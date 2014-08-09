@@ -58,7 +58,8 @@ class Bone {
     setToSetupPose();
   }
 
-  /** Computes the world SRT using the parent bone and the local SRT. */
+  /// Computes the world SRT using the parent bone and the local SRT.
+  ///
   void updateWorldTransform(bool flipX, bool flipY) {
 
     if (this.parent != null) {
@@ -85,9 +86,10 @@ class Bone {
       _worldRotation = rotation;
     }
 
-    num radians = _worldRotation * (math.PI / 180);
+    num radians = _worldRotation * math.PI / 180.0;
     num cos = math.cos(radians);
     num sin = math.sin(radians);
+
     _m00 = cos * _worldScaleX;
     _m10 = sin * _worldScaleX;
     _m01 = -sin * _worldScaleY;

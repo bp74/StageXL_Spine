@@ -2,7 +2,7 @@ import 'dart:html' as html;
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
-Stage stage = new Stage(html.querySelector('#stage'), webGL: false, color: Color.DarkSlateGray);
+Stage stage = new Stage(html.querySelector('#stage'), webGL: true, color: Color.DarkSlateGray);
 RenderLoop renderLoop = new RenderLoop();
 ResourceManager resourceManager = new ResourceManager();
 
@@ -17,7 +17,7 @@ void main() {
   resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
   resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
 
-  // resourceManager.load().then((rm) => startSpineboy());
+  //resourceManager.load().then((rm) => startSpineboy());
   resourceManager.load().then((rm) => startPowerup());
 }
 

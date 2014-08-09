@@ -32,54 +32,54 @@ part of stagexl_spine;
 
 class BitmapDataTextureLoader implements TextureLoader {
 
-	Map<String, BitmapData> _bitmapDatas = new Map<String, BitmapData>();
-	BitmapData _singleBitmapData = null;
+  Map<String, BitmapData> _bitmapDatas = new Map<String, BitmapData>();
+  BitmapData _singleBitmapData = null;
 
-	/// The [bitmapDatas] parameter may be a BitmapData for an atlas that has
-	/// only one page, or for a multi page atlas an object where the key is
-	/// the image path and the value is the BitmapData.
+  /// The [bitmapDatas] parameter may be a BitmapData for an atlas that has
+  /// only one page, or for a multi page atlas an object where the key is
+  /// the image path and the value is the BitmapData.
 
-	BitmapDataTextureLoader(dynamic bitmapDatas) {
-	  if (bitmapDatas is BitmapData) {
-			_singleBitmapData = bitmapDatas;
-		} else if (bitmapDatas is Map) {
-		  _bitmapDatas = bitmapDatas;
-		} else {
+  BitmapDataTextureLoader(dynamic bitmapDatas) {
+    if (bitmapDatas is BitmapData) {
+      _singleBitmapData = bitmapDatas;
+    } else if (bitmapDatas is Map) {
+      _bitmapDatas = bitmapDatas;
+    } else {
       throw new ArgumentError("Invalid bitmaps parameter.");
-		}
-	}
+    }
+  }
 
-	//-----------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------
 
-	void loadPage(AtlasPage page, String path) {
+  void loadPage(AtlasPage page, String path) {
 
-	  BitmapData bitmapData;
+    BitmapData bitmapData;
 
-	  if (_singleBitmapData != null) {
-	    bitmapData = _singleBitmapData;
-	  } else if (_bitmapDatas.containsKey(path)) {
-	    bitmapData = _bitmapDatas[path];
-	  } else {
-	    throw new ArgumentError("BitmapData not found with name: $path");
-	  }
+    if (_singleBitmapData != null) {
+      bitmapData = _singleBitmapData;
+    } else if (_bitmapDatas.containsKey(path)) {
+      bitmapData = _bitmapDatas[path];
+    } else {
+      throw new ArgumentError("BitmapData not found with name: $path");
+    }
 
-		page.rendererObject = bitmapData;
-		page.width = bitmapData.width;
-		page.height = bitmapData.height;
-	}
+    page.rendererObject = bitmapData;
+    page.width = bitmapData.width;
+    page.height = bitmapData.height;
+  }
 
-	//-----------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
 
-  void  unloadPage(AtlasPage page) {
+  void unloadPage(AtlasPage page) {
     BitmapData bitmapData = page.rendererObject;
     bitmapData.renderTexture.dispose();
   }
 
-	//-----------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
 
-	void loadRegion (AtlasRegion region) {
+  void loadRegion(AtlasRegion region) {
 
-	}
+  }
 
 }

@@ -32,98 +32,90 @@ part of stagexl_spine;
 
 class SkeletonSprite extends DisplayObjectContainer implements Animatable {
 
-	static Point _tempPoint = new Point<num>(0.0, 0.0);
-	static Matrix _tempMatrix = new Matrix.fromIdentity();
+  static Point _tempPoint = new Point<num>(0.0, 0.0);
+  static Matrix _tempMatrix = new Matrix.fromIdentity();
 
-	final Skeleton skeleton;
+  final Skeleton skeleton;
 
-	num timeScale = 1.0;
+  num timeScale = 1.0;
 
-	SkeletonSprite (SkeletonData skeletonData) : skeleton = new Skeleton(skeletonData) {
-		Bone.yDown = true;
-		skeleton.updateWorldTransform();
-	}
+  SkeletonSprite(SkeletonData skeletonData) : skeleton = new Skeleton(skeletonData) {
+    Bone.yDown = true;
+    skeleton.updateWorldTransform();
+  }
 
-	bool advanceTime(num delta) {
+  bool advanceTime(num delta) {
 
-	  skeleton.update(delta * timeScale);
+    skeleton.update(delta * timeScale);
 
-	  // This is just a test implementation! Not optimized yet :)
+    // This is just a test implementation! Not optimized yet :)
     // Of course we will override the render method in the future.
 
-		removeChildren();
+    removeChildren();
 
-		List<Slot> drawOrder = skeleton.drawOrder;
+    List<Slot> drawOrder = skeleton.drawOrder;
 
-		for (int i = 0; i < drawOrder.length; i++) {
+    for (int i = 0; i < drawOrder.length; i++) {
 
-			Slot slot = drawOrder[i];
-			RegionAttachment regionAttachment = slot.attachment as RegionAttachment;
+      Slot slot = drawOrder[i];
+      RegionAttachment regionAttachment = slot.attachment as RegionAttachment;
 
-			if (regionAttachment != null) {
+      if (regionAttachment != null) {
 
-			  AtlasRegion region = regionAttachment.rendererObject as AtlasRegion;
+        var region = regionAttachment.rendererObject as AtlasRegion;
+        var bitmapData = region.page.rendererObject as BitmapData;
 
-		    BitmapData bitmapData = region.page.rendererObject as BitmapData;
-				num regionWidth = region.rotate ? region.height : region.width;
-				num regionHeight = region.rotate ? region.width : region.height;
+        RenderTextureQuad renderTextureQuad;
 
-				Rectangle rectangle = new Rectangle(region.x, region.y, regionWidth, regionHeight);
-				BitmapData regionData = new BitmapData.fromBitmapData(bitmapData, rectangle);
-				Bitmap bitmap = new Bitmap(regionData);
+        if (region.rotate) {
+          renderTextureQuad = new RenderTextureQuad(bitmapData.renderTexture, 3,
+              region.offsetX, region.offsetY,
+              region.x, region.y + region.width, region.width, region.height);
+        } else {
+          renderTextureQuad = new RenderTextureQuad(bitmapData.renderTexture, 0,
+              region.offsetX, region.offsetY,
+              region.x, region.y, region.width, region.height);
+        }
 
-        // Position using attachment translation, shifted as if scale and rotation were at image center.
-				// Rotate and scale using default registration point (top left corner, y-down, CW) instead of image center.
+        var regionBitmapData = new BitmapData.fromRenderTextureQuad(renderTextureQuad);
+        var regionBitmap = new Bitmap(regionBitmapData);
 
-        num radians = -regionAttachment.rotation * math.PI / 180;
-        num cos = math.cos(radians);
-        num sin = math.sin(radians);
-        num shiftX = - regionAttachment.width / 2 * regionAttachment.scaleX;
-        num shiftY = - regionAttachment.height / 2 * regionAttachment.scaleY;
-
-        bitmap.rotation = radians;
-				bitmap.scaleX = regionAttachment.scaleX * (regionAttachment.width / region.width);
-				bitmap.scaleY = regionAttachment.scaleY * (regionAttachment.height / region.height);
-
-				if (region.rotate) {
-					bitmap.rotation += math.PI / 2;
-					shiftX += regionHeight * (regionAttachment.width / region.width);
-				}
-
-				bitmap.x =   regionAttachment.x + shiftX * cos - shiftY * sin;
-				bitmap.y = - regionAttachment.y + shiftX * sin + shiftY * cos;
-
-				Sprite wrapper = new Sprite();
-				wrapper.addChild(bitmap);
-        wrapper.blendMode = slot.data.additiveBlending ? BlendMode.ADD : BlendMode.NORMAL;
+        regionBitmap.rotation = - regionAttachment.rotation * math.PI / 180;
+        regionBitmap.scaleX = regionAttachment.scaleX * (regionAttachment.width / region.width);
+        regionBitmap.scaleY = regionAttachment.scaleY * (regionAttachment.height / region.height);
+        regionBitmap.x = regionAttachment.x;
+        regionBitmap.y = regionAttachment.y;
+        regionBitmap.pivotX = regionAttachment.width / 2;
+        regionBitmap.pivotY = regionAttachment.height / 2;
 
         /*
-				var colorTransform:ColorTransform = wrapper.transform.colorTransform;
-				colorTransform.redMultiplier = skeleton.r * slot.r * regionAttachment.r;
-				colorTransform.greenMultiplier = skeleton.g * slot.g * regionAttachment.g;
-				colorTransform.blueMultiplier = skeleton.b * slot.b * regionAttachment.b;
-				colorTransform.alphaMultiplier = skeleton.a * slot.a * regionAttachment.a;
-				wrapper.transform.colorTransform = colorTransform;
+        var colorTransform:ColorTransform = wrapper.transform.colorTransform;
+        colorTransform.redMultiplier = skeleton.r * slot.r * regionAttachment.r;
+        colorTransform.greenMultiplier = skeleton.g * slot.g * regionAttachment.g;
+        colorTransform.blueMultiplier = skeleton.b * slot.b * regionAttachment.b;
+        colorTransform.alphaMultiplier = skeleton.a * slot.a * regionAttachment.a;
         */
 
+        int flipX = skeleton.flipX ? -1 : 1;
+        int flipY = skeleton.flipY ? -1 : 1;
+        Bone bone = slot.bone;
+
+        Sprite wrapper = new Sprite();
+        wrapper.addChild(regionBitmap);
+        wrapper.x = bone.worldX;
+        wrapper.y = bone.worldY;
+        wrapper.rotation = -bone.worldRotation * flipX * flipY * math.PI / 180.0;
+        wrapper.scaleX = bone.worldScaleX * flipX;
+        wrapper.scaleY = bone.worldScaleY * flipY;
         wrapper.alpha = skeleton.a * slot.a * regionAttachment.a;
+        wrapper.blendMode = slot.data.additiveBlending ? BlendMode.ADD : BlendMode.NORMAL;
 
-				int flipX = skeleton.flipX ? -1 : 1;
-				int flipY = skeleton.flipY ? -1 : 1;
+        addChild(wrapper);
+      }
+    }
 
-				Bone bone = slot.bone;
-				wrapper.x = bone.worldX;
-				wrapper.y = bone.worldY;
-				wrapper.rotation = -bone.worldRotation * flipX * flipY;
-				wrapper.scaleX = bone.worldScaleX * flipX;
-				wrapper.scaleY = bone.worldScaleY * flipY;
-
-				addChild(wrapper);
-			}
-		}
-
-		return true;
-	}
+    return true;
+  }
 
 
 }
