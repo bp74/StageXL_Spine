@@ -46,7 +46,7 @@ class TextureFilter {
   const TextureFilter(this.ordinal, this.name);
 
   static TextureFilter get(String name) {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "nearest":
         return TextureFilter.nearest;
       case "linear":

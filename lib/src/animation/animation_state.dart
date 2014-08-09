@@ -242,7 +242,7 @@ class AnimationState {
 
   TrackEntry _expandToIndex(int index) {
     if (index < _tracks.length) return _tracks[index];
-    if (index >= _tracks.length) _tracks.length = index;
+    if (index >= _tracks.length) _tracks.length = index + 1;
     return null;
   }
 

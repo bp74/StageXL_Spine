@@ -50,3 +50,7 @@ part 'src/attachments/bounding_box_attachment.dart';
 part 'src/attachments/mesh_attachment.dart';
 part 'src/attachments/region_attachment.dart';
 part 'src/attachments/skinned_mesh_attachment.dart';
+
+part 'src/stagexl/skeleton_animation.dart';
+part 'src/stagexl/skeleton_sprite.dart';
+part 'src/stagexl/bitmap_data_texture_loader.dart';

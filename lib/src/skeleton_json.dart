@@ -93,6 +93,7 @@ class SkeletonJson {
     for (Map slotMap in root["slots"]) {
 
       String boneName = slotMap["bone"];
+
       boneData = skeletonData.findBone(boneName);
       if (boneData == null) throw new StateError("Slot bone not found: $boneName");
       SlotData slotData = new SlotData(slotMap["name"], boneData);
@@ -106,7 +107,7 @@ class SkeletonJson {
       }
 
       slotData.attachmentName = slotMap["attachment"];
-      slotData.additiveBlending = slotMap["additive"];
+      slotData.additiveBlending = slotMap.containsKey("additive") ? slotMap["additive"] : false;
 
       skeletonData.addSlot(slotData);
     }
@@ -275,6 +276,8 @@ class SkeletonJson {
     //-------------------------------------
 
     Map slots = map["slots"];
+    if (slots == null) slots = const {};
+
     for (String slotName in slots.keys) {
 
       Map slotMap = slots[slotName];
@@ -328,6 +331,8 @@ class SkeletonJson {
     //-------------------------------------
 
     Map bones = map["bones"];
+    if (bones == null) bones = const {};
+
     for (String boneName in bones.keys) {
 
       int boneIndex = skeletonData.findBoneIndex(boneName);
@@ -391,6 +396,8 @@ class SkeletonJson {
     //-------------------------------------
 
     Map ffd = map["ffd"];
+    if (ffd == null) ffd = const {};
+
     for (String skinName in ffd.keys) {
 
       Skin skin = skeletonData.findSkin(skinName);
@@ -463,20 +470,21 @@ class SkeletonJson {
 
     //-------------------------------------
 
-    if (map.containsKey("draworder")) {
+    List drawOrderValues = map["draworder"];
+    if (drawOrderValues != null) {
 
-      Map drawOrderValues = map["draworder"];
       DrawOrderTimeline drawOrderTimeline = new DrawOrderTimeline(drawOrderValues.length);
       int slotCount = skeletonData.slots.length;
       int frameIndex = 0;
 
       for (Map drawOrderMap in drawOrderValues) {
+
         List<int> drawOrder = null;
 
         if (drawOrderMap.containsKey("offsets")) {
           drawOrder = new List<int>.filled(slotCount, -1);
 
-          Map offsets = drawOrderMap["offsets"];
+          List offsets = drawOrderMap["offsets"];
           List<int> unchanged = new List<int>(slotCount - offsets.length);
           int originalIndex = 0;
           int unchangedIndex = 0;
@@ -514,7 +522,7 @@ class SkeletonJson {
 
     if (map.containsKey("events")) {
 
-      Map eventsMap = map["events"];
+      List eventsMap = map["events"];
       EventTimeline eventTimeline = new EventTimeline(eventsMap.length);
       int frameIndex = 0;
 

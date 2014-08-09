@@ -7,4 +7,12 @@ environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
   browser: '>=0.9.0 <0.11.0'
-  stagexl: '>=0.9.3 <0.10.0'
+  stagexl: '>=0.9.4 <0.10.0'
+dependency_overrides:
+  stagexl:
+    path: D:\GitHub\bp74\StageXL
+
+#transformers:
+#- $dart2js:
+#    commandLineOptions: ["--trust-type-annotations"]
+#    minify: false

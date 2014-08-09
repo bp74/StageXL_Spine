@@ -169,7 +169,7 @@ class _Reader {
   static RegExp _trimRexExp = new RegExp(r"^\s+|\s+$");
 
   final List<String> lines;
-  int index;
+  int index = 0;
 
   _Reader(String text) : lines = text.split(_splitRexExp);
 
@@ -202,7 +202,7 @@ class _Reader {
     for ( ; i < 3; i++) {
       int comma = line.indexOf(",", lastMatch);
       if (comma == -1) break;
-      tuple[i] = trim(line.substring(lastMatch, comma - lastMatch));
+      tuple[i] = trim(line.substring(lastMatch, comma));
       lastMatch = comma + 1;
     }
 

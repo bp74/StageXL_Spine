@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
- * 
+ *
  * Copyright (c) 2013, Esoteric Software
  * All rights reserved.
- * 
+ *
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to install, execute and perform the Spine Runtimes
  * Software (the "Software") solely for internal use. Without the written
@@ -15,7 +15,7 @@
  * trademark, patent or other intellectual property or proprietary rights
  * notices on or in the Software, including any copy thereof. Redistributions
  * in binary or source form must include this license and terms.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -28,25 +28,58 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-package spine.flash {
-import spine.SkeletonData;
-import spine.animation.AnimationState;
-import spine.animation.AnimationStateData;
+part of stagexl_spine;
 
-public class SkeletonAnimation extends SkeletonSprite {
-	public var state:AnimationState;
+class BitmapDataTextureLoader implements TextureLoader {
 
-	public function SkeletonAnimation (skeletonData:SkeletonData, stateData:AnimationStateData = null) {
-		super(skeletonData);
-		state = new AnimationState(stateData ? stateData : new AnimationStateData(skeletonData));
+	Map<String, BitmapData> _bitmapDatas = new Map<String, BitmapData>();
+	BitmapData _singleBitmapData = null;
+
+	/// The [bitmapDatas] parameter may be a BitmapData for an atlas that has
+	/// only one page, or for a multi page atlas an object where the key is
+	/// the image path and the value is the BitmapData.
+
+	BitmapDataTextureLoader(dynamic bitmapDatas) {
+	  if (bitmapDatas is BitmapData) {
+			_singleBitmapData = bitmapDatas;
+		} else if (bitmapDatas is Map) {
+		  _bitmapDatas = bitmapDatas;
+		} else {
+      throw new ArgumentError("Invalid bitmaps parameter.");
+		}
 	}
 
-	override public function advanceTime (time:Number) : void {
-		state.update(time * timeScale);
-		state.apply(skeleton);
-		skeleton.updateWorldTransform();
-		super.advanceTime(time);
+	//-----------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
+
+	void loadPage(AtlasPage page, String path) {
+
+	  BitmapData bitmapData;
+
+	  if (_singleBitmapData != null) {
+	    bitmapData = _singleBitmapData;
+	  } else if (_bitmapDatas.containsKey(path)) {
+	    bitmapData = _bitmapDatas[path];
+	  } else {
+	    throw new ArgumentError("BitmapData not found with name: $path");
+	  }
+
+		page.rendererObject = bitmapData;
+		page.width = bitmapData.width;
+		page.height = bitmapData.height;
 	}
-}
+
+	//-----------------------------------------------------------------------------------------------
+
+  void  unloadPage(AtlasPage page) {
+    BitmapData bitmapData = page.rendererObject;
+    bitmapData.renderTexture.dispose();
+  }
+
+	//-----------------------------------------------------------------------------------------------
+
+	void loadRegion (AtlasRegion region) {
+
+	}
 
 }

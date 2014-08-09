@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
- * 
+ *
  * Copyright (c) 2013, Esoteric Software
  * All rights reserved.
- * 
+ *
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to install, execute and perform the Spine Runtimes
  * Software (the "Software") solely for internal use. Without the written
@@ -15,7 +15,7 @@
  * trademark, patent or other intellectual property or proprietary rights
  * notices on or in the Software, including any copy thereof. Redistributions
  * in binary or source form must include this license and terms.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -28,58 +28,21 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-package spine.flash {
-import flash.display.Bitmap;
-import flash.display.BitmapData;
+part of stagexl_spine;
 
-import spine.atlas.AtlasPage;
-import spine.atlas.AtlasRegion;
-import spine.atlas.TextureLoader;
+class SkeletonAnimation extends SkeletonSprite implements Animatable {
 
-public class FlashTextureLoader implements TextureLoader {
-	public var bitmapDatas:Object = {};
-	public var singleBitmapData:BitmapData;
+  final AnimationState state;
 
-	/** @param bitmaps A Bitmap or BitmapData for an atlas that has only one page, or for a multi page atlas an object where the 
-	 * key is the image path and the value is the Bitmap or BitmapData. */
-	public function FlashTextureLoader (bitmaps:Object) {
-		if (bitmaps is BitmapData) {
-			singleBitmapData = BitmapData(bitmaps);
-			return;
-		}
-		if (bitmaps is Bitmap) {
-			singleBitmapData = Bitmap(bitmaps).bitmapData;
-			return;
-		}
+  SkeletonAnimation(SkeletonData skeletonData, [AnimationStateData stateData = null])
+      : super(skeletonData),
+        state = new AnimationState(stateData != null ? stateData : new AnimationStateData(skeletonData));
 
-		for (var path:* in bitmaps) {
-			var object:* = bitmaps[path];
-			var bitmapData:BitmapData;
-			if (object is BitmapData)
-				bitmapData = BitmapData(object);
-			else if (object is Bitmap)
-				bitmapData = Bitmap(object).bitmapData;
-			else
-				throw new ArgumentError("Object for path \"" + path + "\" must be a Bitmap or BitmapData: " + object);
-			bitmapDatas[path] = bitmapData;
-		}
-	}
-
-	public function loadPage (page:AtlasPage, path:String) : void {
-		var bitmapData:BitmapData = singleBitmapData || bitmapDatas[path];
-		if (!bitmapData)
-			throw new ArgumentError("BitmapData not found with name: " + path);
-		page.rendererObject = bitmapData;
-		page.width = bitmapData.width;
-		page.height = bitmapData.height;
-	}
-	
-	public function loadRegion (region:AtlasRegion) : void {
-	}
-
-	public function unloadPage (page:AtlasPage) : void {
-		BitmapData(page.rendererObject).dispose();
-	}
-}
+  advanceTime(num time) {
+    state.update(time * timeScale);
+    state.apply(skeleton);
+    skeleton.updateWorldTransform();
+    super.advanceTime(time);
+  }
 
 }

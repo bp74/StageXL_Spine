@@ -46,7 +46,7 @@ class TextureFormat {
   const TextureFormat(this.ordinal, this.name);
 
   static TextureFormat get(String name) {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "alpha":
         return TextureFormat.alpha;
       case "intensity":

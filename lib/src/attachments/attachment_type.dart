@@ -44,7 +44,7 @@ class AttachmentType {
   const AttachmentType(this.ordinal, this.name);
 
   static AttachmentType get(String name) {
-    switch (name) {
+    switch (name.toLowerCase()) {
       case "region":
         return AttachmentType.region;
       case "regionsequence":
