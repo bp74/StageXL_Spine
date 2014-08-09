@@ -32,13 +32,13 @@ part of stagexl_spine;
 
 class AtlasPage {
 
-	String name;
-	TextureFormat format;
-	TextureFilter minFilter;
-	TextureFilter magFilter;
-	TextureWrap uWrap;
-	TextureWrap vWrap;
-	Object rendererObject;
-	int width;
-	int height;
+  String name;
+  TextureFormat format;
+  TextureFilter minFilter;
+  TextureFilter magFilter;
+  TextureWrap uWrap;
+  TextureWrap vWrap;
+  Object rendererObject;
+  int width;
+  int height;
 }

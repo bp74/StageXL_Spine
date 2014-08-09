@@ -32,13 +32,11 @@ part of stagexl_spine;
 
 class Attachment {
 
-	String _name;  // internal
+  final String name;
 
-	Attachment (String name) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-		_name = name;
-	}
+  Attachment(this.name) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
+  }
 
-	String get name => _name;
-	String toString() => name;
+  String toString() => name;
 }

@@ -32,58 +32,56 @@ part of stagexl_spine;
 
 class EventTimeline implements Timeline {
 
-	List<num> frames; // time, ...
-	List<Event> events;
+  final List<num> frames; // time, ...
+  final List<Event> events;
 
-	EventTimeline (int frameCount) {
-		frames = new List<num>.filled(frameCount, 0);
-		events = new List<Event>.filled(frameCount, null);
-	}
+  EventTimeline(int frameCount)
+      : frames = new List<num>.filled(frameCount, 0),
+        events = new List<Event>.filled(frameCount, null);
 
-	int get frameCount => frames.length;
+  int get frameCount => frames.length;
 
-	/// Sets the time and value of the specified keyframe.
-	///
-	void setFrame (int frameIndex, num time, Event event) {
-		frames[frameIndex] = time;
-		events[frameIndex] = event;
-	}
+  /// Sets the time and value of the specified keyframe.
+  ///
+  void setFrame(int frameIndex, num time, Event event) {
+    frames[frameIndex] = time;
+    events[frameIndex] = event;
+  }
 
-	/// Fires events for frames > lastTime and <= time.
-	///
-	void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  /// Fires events for frames > lastTime and <= time.
+  ///
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  if (firedEvents == null) return;
+    if (firedEvents == null) return;
 
-		if (lastTime > time) { // Fire events after last time for looped animations.
-			apply(skeleton, lastTime, double.INFINITY, firedEvents, alpha);
-			lastTime = -1;
-		} else if (lastTime >= frames[frameCount - 1]) { // Last time is after last frame.
-			return;
-		}
+    if (lastTime > time) { // Fire events after last time for looped animations.
+      apply(skeleton, lastTime, double.INFINITY, firedEvents, alpha);
+      lastTime = -1;
+    } else if (lastTime >= frames[frameCount - 1]) { // Last time is after last frame.
+      return;
+    }
 
-		if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		int frameIndex;
+    int frameIndex;
 
-		if (lastTime < frames[0]) {
+    if (lastTime < frames[0]) {
 
-			frameIndex = 0;
+      frameIndex = 0;
 
-		} else {
+    } else {
 
-			frameIndex = Animation.binarySearch(frames, lastTime, 1);
-			num frame = frames[frameIndex];
+      frameIndex = Animation.binarySearch(frames, lastTime, 1);
+      num frame = frames[frameIndex];
 
-			while (frameIndex > 0) { // Fire multiple events with the same frame.
-				if (frames[frameIndex - 1] != frame) break;
-				frameIndex--;
-			}
-		}
+      while (frameIndex > 0) { // Fire multiple events with the same frame.
+        if (frames[frameIndex - 1] != frame) break;
+        frameIndex--;
+      }
+    }
 
-		for (; frameIndex < frameCount && time >= frames[frameIndex]; frameIndex++) {
-			firedEvents[firedEvents.length] = events[frameIndex];
-		}
-	}
+    for ( ; frameIndex < frameCount && time >= frames[frameIndex]; frameIndex++) {
+      firedEvents[firedEvents.length] = events[frameIndex];
+    }
+  }
 }
-

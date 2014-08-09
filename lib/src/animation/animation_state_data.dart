@@ -32,32 +32,28 @@ part of stagexl_spine;
 
 class AnimationStateData {
 
-  SkeletonData _skeletonData;  // internal
-	Map<String, num> animationToMixTime = new Map<String, num>();
-	num defaultMix = 0;
+  final SkeletonData skeletonData;
+  final Map<String, num> animationToMixTime = new Map<String, num>();
+  num defaultMix = 0;
 
-	AnimationStateData(SkeletonData skeletonData) {
-    _skeletonData = skeletonData;
-	}
+  AnimationStateData(this.skeletonData);
 
-	SkeletonData get skeletonData => _skeletonData;
+  void setMixByName(String fromName, String toName, num duration) {
+    Animation from = this.skeletonData.findAnimation(fromName);
+    if (from == null) throw new ArgumentError("Animation not found: $fromName");
+    Animation to = this.skeletonData.findAnimation(toName);
+    if (to == null) throw new ArgumentError("Animation not found: $toName");
+    setMix(from, to, duration);
+  }
 
-	void setMixByName(String fromName, String toName, num duration) {
-	  Animation from = _skeletonData.findAnimation(fromName);
-		if (from == null) throw new ArgumentError("Animation not found: $fromName");
-		Animation to = _skeletonData.findAnimation(toName);
-		if (to == null) throw new ArgumentError("Animation not found: $toName");
-		setMix(from, to, duration);
-	}
+  void setMix(Animation from, Animation to, num duration) {
+    if (from == null) throw new ArgumentError("from cannot be null.");
+    if (to == null) throw new ArgumentError("to cannot be null.");
+    animationToMixTime["${from.name}:${to.name}"] = duration;
+  }
 
-	void setMix(Animation from, Animation to, num duration) {
-		if (from == null) throw new ArgumentError("from cannot be null.");
-		if (to == null) throw new ArgumentError("to cannot be null.");
-		animationToMixTime["${from.name}:${to.name}"] = duration;
-	}
-
-	num getMix(Animation from, Animation to) {
-		num time = animationToMixTime["${from.name}:${to.name}"];
-		return time is num ? time : defaultMix;
-	}
+  num getMix(Animation from, Animation to) {
+    num time = animationToMixTime["${from.name}:${to.name}"];
+    return time is num ? time : defaultMix;
+  }
 }

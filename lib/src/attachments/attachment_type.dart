@@ -32,26 +32,32 @@ part of stagexl_spine;
 
 class AttachmentType {
 
-	static const AttachmentType region = const AttachmentType(0, "region");
-	static const AttachmentType regionsequence = const AttachmentType(1, "regionsequence");
-	static const AttachmentType boundingbox = const AttachmentType(2, "boundingbox");
-	static const AttachmentType mesh = const AttachmentType(3, "mesh");
-	static const AttachmentType skinnedmesh = const AttachmentType(4, "skinnedmesh");
+  static const AttachmentType region = const AttachmentType(0, "region");
+  static const AttachmentType regionsequence = const AttachmentType(1, "regionsequence");
+  static const AttachmentType boundingbox = const AttachmentType(2, "boundingbox");
+  static const AttachmentType mesh = const AttachmentType(3, "mesh");
+  static const AttachmentType skinnedmesh = const AttachmentType(4, "skinnedmesh");
 
-	final int ordinal;
-	final String name;
+  final int ordinal;
+  final String name;
 
-	const AttachmentType(this.ordinal, this.name);
+  const AttachmentType(this.ordinal, this.name);
 
-	static AttachmentType get(String name) {
-    switch(name) {
-      case "region": return AttachmentType.region;
-      case "regionsequence": return AttachmentType.regionsequence;
-      case "boundingbox": return AttachmentType.boundingbox;
-      case "mesh": return AttachmentType.mesh;
-      case "skinnedmesh": return AttachmentType.skinnedmesh;
-      default: throw new StateError("Unknwon AttachmentType: $name");
+  static AttachmentType get(String name) {
+    switch (name) {
+      case "region":
+        return AttachmentType.region;
+      case "regionsequence":
+        return AttachmentType.regionsequence;
+      case "boundingbox":
+        return AttachmentType.boundingbox;
+      case "mesh":
+        return AttachmentType.mesh;
+      case "skinnedmesh":
+        return AttachmentType.skinnedmesh;
+      default:
+        throw new StateError("Unknwon AttachmentType: $name");
     }
-	}
+  }
 
 }

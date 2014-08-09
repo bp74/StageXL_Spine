@@ -33,25 +33,25 @@ part of stagexl_spine;
 class TrackEntry {
 
   TrackEntry next;
-  TrackEntry _previous;   // internal
+  TrackEntry _previous; // internal
 
   Animation animation;
-	bool loop;
-	num delay;
+  bool loop;
+  num delay;
 
-	num time = 0;
-	num lastTime = -1;
-	num endTime = -1;
-	num timeScale = 1;
+  num time = 0;
+  num lastTime = -1;
+  num endTime = -1;
+  num timeScale = 1;
 
-	num _mixTime;     // internal
-	num _mixDuration; // internal
-	num _mix = 1;     // internal
+  num _mixTime; // internal
+  num _mixDuration; // internal
+  num _mix = 1; // internal
 
-	TrackStateAction onStart;
-	TrackStateAction onEnd;
-	TrackStateAction onComplete;
-	TrackStateAction onEvent;
+  TrackStateAction onStart;
+  TrackStateAction onEnd;
+  TrackStateAction onComplete;
+  TrackStateAction onEvent;
 
-	String toString() => animation == null ? "<none>" : animation.name;
+  String toString() => animation == null ? "<none>" : animation.name;
 }

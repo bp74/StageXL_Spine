@@ -32,36 +32,35 @@ part of stagexl_spine;
 
 class AttachmentTimeline implements Timeline {
 
-	int slotIndex;
-	List<num> frames; // time, ...
-	List<String> attachmentNames;
+  final List<num> frames; // time, ...
+  final List<String> attachmentNames;
+  int slotIndex = 0;
 
-	AttachmentTimeline (int frameCount) {
-		frames = new List<num>.filled(frameCount, 0);
-		attachmentNames = new List<String>.filled(frameCount, null);
-	}
+  AttachmentTimeline(int frameCount)
+      : frames = new List<num>.filled(frameCount, 0),
+        attachmentNames = new List<String>.filled(frameCount, null);
 
-	int get frameCount => frames.length;
+  int get frameCount => frames.length;
 
-	/// Sets the time and value of the specified keyframe.
-	void setFrame (int frameIndex, num time, String attachmentName) {
-		frames[frameIndex] = time;
-		attachmentNames[frameIndex] = attachmentName;
-	}
+  /// Sets the time and value of the specified keyframe.
+  ///
+  void setFrame(int frameIndex, num time, String attachmentName) {
+    frames[frameIndex] = time;
+    attachmentNames[frameIndex] = attachmentName;
+  }
 
-	void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		int frameIndex;
-		if (time >= frames[frames.length - 1]) { // Time is after last frame.
-			frameIndex = frames.length - 1;
-		} else {
-			frameIndex = Animation.binarySearch(frames, time, 1) - 1;
-		}
+    int frameIndex;
+    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+      frameIndex = frames.length - 1;
+    } else {
+      frameIndex = Animation.binarySearch(frames, time, 1) - 1;
+    }
 
-		String attachmentName= attachmentNames[frameIndex];
-		skeleton.slots[slotIndex].attachment = (attachmentName == null)
-		    ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
-	}
+    String attachmentName = attachmentNames[frameIndex];
+    skeleton.slots[slotIndex].attachment = (attachmentName == null) ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
+  }
 }

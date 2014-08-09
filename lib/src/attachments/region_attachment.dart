@@ -32,119 +32,119 @@ part of stagexl_spine;
 
 class RegionAttachment extends Attachment {
 
-	final int X1 = 0;
-	final int Y1 = 1;
-	final int X2 = 2;
-	final int Y2 = 3;
-	final int X3 = 4;
-	final int Y3 = 5;
-	final int X4 = 6;
-	final int Y4 = 7;
+  final int X1 = 0;
+  final int Y1 = 1;
+  final int X2 = 2;
+  final int Y2 = 3;
+  final int X3 = 4;
+  final int Y3 = 5;
+  final int X4 = 6;
+  final int Y4 = 7;
 
-	num x;
-	num y;
-	num scaleX = 1;
-	num scaleY = 1;
-	num rotation;
-	num width;
-	num height;
-	num r = 1;
-	num g = 1;
-	num b = 1;
-	num a = 1;
+  num x;
+  num y;
+  num scaleX = 1;
+  num scaleY = 1;
+  num rotation;
+  num width;
+  num height;
+  num r = 1;
+  num g = 1;
+  num b = 1;
+  num a = 1;
 
-	String path;
-	Object rendererObject;
+  String path;
+  Object rendererObject;
 
-	num regionOffsetX;       // Pixels stripped from the bottom left, unrotated.
-	num regionOffsetY;
-	num regionWidth;         // Unrotated, stripped size.
-	num regionHeight;
-	num regionOriginalWidth; // Unrotated, unstripped size.
-	num regionOriginalHeight;
+  num regionOffsetX; // Pixels stripped from the bottom left, unrotated.
+  num regionOffsetY;
+  num regionWidth; // Unrotated, stripped size.
+  num regionHeight;
+  num regionOriginalWidth; // Unrotated, unstripped size.
+  num regionOriginalHeight;
 
-	List<num> offset = new List<num>.filled(8, 0);
-	List<num> uvs = new List<num>.filled(8, 0);
+  List<num> offset = new List<num>.filled(8, 0);
+  List<num> uvs = new List<num>.filled(8, 0);
 
-	RegionAttachment(String name) : super(name);
+  RegionAttachment(String name) : super(name);
 
-	void setUVs (num u, num v, num u2, num v2, bool rotate) {
-		if (rotate) {
-			uvs[X2] = u;
-			uvs[Y2] = v2;
-			uvs[X3] = u;
-			uvs[Y3] = v;
-			uvs[X4] = u2;
-			uvs[Y4] = v;
-			uvs[X1] = u2;
-			uvs[Y1] = v2;
-		} else {
-			uvs[X1] = u;
-			uvs[Y1] = v2;
-			uvs[X2] = u;
-			uvs[Y2] = v;
-			uvs[X3] = u2;
-			uvs[Y3] = v;
-			uvs[X4] = u2;
-			uvs[Y4] = v2;
-		}
-	}
+  void setUVs(num u, num v, num u2, num v2, bool rotate) {
+    if (rotate) {
+      uvs[X2] = u;
+      uvs[Y2] = v2;
+      uvs[X3] = u;
+      uvs[Y3] = v;
+      uvs[X4] = u2;
+      uvs[Y4] = v;
+      uvs[X1] = u2;
+      uvs[Y1] = v2;
+    } else {
+      uvs[X1] = u;
+      uvs[Y1] = v2;
+      uvs[X2] = u;
+      uvs[Y2] = v;
+      uvs[X3] = u2;
+      uvs[Y3] = v;
+      uvs[X4] = u2;
+      uvs[Y4] = v2;
+    }
+  }
 
-	void updateOffset() {
+  void updateOffset() {
 
-		num regionScaleX = width / regionOriginalWidth * scaleX;
-		num regionScaleY = height / regionOriginalHeight * scaleY;
-		num localX = -width / 2 * scaleX + regionOffsetX * regionScaleX;
-		num localY = -height / 2 * scaleY + regionOffsetY * regionScaleY;
-		num localX2 = localX + regionWidth * regionScaleX;
-		num localY2 = localY + regionHeight * regionScaleY;
-		num radians = rotation * math.PI / 180;
-		num cos = math.cos(radians);
-		num sin = math.sin(radians);
-		num localXCos = localX * cos + x;
-		num localXSin = localX * sin;
-		num localYCos = localY * cos + y;
-		num localYSin = localY * sin;
-		num localX2Cos = localX2 * cos + x;
-		num localX2Sin = localX2 * sin;
-		num localY2Cos = localY2 * cos + y;
-		num localY2Sin = localY2 * sin;
+    num regionScaleX = width / regionOriginalWidth * scaleX;
+    num regionScaleY = height / regionOriginalHeight * scaleY;
+    num localX = -width / 2 * scaleX + regionOffsetX * regionScaleX;
+    num localY = -height / 2 * scaleY + regionOffsetY * regionScaleY;
+    num localX2 = localX + regionWidth * regionScaleX;
+    num localY2 = localY + regionHeight * regionScaleY;
+    num radians = rotation * math.PI / 180;
+    num cos = math.cos(radians);
+    num sin = math.sin(radians);
+    num localXCos = localX * cos + x;
+    num localXSin = localX * sin;
+    num localYCos = localY * cos + y;
+    num localYSin = localY * sin;
+    num localX2Cos = localX2 * cos + x;
+    num localX2Sin = localX2 * sin;
+    num localY2Cos = localY2 * cos + y;
+    num localY2Sin = localY2 * sin;
 
-		offset[X1] = localXCos - localYSin;
-		offset[Y1] = localYCos + localXSin;
-		offset[X2] = localXCos - localY2Sin;
-		offset[Y2] = localY2Cos + localXSin;
-		offset[X3] = localX2Cos - localY2Sin;
-		offset[Y3] = localY2Cos + localX2Sin;
-		offset[X4] = localX2Cos - localYSin;
-		offset[Y4] = localYCos + localX2Sin;
-	}
+    offset[X1] = localXCos - localYSin;
+    offset[Y1] = localYCos + localXSin;
+    offset[X2] = localXCos - localY2Sin;
+    offset[Y2] = localY2Cos + localXSin;
+    offset[X3] = localX2Cos - localY2Sin;
+    offset[Y3] = localY2Cos + localX2Sin;
+    offset[X4] = localX2Cos - localYSin;
+    offset[Y4] = localYCos + localX2Sin;
+  }
 
-	void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
+  void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
 
-	  x += bone.worldX;
-		y += bone.worldY;
+    x += bone.worldX;
+    y += bone.worldY;
 
-		num m00 = bone.m00;
-		num m01 = bone.m01;
-		num m10 = bone.m10;
-		num m11 = bone.m11;
-		num x1 = offset[X1];
-		num y1 = offset[Y1];
-		num x2 = offset[X2];
-		num y2 = offset[Y2];
-		num x3 = offset[X3];
-		num y3 = offset[Y3];
-		num x4 = offset[X4];
-		num y4 = offset[Y4];
-		worldVertices[X1] = x1 * m00 + y1 * m01 + x;
-		worldVertices[Y1] = x1 * m10 + y1 * m11 + y;
-		worldVertices[X2] = x2 * m00 + y2 * m01 + x;
-		worldVertices[Y2] = x2 * m10 + y2 * m11 + y;
-		worldVertices[X3] = x3 * m00 + y3 * m01 + x;
-		worldVertices[Y3] = x3 * m10 + y3 * m11 + y;
-		worldVertices[X4] = x4 * m00 + y4 * m01 + x;
-		worldVertices[Y4] = x4 * m10 + y4 * m11 + y;
-	}
+    num m00 = bone.m00;
+    num m01 = bone.m01;
+    num m10 = bone.m10;
+    num m11 = bone.m11;
+    num x1 = offset[X1];
+    num y1 = offset[Y1];
+    num x2 = offset[X2];
+    num y2 = offset[Y2];
+    num x3 = offset[X3];
+    num y3 = offset[Y3];
+    num x4 = offset[X4];
+    num y4 = offset[Y4];
+    worldVertices[X1] = x1 * m00 + y1 * m01 + x;
+    worldVertices[Y1] = x1 * m10 + y1 * m11 + y;
+    worldVertices[X2] = x2 * m00 + y2 * m01 + x;
+    worldVertices[Y2] = x2 * m10 + y2 * m11 + y;
+    worldVertices[X3] = x3 * m00 + y3 * m01 + x;
+    worldVertices[Y3] = x3 * m10 + y3 * m11 + y;
+    worldVertices[X4] = x4 * m00 + y4 * m01 + x;
+    worldVertices[Y4] = x4 * m10 + y4 * m11 + y;
+  }
 
 }

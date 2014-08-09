@@ -33,6 +33,6 @@ part of stagexl_spine;
 abstract class TextureLoader {
 
   void loadPage(AtlasPage page, String path);
-	void loadRegion(AtlasRegion region);
-	void unloadPage(AtlasPage page);
+  void loadRegion(AtlasRegion region);
+  void unloadPage(AtlasPage page);
 }

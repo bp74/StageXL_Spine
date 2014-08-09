@@ -30,33 +30,32 @@
 
 part of stagexl_spine;
 
-
 class ScaleTimeline extends TranslateTimeline {
 
-	ScaleTimeline(int frameCount) : super(frameCount);
+  ScaleTimeline(int frameCount) : super(frameCount);
 
-	void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		Bone bone = skeleton.bones[boneIndex];
+    Bone bone = skeleton.bones[boneIndex];
 
-		if (time >= frames[frames.length - 3]) { // Time is after last frame.
-			bone.scaleX += (bone.data.scaleX - 1 + frames[frames.length - 2] - bone.scaleX) * alpha;
-			bone.scaleY += (bone.data.scaleY - 1 + frames[frames.length - 1] - bone.scaleY) * alpha;
-			return;
-		}
+    if (time >= frames[frames.length - 3]) { // Time is after last frame.
+      bone.scaleX += (bone.data.scaleX - 1 + frames[frames.length - 2] - bone.scaleX) * alpha;
+      bone.scaleY += (bone.data.scaleY - 1 + frames[frames.length - 1] - bone.scaleY) * alpha;
+      return;
+    }
 
-		// Interpolate between the previous frame and the current frame.
+    // Interpolate between the previous frame and the current frame.
 
-		int frameIndex = Animation.binarySearch(frames, time, 3);
-		num prevFrameX = frames[frameIndex - 2];
-		num prevFrameY = frames[frameIndex - 1];
-		num frameTime = frames[frameIndex];
-		num percent = 1 - (time - frameTime) / (frames[frameIndex + TranslateTimeline._PREV_FRAME_TIME] - frameTime);
-		percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+    int frameIndex = Animation.binarySearch(frames, time, 3);
+    num prevFrameX = frames[frameIndex - 2];
+    num prevFrameY = frames[frameIndex - 1];
+    num frameTime = frames[frameIndex];
+    num percent = 1 - (time - frameTime) / (frames[frameIndex + TranslateTimeline._PREV_FRAME_TIME] - frameTime);
+    percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
-		bone.scaleX += (bone.data.scaleX - 1 + prevFrameX + (frames[frameIndex + TranslateTimeline._FRAME_X] - prevFrameX) * percent - bone.scaleX) * alpha;
-		bone.scaleY += (bone.data.scaleY - 1 + prevFrameY + (frames[frameIndex + TranslateTimeline._FRAME_Y] - prevFrameY) * percent - bone.scaleY) * alpha;
-	}
+    bone.scaleX += (bone.data.scaleX - 1 + prevFrameX + (frames[frameIndex + TranslateTimeline._FRAME_X] - prevFrameX) * percent - bone.scaleX) * alpha;
+    bone.scaleY += (bone.data.scaleY - 1 + prevFrameY + (frames[frameIndex + TranslateTimeline._FRAME_Y] - prevFrameY) * percent - bone.scaleY) * alpha;
+  }
 }

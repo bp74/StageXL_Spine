@@ -32,30 +32,38 @@ part of stagexl_spine;
 
 class TextureFormat {
 
-	static const TextureFormat alpha = const TextureFormat(0, "alpha");
-	static const TextureFormat intensity = const TextureFormat(1, "intensity");
-	static const TextureFormat luminanceAlpha = const TextureFormat(2, "luminanceAlpha");
-	static const TextureFormat rgb565 = const TextureFormat(3, "rgb565");
-	static const TextureFormat rgba4444 = const TextureFormat(4, "rgba4444");
-	static const TextureFormat rgb888 = const TextureFormat(5, "rgb888");
-	static const TextureFormat rgba8888 = const TextureFormat(6, "rgba8888");
+  static const TextureFormat alpha = const TextureFormat(0, "alpha");
+  static const TextureFormat intensity = const TextureFormat(1, "intensity");
+  static const TextureFormat luminanceAlpha = const TextureFormat(2, "luminanceAlpha");
+  static const TextureFormat rgb565 = const TextureFormat(3, "rgb565");
+  static const TextureFormat rgba4444 = const TextureFormat(4, "rgba4444");
+  static const TextureFormat rgb888 = const TextureFormat(5, "rgb888");
+  static const TextureFormat rgba8888 = const TextureFormat(6, "rgba8888");
 
-	final int ordinal;
-	final String name;
+  final int ordinal;
+  final String name;
 
-	const TextureFormat(this.ordinal, this.name);
+  const TextureFormat(this.ordinal, this.name);
 
-	static TextureFormat get(String name) {
-	  switch(name) {
-	    case "alpha": return TextureFormat.alpha;
-      case "intensity": return TextureFormat.intensity;
-      case "luminanceAlpha": return TextureFormat.luminanceAlpha;
-      case "rgb565": return TextureFormat.rgb565;
-      case "rgba4444": return TextureFormat.rgba4444;
-      case "rgb888": return TextureFormat.rgb888;
-      case "rgba8888": return TextureFormat.rgba8888;
-      default: throw new StateError("Unknown TextureFormat: $name");
-	  }
-	}
+  static TextureFormat get(String name) {
+    switch (name) {
+      case "alpha":
+        return TextureFormat.alpha;
+      case "intensity":
+        return TextureFormat.intensity;
+      case "luminanceAlpha":
+        return TextureFormat.luminanceAlpha;
+      case "rgb565":
+        return TextureFormat.rgb565;
+      case "rgba4444":
+        return TextureFormat.rgba4444;
+      case "rgb888":
+        return TextureFormat.rgb888;
+      case "rgba8888":
+        return TextureFormat.rgba8888;
+      default:
+        throw new StateError("Unknown TextureFormat: $name");
+    }
+  }
 
 }

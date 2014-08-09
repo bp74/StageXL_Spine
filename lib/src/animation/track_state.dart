@@ -39,8 +39,21 @@ class TrackState {
   final Event event;
   final int count;
 
-  TrackState.onStart(this.index) : name = 'start', event = null, count = null;
-  TrackState.onEnd(this.index) : name = 'end', event = null, count = null;
-  TrackState.onComplete(this.index, this.count) : name = 'complete', event = null;
-  TrackState.onEvent(this.index, this.event) : name = 'event', count = null;
+  TrackState.onStart(this.index)
+      : name = 'start',
+        event = null,
+        count = null;
+
+  TrackState.onEnd(this.index)
+      : name = 'end',
+        event = null,
+        count = null;
+
+  TrackState.onComplete(this.index, this.count)
+      : name = 'complete',
+        event = null;
+
+  TrackState.onEvent(this.index, this.event)
+      : name = 'event',
+        count = null;
 }

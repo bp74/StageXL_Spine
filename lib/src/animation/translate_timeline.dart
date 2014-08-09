@@ -32,47 +32,46 @@ part of stagexl_spine;
 
 class TranslateTimeline extends CurveTimeline {
 
-	static const int _PREV_FRAME_TIME = -3;
-	static const int _FRAME_X = 1;
-	static const int _FRAME_Y = 2;
+  static const int _PREV_FRAME_TIME = -3;
+  static const int _FRAME_X = 1;
+  static const int _FRAME_Y = 2;
 
-	int boneIndex;
-	List<num> frames; // time, value, value, ...
+  final List<num> frames; // time, value, value, ...
+  int boneIndex = 0;
 
-	TranslateTimeline (int frameCount) : super(frameCount) {
-		frames = new List<num>.filled(frameCount * 3, 0);
-	}
+  TranslateTimeline(int frameCount)
+      : super(frameCount),
+        frames = new List<num>.filled(frameCount * 3, 0);
 
-	/// Sets the time and value of the specified keyframe.
-	void setFrame (int frameIndex, num time, num x, num y) {
-		frameIndex *= 3;
-		frames[frameIndex] = time;
-		frames[frameIndex + 1] = x;
-		frames[frameIndex + 2] = y;
-	}
+  /// Sets the time and value of the specified keyframe.
+  void setFrame(int frameIndex, num time, num x, num y) {
+    frameIndex *= 3;
+    frames[frameIndex] = time;
+    frames[frameIndex + 1] = x;
+    frames[frameIndex + 2] = y;
+  }
 
-	void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		Bone bone = skeleton.bones[boneIndex];
+    Bone bone = skeleton.bones[boneIndex];
 
-		if (time >= frames[frames.length - 3]) { // Time is after last frame.
-			bone.x += (bone.data.x + frames[frames.length - 2] - bone.x) * alpha;
-			bone.y += (bone.data.y + frames[frames.length - 1] - bone.y) * alpha;
-			return;
-		}
+    if (time >= frames[frames.length - 3]) { // Time is after last frame.
+      bone.x += (bone.data.x + frames[frames.length - 2] - bone.x) * alpha;
+      bone.y += (bone.data.y + frames[frames.length - 1] - bone.y) * alpha;
+      return;
+    }
 
-		// Interpolate between the previous frame and the current frame.
-		int frameIndex = Animation.binarySearch(frames, time, 3);
-		num prevFrameX = frames[frameIndex - 2];
-		num prevFrameY = frames[frameIndex - 1];
-		num frameTime = frames[frameIndex];
-		num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
-		percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+    // Interpolate between the previous frame and the current frame.
+    int frameIndex = Animation.binarySearch(frames, time, 3);
+    num prevFrameX = frames[frameIndex - 2];
+    num prevFrameY = frames[frameIndex - 1];
+    num frameTime = frames[frameIndex];
+    num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
+    percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
-		bone.x += (bone.data.x + prevFrameX + (frames[frameIndex + _FRAME_X] - prevFrameX) * percent - bone.x) * alpha;
-		bone.y += (bone.data.y + prevFrameY + (frames[frameIndex + _FRAME_Y] - prevFrameY) * percent - bone.y) * alpha;
-	}
+    bone.x += (bone.data.x + prevFrameX + (frames[frameIndex + _FRAME_X] - prevFrameX) * percent - bone.x) * alpha;
+    bone.y += (bone.data.y + prevFrameY + (frames[frameIndex + _FRAME_Y] - prevFrameY) * percent - bone.y) * alpha;
+  }
 }
-

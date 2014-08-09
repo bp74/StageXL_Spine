@@ -32,79 +32,79 @@ part of stagexl_spine;
 
 class ColorTimeline extends CurveTimeline {
 
-	static const int _PREV_FRAME_TIME = -5;
-	static const int _FRAME_R = 1;
-	static const int _FRAME_G = 2;
-	static const int _FRAME_B = 3;
-	static const int _FRAME_A = 4;
+  static const int _PREV_FRAME_TIME = -5;
+  static const int _FRAME_R = 1;
+  static const int _FRAME_G = 2;
+  static const int _FRAME_B = 3;
+  static const int _FRAME_A = 4;
 
-	int slotIndex;
-	List<num> frames; // time, r, g, b, a, ...
+  final List<num> frames; // time, r, g, b, a, ...
+  int slotIndex = 0;
 
-	ColorTimeline(int frameCount) : super(frameCount) {
-		frames = new List<num>.filled(frameCount * 5, 0);
-	}
+  ColorTimeline(int frameCount)
+      : super(frameCount),
+        frames = new List<num>.filled(frameCount * 5, 0);
 
-	/// Sets the time and value of the specified keyframe.
-	///
-	void setFrame (int frameIndex, num time, num r, num g, num b, num a) {
-		frameIndex *= 5;
-		frames[frameIndex] = time;
-		frames[frameIndex + 1] = r;
-		frames[frameIndex + 2] = g;
-		frames[frameIndex + 3] = b;
-		frames[frameIndex + 4] = a;
-	}
+  /// Sets the time and value of the specified keyframe.
+  ///
+  void setFrame(int frameIndex, num time, num r, num g, num b, num a) {
+    frameIndex *= 5;
+    frames[frameIndex] = time;
+    frames[frameIndex + 1] = r;
+    frames[frameIndex + 2] = g;
+    frames[frameIndex + 3] = b;
+    frames[frameIndex + 4] = a;
+  }
 
-	void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  num r, g, b, a;
+    num r, g, b, a;
 
-	  if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		if (time >= frames[frames.length - 5]) {
+    if (time >= frames[frames.length - 5]) {
 
-		  // Time is after last frame.
+      // Time is after last frame.
 
-			r = frames[frames.length - 4];
-			g = frames[frames.length - 3];
-			b = frames[frames.length - 2];
-			a = frames[frames.length - 1];
+      r = frames[frames.length - 4];
+      g = frames[frames.length - 3];
+      b = frames[frames.length - 2];
+      a = frames[frames.length - 1];
 
-		} else {
+    } else {
 
-		  // Interpolate between the previous frame and the current frame.
+      // Interpolate between the previous frame and the current frame.
 
-		  int frameIndex = Animation.binarySearch(frames, time, 5);
+      int frameIndex = Animation.binarySearch(frames, time, 5);
 
-			num prevFrameR = frames[frameIndex - 4];
-			num prevFrameG = frames[frameIndex - 3];
-			num prevFrameB = frames[frameIndex - 2];
-			num prevFrameA = frames[frameIndex - 1];
-			num frameTime  = frames[frameIndex];
+      num prevFrameR = frames[frameIndex - 4];
+      num prevFrameG = frames[frameIndex - 3];
+      num prevFrameB = frames[frameIndex - 2];
+      num prevFrameA = frames[frameIndex - 1];
+      num frameTime = frames[frameIndex];
 
-			num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
-			percent = getCurvePercent(frameIndex ~/ 5 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+      num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
+      percent = getCurvePercent(frameIndex ~/ 5 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
-			r = prevFrameR + (frames[frameIndex + _FRAME_R] - prevFrameR) * percent;
-			g = prevFrameG + (frames[frameIndex + _FRAME_G] - prevFrameG) * percent;
-			b = prevFrameB + (frames[frameIndex + _FRAME_B] - prevFrameB) * percent;
-			a = prevFrameA + (frames[frameIndex + _FRAME_A] - prevFrameA) * percent;
-		}
+      r = prevFrameR + (frames[frameIndex + _FRAME_R] - prevFrameR) * percent;
+      g = prevFrameG + (frames[frameIndex + _FRAME_G] - prevFrameG) * percent;
+      b = prevFrameB + (frames[frameIndex + _FRAME_B] - prevFrameB) * percent;
+      a = prevFrameA + (frames[frameIndex + _FRAME_A] - prevFrameA) * percent;
+    }
 
-		Slot slot = skeleton.slots[slotIndex];
+    Slot slot = skeleton.slots[slotIndex];
 
-		if (alpha < 1) {
-			slot.r += (r - slot.r) * alpha;
-			slot.g += (g - slot.g) * alpha;
-			slot.b += (b - slot.b) * alpha;
-			slot.a += (a - slot.a) * alpha;
-		} else {
-			slot.r = r;
-			slot.g = g;
-			slot.b = b;
-			slot.a = a;
-		}
-	}
+    if (alpha < 1) {
+      slot.r += (r - slot.r) * alpha;
+      slot.g += (g - slot.g) * alpha;
+      slot.b += (b - slot.b) * alpha;
+      slot.a += (a - slot.a) * alpha;
+    } else {
+      slot.r = r;
+      slot.g = g;
+      slot.b = b;
+      slot.a = a;
+    }
+  }
 
 }

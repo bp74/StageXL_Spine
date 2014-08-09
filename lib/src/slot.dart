@@ -32,57 +32,49 @@ part of stagexl_spine;
 
 class Slot {
 
-  SlotData _data;  // internal
-  Bone _bone;  // internal
-  Skeleton _skeleton;  // internal
+  final SlotData data;
+  final Skeleton skeleton;
+  final Bone bone;
 
-	num r;
-	num g;
-	num b;
-	num a;
+  num r;
+  num g;
+  num b;
+  num a;
 
-	Attachment _attachment;  // internal
-	num _attachmentTime;
-	List<num> attachmentVertices = new List<num>();
+  Attachment _attachment; // internal
+  num _attachmentTime;
+  List<num> attachmentVertices = new List<num>();
 
-	Slot (SlotData data, Skeleton skeleton, Bone bone) {
-		if (data == null) throw new ArgumentError("data cannot be null.");
-		if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
-		if (bone == null) throw new ArgumentError("bone cannot be null.");
-		_data = data;
-		_skeleton = skeleton;
-		_bone = bone;
-		setToSetupPose();
-	}
+  Slot(this.data, this.skeleton, this.bone) {
+    if (data == null) throw new ArgumentError("data cannot be null.");
+    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+    if (bone == null) throw new ArgumentError("bone cannot be null.");
+    setToSetupPose();
+  }
 
-	SlotData get data => _data;
-	Skeleton get skeleton => _skeleton;
-	Bone get bone => _bone;
+  Attachment get attachment => _attachment;
 
-	Attachment get attachment => _attachment;
-
-	void set attachment(Attachment attachment) {
+  void set attachment(Attachment attachment) {
     _attachment = attachment;
-		_attachmentTime = _skeleton.time;
-		attachmentVertices.length = 0;
-	}
+    _attachmentTime = skeleton.time;
+    attachmentVertices.length = 0;
+  }
 
   /// Returns the time since the attachment was set.
   num get attachmentTime => skeleton.time - _attachmentTime;
 
-	void set attachmentTime (num time) {
-		_attachmentTime = skeleton.time - time;
-	}
+  void set attachmentTime(num time) {
+    _attachmentTime = skeleton.time - time;
+  }
 
-	void setToSetupPose() {
-		int slotIndex = skeleton.data.slots.indexOf(data);
-		r = _data.r;
-		g = _data.g;
-		b = _data.b;
-		a = _data.a;
-		attachment = _data.attachmentName == null
-		    ? null : skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
-	}
+  void setToSetupPose() {
+    int slotIndex = skeleton.data.slots.indexOf(data);
+    r = data.r;
+    g = data.g;
+    b = data.b;
+    a = data.a;
+    attachment = data.attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
+  }
 
-	String toString() => _data.name;
+  String toString() => data.name;
 }

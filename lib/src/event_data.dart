@@ -32,17 +32,15 @@ part of stagexl_spine;
 
 class EventData {
 
-  String _name; // internal
-	int intValue;
-	num floatValue;
-	String stringValue;
+  final String name;
 
-	EventData (String name) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-		_name = name;
-	}
+  int intValue;
+  num floatValue;
+  String stringValue;
 
-	String get name => _name;
+  EventData(this.name) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
+  }
 
-	String toString() => _name;
+  String toString() => name;
 }

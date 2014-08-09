@@ -34,21 +34,21 @@ class AtlasRegion {
 
   AtlasPage page;
   String name;
-	int x;
-	int y;
-	int width;
-	int height;
-	num u;
-	num v;
-	num u2;
-	num v2;
-	num offsetX;
-	num offsetY;
-	int originalWidth;
-	int originalHeight;
-	int index;
-	bool rotate;
-	List<int> splits;
-	List<int> pads;
-	Object rendererObject;
+  int x;
+  int y;
+  int width;
+  int height;
+  num u;
+  num v;
+  num u2;
+  num v2;
+  num offsetX;
+  num offsetY;
+  int originalWidth;
+  int originalHeight;
+  int index;
+  bool rotate;
+  List<int> splits;
+  List<int> pads;
+  Object rendererObject;
 }

@@ -33,12 +33,12 @@ part of stagexl_spine;
 class TextureWrap {
 
   static const TextureWrap mirroredRepeat = const TextureWrap(0, "mirroredRepeat");
-	static const TextureWrap clampToEdge = const TextureWrap(1, "clampToEdge");
-	static const TextureWrap repeat = const TextureWrap(2, "repeat");
+  static const TextureWrap clampToEdge = const TextureWrap(1, "clampToEdge");
+  static const TextureWrap repeat = const TextureWrap(2, "repeat");
 
-	final int ordinal;
-	final String name;
+  final int ordinal;
+  final String name;
 
-	const TextureWrap(this.ordinal, this.name);
+  const TextureWrap(this.ordinal, this.name);
 
 }

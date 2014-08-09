@@ -27,7 +27,6 @@ part 'src/animation/curve_timeline.dart';
 part 'src/animation/draw_order_timeline.dart';
 part 'src/animation/event_timeline.dart';
 part 'src/animation/ffd_timeline.dart';
-part 'src/animation/listeners.dart';
 part 'src/animation/rotate_timeline.dart';
 part 'src/animation/scale_timeline.dart';
 part 'src/animation/timeline.dart';

@@ -32,117 +32,117 @@ part of stagexl_spine;
 
 class SkinnedMeshAttachment extends Attachment {
 
-	List<int> bones;
-	List<num> weights;
-	List<num> uvs;
-	List<num> regionUVs;
-	List<int> triangles;
-	int hullLength;
+  List<int> bones;
+  List<num> weights;
+  List<num> uvs;
+  List<num> regionUVs;
+  List<int> triangles;
+  int hullLength;
 
-	num r = 1;
-	num g = 1;
-	num b = 1;
-	num a = 1;
+  num r = 1;
+  num g = 1;
+  num b = 1;
+  num a = 1;
 
-	String path;
-	Object rendererObject;
+  String path;
+  Object rendererObject;
 
-	num regionU;
-	num regionV;
-	num regionU2;
-	num regionV2;
-	bool regionRotate;
+  num regionU;
+  num regionV;
+  num regionU2;
+  num regionV2;
+  bool regionRotate;
 
-	num regionOffsetX;       // Pixels stripped from the bottom left, unrotated.
-	num regionOffsetY;
-	num regionWidth;         // Unrotated, stripped size.
-	num regionHeight;
-	num regionOriginalWidth; // Unrotated, unstripped size.
-	num regionOriginalHeight;
+  num regionOffsetX; // Pixels stripped from the bottom left, unrotated.
+  num regionOffsetY;
+  num regionWidth; // Unrotated, stripped size.
+  num regionHeight;
+  num regionOriginalWidth; // Unrotated, unstripped size.
+  num regionOriginalHeight;
 
-	// Nonessential.
-	List<int> edges;
-	num width;
-	num height;
+  // Nonessential.
+  List<int> edges;
+  num width;
+  num height;
 
-	SkinnedMeshAttachment (String name) : super(name);
+  SkinnedMeshAttachment(String name) : super(name);
 
-	void updateUVs () {
+  void updateUVs() {
 
-		num width = regionU2 - regionU;
-		num height = regionV2 - regionV;
+    num width = regionU2 - regionU;
+    num height = regionV2 - regionV;
 
-		if (uvs == null || uvs.length != regionUVs.length) {
-		  uvs = new List<num>.filled(regionUVs.length, 0);
-		}
+    if (uvs == null || uvs.length != regionUVs.length) {
+      uvs = new List<num>.filled(regionUVs.length, 0);
+    }
 
-		if (regionRotate) {
-			for (int i = 0; i < regionUVs.length; i += 2) {
-				uvs[i] = regionU + regionUVs[i + 1] * width;
-				uvs[i + 1] = regionV + height - regionUVs[i] * height;
-			}
-		} else {
-			for (int i = 0; i < regionUVs.length; i += 2) {
-				uvs[i] = regionU + regionUVs[i] * width;
-				uvs[i + 1] = regionV + regionUVs[i + 1] * height;
-			}
-		}
-	}
+    if (regionRotate) {
+      for (int i = 0; i < regionUVs.length; i += 2) {
+        uvs[i] = regionU + regionUVs[i + 1] * width;
+        uvs[i + 1] = regionV + height - regionUVs[i] * height;
+      }
+    } else {
+      for (int i = 0; i < regionUVs.length; i += 2) {
+        uvs[i] = regionU + regionUVs[i] * width;
+        uvs[i + 1] = regionV + regionUVs[i + 1] * height;
+      }
+    }
+  }
 
-	void computeWorldVertices (num x, num y, Slot slot, List<num> worldVertices) {
+  void computeWorldVertices(num x, num y, Slot slot, List<num> worldVertices) {
 
-		List<Bone> skeletonBones = slot.skeleton.bones;
-		List<num> weights = this.weights;
-		List<int> bones = this.bones;
+    List<Bone> skeletonBones = slot.skeleton.bones;
+    List<num> weights = this.weights;
+    List<int> bones = this.bones;
 
-		int w = 0;
-		int v = 0;
-		int b = 0;
-		int f = 0;
-		int nn;
+    int w = 0;
+    int v = 0;
+    int b = 0;
+    int f = 0;
+    int nn;
 
-		num wx;
-		num wy;
-		Bone bone;
-		num vx;
-		num vy;
-		num weight;
+    num wx;
+    num wy;
+    Bone bone;
+    num vx;
+    num vy;
+    num weight;
 
-		if (slot.attachmentVertices.length == 0) {
+    if (slot.attachmentVertices.length == 0) {
 
-			for (; v < bones.length; w += 2) {
-				wx = wy = 0;
-				int nn = bones[v++] + v;
-				for (; v < nn; v++, b += 3) {
-					bone = skeletonBones[bones[v]];
-					vx = weights[b];
-					vy = weights[b + 1];
-					weight = weights[b + 2];
-					wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
-					wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
-				}
-				worldVertices[w] = wx + x;
-				worldVertices[w + 1] = wy + y;
-			}
+      for ( ; v < bones.length; w += 2) {
+        wx = wy = 0;
+        int nn = bones[v++] + v;
+        for ( ; v < nn; v++, b += 3) {
+          bone = skeletonBones[bones[v]];
+          vx = weights[b];
+          vy = weights[b + 1];
+          weight = weights[b + 2];
+          wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
+          wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
+        }
+        worldVertices[w] = wx + x;
+        worldVertices[w + 1] = wy + y;
+      }
 
-		} else {
+    } else {
 
-			List<num> ffd = slot.attachmentVertices;
-			for (; v < bones.length; w += 2) {
-				wx = wy = 0;
-				int nn = bones[v++] + v;
-				for (; v < nn; v++, b += 3, f += 2) {
-					bone = skeletonBones[bones[v]];
-					vx = weights[b] + ffd[f];
-					vy = weights[b + 1] + ffd[f + 1];
-					weight = weights[b + 2];
-					wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
-					wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
-				}
-				worldVertices[w] = wx + x;
-				worldVertices[w + 1] = wy + y;
-			}
-		}
-	}
+      List<num> ffd = slot.attachmentVertices;
+      for ( ; v < bones.length; w += 2) {
+        wx = wy = 0;
+        int nn = bones[v++] + v;
+        for ( ; v < nn; v++, b += 3, f += 2) {
+          bone = skeletonBones[bones[v]];
+          vx = weights[b] + ffd[f];
+          vy = weights[b + 1] + ffd[f + 1];
+          weight = weights[b + 2];
+          wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
+          wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
+        }
+        worldVertices[w] = wx + x;
+        worldVertices[w + 1] = wy + y;
+      }
+    }
+  }
 
 }

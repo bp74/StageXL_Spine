@@ -32,54 +32,54 @@ part of stagexl_spine;
 
 class RotateTimeline extends CurveTimeline {
 
-	static const int _PREV_FRAME_TIME = -2;
-	static const int _FRAME_VALUE = 1;
+  static const int _PREV_FRAME_TIME = -2;
+  static const int _FRAME_VALUE = 1;
 
-	int boneIndex;
-	List<num> frames; // time, value, ...
+  final List<num> frames; // time, value, ...
+  int boneIndex = 0;
 
-	RotateTimeline(int frameCount) : super(frameCount) {
-		frames = new List<num>.filled(frameCount * 2, 0);
-	}
+  RotateTimeline(int frameCount)
+      : super(frameCount),
+        frames = new List<num>.filled(frameCount * 2, 0);
 
-	/// Sets the time and angle of the specified keyframe.
-	///
-	void setFrame (int frameIndex, num time, num angle) {
-		frameIndex *= 2;
-		frames[frameIndex] = time;
-		frames[frameIndex + 1] = angle;
-	}
+  /// Sets the time and angle of the specified keyframe.
+  ///
+  void setFrame(int frameIndex, num time, num angle) {
+    frameIndex *= 2;
+    frames[frameIndex] = time;
+    frames[frameIndex + 1] = angle;
+  }
 
-	void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		Bone bone = skeleton.bones[boneIndex];
+    Bone bone = skeleton.bones[boneIndex];
 
-		num amount ;
+    num amount;
 
-		if (time >= frames[frames.length - 2]) { // Time is after last frame.
-			amount = bone.data.rotation + frames[frames.length - 1] - bone.rotation;
-			while (amount > 180) amount -= 360;
-			while (amount < -180) amount += 360;
-			bone.rotation += amount * alpha;
-			return;
-		}
+    if (time >= frames[frames.length - 2]) { // Time is after last frame.
+      amount = bone.data.rotation + frames[frames.length - 1] - bone.rotation;
+      while (amount > 180) amount -= 360;
+      while (amount < -180) amount += 360;
+      bone.rotation += amount * alpha;
+      return;
+    }
 
-		// Interpolate between the previous frame and the current frame.
+    // Interpolate between the previous frame and the current frame.
 
-		int frameIndex = Animation.binarySearch(frames, time, 2);
-		num prevFrameValue = frames[frameIndex - 1];
-		num frameTime = frames[frameIndex];
-		num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
-		percent = getCurvePercent(frameIndex ~/ 2 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+    int frameIndex = Animation.binarySearch(frames, time, 2);
+    num prevFrameValue = frames[frameIndex - 1];
+    num frameTime = frames[frameIndex];
+    num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
+    percent = getCurvePercent(frameIndex ~/ 2 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
-		amount = frames[frameIndex + _FRAME_VALUE] - prevFrameValue;
-		while (amount > 180) amount -= 360;
-		while (amount < -180) amount += 360;
-		amount = bone.data.rotation + (prevFrameValue + amount * percent) - bone.rotation;
-		while (amount > 180) amount -= 360;
-		while (amount < -180) amount += 360;
-		bone.rotation += amount * alpha;
-	}
+    amount = frames[frameIndex + _FRAME_VALUE] - prevFrameValue;
+    while (amount > 180) amount -= 360;
+    while (amount < -180) amount += 360;
+    amount = bone.data.rotation + (prevFrameValue + amount * percent) - bone.rotation;
+    while (amount > 180) amount -= 360;
+    while (amount < -180) amount += 360;
+    bone.rotation += amount * alpha;
+  }
 }

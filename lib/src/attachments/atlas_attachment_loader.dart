@@ -32,89 +32,88 @@ part of stagexl_spine;
 
 class AtlasAttachmentLoader implements AttachmentLoader {
 
-	Atlas atlas;
+  final Atlas atlas;
 
-	AtlasAttachmentLoader (Atlas atlas) {
-		if (atlas == null) throw new ArgumentError("atlas cannot be null.");
-		this.atlas = atlas;
-	}
+  AtlasAttachmentLoader(this.atlas) {
+    if (atlas == null) throw new ArgumentError("atlas cannot be null.");
+  }
 
-	RegionAttachment newRegionAttachment (Skin skin, String name, String path) {
+  RegionAttachment newRegionAttachment(Skin skin, String name, String path) {
 
-	  AtlasRegion region = atlas.findRegion(path);
-		if (region == null) throw new StateError("Region not found in atlas: $path (region attachment: $name)");
+    AtlasRegion region = atlas.findRegion(path);
+    if (region == null) throw new StateError("Region not found in atlas: $path (region attachment: $name)");
 
-		RegionAttachment attachment = new RegionAttachment(name);
-		attachment.rendererObject = region;
-		num scaleX = region.page.width / nextPOT(region.page.width);
-		num scaleY = region.page.height / nextPOT(region.page.height);
-		attachment.setUVs(region.u * scaleX, region.v * scaleY, region.u2 * scaleX, region.v2 * scaleY, region.rotate);
-		attachment.regionOffsetX = region.offsetX;
-		attachment.regionOffsetY = region.offsetY;
-		attachment.regionWidth = region.width;
-		attachment.regionHeight = region.height;
-		attachment.regionOriginalWidth = region.originalWidth;
-		attachment.regionOriginalHeight = region.originalHeight;
-		return attachment;
-	}
+    RegionAttachment attachment = new RegionAttachment(name);
+    attachment.rendererObject = region;
+    num scaleX = region.page.width / nextPOT(region.page.width);
+    num scaleY = region.page.height / nextPOT(region.page.height);
+    attachment.setUVs(region.u * scaleX, region.v * scaleY, region.u2 * scaleX, region.v2 * scaleY, region.rotate);
+    attachment.regionOffsetX = region.offsetX;
+    attachment.regionOffsetY = region.offsetY;
+    attachment.regionWidth = region.width;
+    attachment.regionHeight = region.height;
+    attachment.regionOriginalWidth = region.originalWidth;
+    attachment.regionOriginalHeight = region.originalHeight;
+    return attachment;
+  }
 
-	MeshAttachment newMeshAttachment (Skin skin, String name, String path){
+  MeshAttachment newMeshAttachment(Skin skin, String name, String path) {
 
-	  AtlasRegion region = atlas.findRegion(path);
-		if (region == null) throw new StateError("Region not found in atlas: $path (mesh attachment: $name)");
+    AtlasRegion region = atlas.findRegion(path);
+    if (region == null) throw new StateError("Region not found in atlas: $path (mesh attachment: $name)");
 
-		MeshAttachment  attachment = new MeshAttachment(name);
-		attachment.rendererObject = region;
-		num scaleX = region.page.width / nextPOT(region.page.width);
-		num scaleY = region.page.height / nextPOT(region.page.height);
-		attachment.regionU = region.u * scaleX;
-		attachment.regionV = region.v * scaleY;
-		attachment.regionU2 = region.u2 * scaleX;
-		attachment.regionV2 = region.v2 * scaleY;
-		attachment.regionRotate = region.rotate;
-		attachment.regionOffsetX = region.offsetX;
-		attachment.regionOffsetY = region.offsetY;
-		attachment.regionWidth = region.width;
-		attachment.regionHeight = region.height;
-		attachment.regionOriginalWidth = region.originalWidth;
-		attachment.regionOriginalHeight = region.originalHeight;
-		return attachment;
-	}
+    MeshAttachment attachment = new MeshAttachment(name);
+    attachment.rendererObject = region;
+    num scaleX = region.page.width / nextPOT(region.page.width);
+    num scaleY = region.page.height / nextPOT(region.page.height);
+    attachment.regionU = region.u * scaleX;
+    attachment.regionV = region.v * scaleY;
+    attachment.regionU2 = region.u2 * scaleX;
+    attachment.regionV2 = region.v2 * scaleY;
+    attachment.regionRotate = region.rotate;
+    attachment.regionOffsetX = region.offsetX;
+    attachment.regionOffsetY = region.offsetY;
+    attachment.regionWidth = region.width;
+    attachment.regionHeight = region.height;
+    attachment.regionOriginalWidth = region.originalWidth;
+    attachment.regionOriginalHeight = region.originalHeight;
+    return attachment;
+  }
 
-	SkinnedMeshAttachment newSkinnedMeshAttachment (Skin skin, String name, String path) {
+  SkinnedMeshAttachment newSkinnedMeshAttachment(Skin skin, String name, String path) {
 
-	  AtlasRegion region = atlas.findRegion(path);
-		if (region == null) throw new StateError("Region not found in atlas: $path (skinned mesh attachment: $name)");
+    AtlasRegion region = atlas.findRegion(path);
+    if (region == null) throw new StateError("Region not found in atlas: $path (skinned mesh attachment: $name)");
 
-		SkinnedMeshAttachment attachment = new SkinnedMeshAttachment(name);
-		attachment.rendererObject = region;
-		num scaleX = region.page.width / nextPOT(region.page.width);
-		num scaleY = region.page.height / nextPOT(region.page.height);
-		attachment.regionU = region.u * scaleX;
-		attachment.regionV = region.v * scaleY;
-		attachment.regionU2 = region.u2 * scaleX;
-		attachment.regionV2 = region.v2 * scaleY;
-		attachment.regionRotate = region.rotate;
-		attachment.regionOffsetX = region.offsetX;
-		attachment.regionOffsetY = region.offsetY;
-		attachment.regionWidth = region.width;
-		attachment.regionHeight = region.height;
-		attachment.regionOriginalWidth = region.originalWidth;
-		attachment.regionOriginalHeight = region.originalHeight;
-		return attachment;
-	}
+    SkinnedMeshAttachment attachment = new SkinnedMeshAttachment(name);
+    attachment.rendererObject = region;
+    num scaleX = region.page.width / nextPOT(region.page.width);
+    num scaleY = region.page.height / nextPOT(region.page.height);
+    attachment.regionU = region.u * scaleX;
+    attachment.regionV = region.v * scaleY;
+    attachment.regionU2 = region.u2 * scaleX;
+    attachment.regionV2 = region.v2 * scaleY;
+    attachment.regionRotate = region.rotate;
+    attachment.regionOffsetX = region.offsetX;
+    attachment.regionOffsetY = region.offsetY;
+    attachment.regionWidth = region.width;
+    attachment.regionHeight = region.height;
+    attachment.regionOriginalWidth = region.originalWidth;
+    attachment.regionOriginalHeight = region.originalHeight;
+    return attachment;
+  }
 
-	BoundingBoxAttachment newBoundingBoxAttachment (Skin skin, String name) {
-		return new BoundingBoxAttachment(name);
-	}
+  BoundingBoxAttachment newBoundingBoxAttachment(Skin skin, String name) {
+    return new BoundingBoxAttachment(name);
+  }
 
-	static int nextPOT (int value) {
-		value--;
-		value |= value >> 1;
-		value |= value >> 2;
-		value |= value >> 4;
-		value |= value >> 8;
-		value |= value >> 16;
-		return value + 1;
-	}
+  static int nextPOT(int value) {
+    value--;
+    value |= value >> 1;
+    value |= value >> 2;
+    value |= value >> 4;
+    value |= value >> 8;
+    value |= value >> 16;
+    return value + 1;
+  }
 }

@@ -32,26 +32,26 @@ part of stagexl_spine;
 
 class BoundingBoxAttachment extends Attachment {
 
-	List<num> vertices = new List<num>();
+  final List<num> vertices = new List<num>();
 
   BoundingBoxAttachment(String name) : super(name);
 
-	void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
+  void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
 
-	  x += bone.worldX;
-		y += bone.worldY;
+    x += bone.worldX;
+    y += bone.worldY;
 
-		num m00 = bone.m00;
-		num m01 = bone.m01;
-		num m10 = bone.m10;
-		num m11 = bone.m11;
+    num m00 = bone.m00;
+    num m01 = bone.m01;
+    num m10 = bone.m10;
+    num m11 = bone.m11;
 
-		for (int i = 0; i < this.vertices.length; i += 2) {
-			num px = this.vertices[i];
-			num py = this.vertices[i + 1];
-			worldVertices[i] = px * m00 + py * m01 + x;
-			worldVertices[i + 1] = px * m10 + py * m11 + y;
-		}
-	}
+    for (int i = 0; i < this.vertices.length; i += 2) {
+      num px = this.vertices[i];
+      num py = this.vertices[i + 1];
+      worldVertices[i] = px * m00 + py * m01 + x;
+      worldVertices[i + 1] = px * m10 + py * m11 + y;
+    }
+  }
 
 }

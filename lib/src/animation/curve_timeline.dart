@@ -34,98 +34,96 @@ part of stagexl_spine;
 ///
 class CurveTimeline implements Timeline {
 
-	static const num _LINEAR = 0;
-	static const num _STEPPED = -1;
-	static const int _BEZIER_SEGMENTS = 10;
+  static const num _LINEAR = 0;
+  static const num _STEPPED = -1;
+  static const int _BEZIER_SEGMENTS = 10;
 
-	List<num> _curves; // dfx, dfy, ddfx, ddfy, dddfx, dddfy, ...
+  final List<num> _curves; // dfx, dfy, ddfx, ddfy, dddfx, dddfy, ...
 
-	CurveTimeline(int frameCount) {
-		_curves = new List<num>.filled(frameCount * 6, 0);
-	}
+  CurveTimeline(int frameCount) : _curves = new List<num>.filled(frameCount * 6, 0);
 
-	void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
-	}
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  }
 
-	int get frameCount => _curves.length ~/ 6;
+  int get frameCount => _curves.length ~/ 6;
 
-	void setLinear(int frameIndex) {
-		_curves[frameIndex * 6] = _LINEAR;
-	}
+  void setLinear(int frameIndex) {
+    _curves[frameIndex * 6] = _LINEAR;
+  }
 
-	void setStepped(int frameIndex) {
-		_curves[frameIndex * 6] = _STEPPED;
-	}
+  void setStepped(int frameIndex) {
+    _curves[frameIndex * 6] = _STEPPED;
+  }
 
-	/// Sets the control handle positions for an interpolation bezier curve
-	/// used to transition from this keyframe to the next.
-	///
-	/// cx1 and cx2 are from 0 to 1, representing the percent of time between
-	/// the two keyframes. cy1 and cy2 are the percent of the difference between
-	/// the keyframe's values.
-	///
-	void setCurve (int frameIndex, num cx1, num cy1, num cx2, num cy2) {
+  /// Sets the control handle positions for an interpolation bezier curve
+  /// used to transition from this keyframe to the next.
+  ///
+  /// cx1 and cx2 are from 0 to 1, representing the percent of time between
+  /// the two keyframes. cy1 and cy2 are the percent of the difference between
+  /// the keyframe's values.
+  ///
+  void setCurve(int frameIndex, num cx1, num cy1, num cx2, num cy2) {
 
-	  num subdiv_step = 1 / _BEZIER_SEGMENTS;
-		num subdiv_step2 = subdiv_step * subdiv_step;
-		num subdiv_step3 = subdiv_step2 * subdiv_step;
+    num subdiv_step = 1 / _BEZIER_SEGMENTS;
+    num subdiv_step2 = subdiv_step * subdiv_step;
+    num subdiv_step3 = subdiv_step2 * subdiv_step;
 
-		num pre1 = 3 * subdiv_step;
-		num pre2 = 3 * subdiv_step2;
-		num pre4 = 6 * subdiv_step2;
-		num pre5 = 6 * subdiv_step3;
+    num pre1 = 3 * subdiv_step;
+    num pre2 = 3 * subdiv_step2;
+    num pre4 = 6 * subdiv_step2;
+    num pre5 = 6 * subdiv_step3;
 
-		num tmp1x = -cx1 * 2 + cx2;
-		num tmp1y = -cy1 * 2 + cy2;
-		num tmp2x = (cx1 - cx2) * 3 + 1;
-		num tmp2y = (cy1 - cy2) * 3 + 1;
+    num tmp1x = -cx1 * 2 + cx2;
+    num tmp1y = -cy1 * 2 + cy2;
+    num tmp2x = (cx1 - cx2) * 3 + 1;
+    num tmp2y = (cy1 - cy2) * 3 + 1;
 
-		int i = frameIndex * 6;
+    int i = frameIndex * 6;
 
-		_curves[i + 0] = cx1 * pre1 + tmp1x * pre2 + tmp2x * subdiv_step3;
-		_curves[i + 1] = cy1 * pre1 + tmp1y * pre2 + tmp2y * subdiv_step3;
-		_curves[i + 2] = tmp1x * pre4 + tmp2x * pre5;
-		_curves[i + 3] = tmp1y * pre4 + tmp2y * pre5;
-		_curves[i + 4] = tmp2x * pre5;
-		_curves[i + 5] = tmp2y * pre5;
-	}
+    _curves[i + 0] = cx1 * pre1 + tmp1x * pre2 + tmp2x * subdiv_step3;
+    _curves[i + 1] = cy1 * pre1 + tmp1y * pre2 + tmp2y * subdiv_step3;
+    _curves[i + 2] = tmp1x * pre4 + tmp2x * pre5;
+    _curves[i + 3] = tmp1y * pre4 + tmp2y * pre5;
+    _curves[i + 4] = tmp2x * pre5;
+    _curves[i + 5] = tmp2y * pre5;
+  }
 
-	num getCurvePercent (int frameIndex, num percent) {
+  num getCurvePercent(int frameIndex, num percent) {
 
-	  int curveIndex = frameIndex * 6;
-		num dfx = _curves[curveIndex];
-		if (dfx == _LINEAR) return percent;
-		if (dfx == _STEPPED) return 0;
+    int curveIndex = frameIndex * 6;
+    num dfx = _curves[curveIndex];
+    if (dfx == _LINEAR) return percent;
+    if (dfx == _STEPPED) return 0;
 
-		num dfy   = _curves[curveIndex + 1];
-		num ddfx  = _curves[curveIndex + 2];
-		num ddfy  = _curves[curveIndex + 3];
-		num dddfx = _curves[curveIndex + 4];
-		num dddfy = _curves[curveIndex + 5];
-		num x = dfx;
-		num y = dfy;
+    num dfy = _curves[curveIndex + 1];
+    num ddfx = _curves[curveIndex + 2];
+    num ddfy = _curves[curveIndex + 3];
+    num dddfx = _curves[curveIndex + 4];
+    num dddfy = _curves[curveIndex + 5];
+    num x = dfx;
+    num y = dfy;
 
-		int i = _BEZIER_SEGMENTS - 2;
+    int i = _BEZIER_SEGMENTS - 2;
 
-		while (true) {
+    while (true) {
 
-			if (x >= percent) {
-				num prevX = x - dfx;
-				num prevY = y - dfy;
-				return prevY + (y - prevY) * (percent - prevX) / (x - prevX);
-			}
+      if (x >= percent) {
+        num prevX = x - dfx;
+        num prevY = y - dfy;
+        return prevY + (y - prevY) * (percent - prevX) / (x - prevX);
+      }
 
-			if (i == 0) break;
+      if (i == 0) break;
 
-			i--;
-			dfx += ddfx;
-			dfy += ddfy;
-			ddfx += dddfx;
-			ddfy += dddfy;
-			x += dfx;
-			y += dfy;
-		}
+      i--;
+      dfx += ddfx;
+      dfy += ddfy;
+      ddfx += dddfx;
+      ddfy += dddfy;
+      x += dfx;
+      y += dfy;
+    }
 
-		return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
-	}
+    return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
+  }
 }

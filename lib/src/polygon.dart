@@ -32,55 +32,55 @@ part of stagexl_spine;
 
 class Polygon {
 
-	final List<num> vertices = new List<num>();
+  final List<num> vertices = new List<num>();
 
-	/// Returns true if the polygon contains the point.
-	///
-	bool containsPoint (num x, num y) {
+  /// Returns true if the polygon contains the point.
+  ///
+  bool containsPoint(num x, num y) {
 
-		int prevIndex = vertices.length - 2;
-		bool inside = false;
+    int prevIndex = vertices.length - 2;
+    bool inside = false;
 
-		for (int ii = 0; ii < vertices.length; ii += 2) {
-			num vertexY = vertices[ii + 1];
-			num prevY = vertices[prevIndex + 1];
-			if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
-				num vertexX = vertices[ii];
-				if (vertexX + (y - vertexY) / (prevY - vertexY) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
-			}
-			prevIndex = ii;
-		}
+    for (int ii = 0; ii < vertices.length; ii += 2) {
+      num vertexY = vertices[ii + 1];
+      num prevY = vertices[prevIndex + 1];
+      if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
+        num vertexX = vertices[ii];
+        if (vertexX + (y - vertexY) / (prevY - vertexY) * (vertices[prevIndex] - vertexX) < x) inside = !inside;
+      }
+      prevIndex = ii;
+    }
 
-		return inside;
-	}
+    return inside;
+  }
 
-	/// Returns true if the polygon contains the line segment.
-	///
-	bool intersectsSegment (num x1, num y1, num x2, num y2) {
+  /// Returns true if the polygon contains the line segment.
+  ///
+  bool intersectsSegment(num x1, num y1, num x2, num y2) {
 
-		num width12 = x1 - x2;
-		num height12 = y1 - y2;
-		num det1 = x1 * y2 - y1 * x2;
-		num x3 = vertices[vertices.length - 2];
-		num y3 = vertices[vertices.length - 1];
+    num width12 = x1 - x2;
+    num height12 = y1 - y2;
+    num det1 = x1 * y2 - y1 * x2;
+    num x3 = vertices[vertices.length - 2];
+    num y3 = vertices[vertices.length - 1];
 
-		for (int ii = 0; ii < vertices.length; ii += 2) {
+    for (int ii = 0; ii < vertices.length; ii += 2) {
 
-			num x4 = vertices[ii];
-			num y4 = vertices[ii + 1];
-			num det2 = x3 * y4 - y3 * x4;
-			num width34 = x3 - x4;
-			num height34 = y3 - y4;
-			num det3 = width12 * height34 - height12 * width34;
-			num x = (det1 * width34 - width12 * det2) / det3;
+      num x4 = vertices[ii];
+      num y4 = vertices[ii + 1];
+      num det2 = x3 * y4 - y3 * x4;
+      num width34 = x3 - x4;
+      num height34 = y3 - y4;
+      num det3 = width12 * height34 - height12 * width34;
+      num x = (det1 * width34 - width12 * det2) / det3;
 
-			if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
-				num y = (det1 * height34 - height12 * det2) / det3;
-				if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1))) return true;
-			}
-			x3 = x4;
-			y3 = y4;
-		}
-		return false;
-	}
+      if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
+        num y = (det1 * height34 - height12 * det2) / det3;
+        if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1))) return true;
+      }
+      x3 = x4;
+      y3 = y4;
+    }
+    return false;
+  }
 }

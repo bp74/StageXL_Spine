@@ -32,26 +32,21 @@ part of stagexl_spine;
 
 class SlotData {
 
-	String _name;  // internal
-	BoneData _boneData;  // internal
+  final String name;
+  final BoneData boneData;
 
-	num r = 1;
-	num g = 1;
-	num b = 1;
-	num a = 1;
+  num r = 1;
+  num g = 1;
+  num b = 1;
+  num a = 1;
 
-	String attachmentName;
-	bool additiveBlending;
+  String attachmentName;
+  bool additiveBlending;
 
-	SlotData (String name, BoneData boneData) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-		if (boneData == null) 			throw new ArgumentError("boneData cannot be null.");
-		_name = name;
-		_boneData = boneData;
-	}
+  SlotData(this.name, this.boneData) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
+    if (boneData == null) throw new ArgumentError("boneData cannot be null.");
+  }
 
-	String get name => _name;
-	BoneData get boneData => _boneData;
-
-	String toString() => _name;
+  String toString() => name;
 }

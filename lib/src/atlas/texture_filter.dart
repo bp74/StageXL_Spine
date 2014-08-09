@@ -33,29 +33,37 @@ part of stagexl_spine;
 class TextureFilter {
 
   static const TextureFilter nearest = const TextureFilter(0, "nearest");
-	static const TextureFilter linear = const TextureFilter(1, "linear");
-	static const TextureFilter mipMap = const TextureFilter(2, "mipMap");
-	static const TextureFilter mipMapNearestNearest = const TextureFilter(3, "mipMapNearestNearest");
-	static const TextureFilter mipMapLinearNearest = const TextureFilter(4, "mipMapLinearNearest");
-	static const TextureFilter mipMapNearestLinear = const TextureFilter(5, "mipMapNearestLinear");
-	static const TextureFilter mipMapLinearLinear = const TextureFilter(6, "mipMapLinearLinear");
+  static const TextureFilter linear = const TextureFilter(1, "linear");
+  static const TextureFilter mipMap = const TextureFilter(2, "mipMap");
+  static const TextureFilter mipMapNearestNearest = const TextureFilter(3, "mipMapNearestNearest");
+  static const TextureFilter mipMapLinearNearest = const TextureFilter(4, "mipMapLinearNearest");
+  static const TextureFilter mipMapNearestLinear = const TextureFilter(5, "mipMapNearestLinear");
+  static const TextureFilter mipMapLinearLinear = const TextureFilter(6, "mipMapLinearLinear");
 
-	final int ordinal;
-	final String name;
+  final int ordinal;
+  final String name;
 
-	const TextureFilter (this.ordinal, this.name);
+  const TextureFilter(this.ordinal, this.name);
 
-	static TextureFilter get(String name) {
-	  switch(name) {
-	    case "nearest": return TextureFilter.nearest;
-      case "linear": return TextureFilter.linear;
-      case "mipMap": return TextureFilter.mipMap;
-      case "mipMapNearestNearest": return TextureFilter.mipMapNearestNearest;
-      case "mipMapLinearNearest": return TextureFilter.mipMapLinearNearest;
-      case "mipMapNearestLinear": return TextureFilter.mipMapNearestLinear;
-      case "mipMapLinearLinear": return TextureFilter.mipMapLinearLinear;
-      default: throw new StateError("Unknown TextureFilter: $name");
-	  }
-	}
+  static TextureFilter get(String name) {
+    switch (name) {
+      case "nearest":
+        return TextureFilter.nearest;
+      case "linear":
+        return TextureFilter.linear;
+      case "mipMap":
+        return TextureFilter.mipMap;
+      case "mipMapNearestNearest":
+        return TextureFilter.mipMapNearestNearest;
+      case "mipMapLinearNearest":
+        return TextureFilter.mipMapLinearNearest;
+      case "mipMapNearestLinear":
+        return TextureFilter.mipMapNearestLinear;
+      case "mipMapLinearLinear":
+        return TextureFilter.mipMapLinearLinear;
+      default:
+        throw new StateError("Unknown TextureFilter: $name");
+    }
+  }
 
 }

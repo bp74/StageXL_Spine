@@ -33,7 +33,7 @@ part of stagexl_spine;
 abstract class Timeline {
 
   /// Sets the value(s) for the specified time.
-	void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha);
+  ///
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha);
 
 }
-

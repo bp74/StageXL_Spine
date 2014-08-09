@@ -32,82 +32,82 @@ part of stagexl_spine;
 
 class FfdTimeline extends CurveTimeline {
 
-	int slotIndex;
-	List<num> frames;
-	List<List<num>> frameVertices;
-	Attachment attachment;
+  final List<num> frames;
+  final List<List<num>> frameVertices;
+  Attachment attachment = null;
+  int slotIndex = 0;
 
-	FfdTimeline(int frameCount) : super(frameCount) {
-		frames = new List<num>.filled(frameCount, 0);
-		frameVertices = new List<List<num>>.filled(frameCount, null);
-	}
+  FfdTimeline(int frameCount)
+      : super(frameCount),
+        frames = new List<num>.filled(frameCount, 0),
+        frameVertices = new List<List<num>>.filled(frameCount, null);
 
-	/// Sets the time and value of the specified keyframe.
-	///
-	void setFrame(int frameIndex, num time, List<num> vertices) {
-		frames[frameIndex] = time;
-		frameVertices[frameIndex] = vertices;
-	}
+  /// Sets the time and value of the specified keyframe.
+  ///
+  void setFrame(int frameIndex, num time, List<num> vertices) {
+    frames[frameIndex] = time;
+    frameVertices[frameIndex] = vertices;
+  }
 
-	void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  Slot slot = skeleton.slots[slotIndex];
-		if (slot.attachment != attachment) return;
+    Slot slot = skeleton.slots[slotIndex];
+    if (slot.attachment != attachment) return;
 
-		List<num> frames = this.frames;
+    List<num> frames = this.frames;
 
-		if (time < frames[0]) {
-			slot.attachmentVertices.length = 0;
-			return; // Time is before first frame.
-		}
+    if (time < frames[0]) {
+      slot.attachmentVertices.length = 0;
+      return; // Time is before first frame.
+    }
 
-		List<List<num>> frameVertices = this.frameVertices;
-		int vertexCount = frameVertices[0].length;
+    List<List<num>> frameVertices = this.frameVertices;
+    int vertexCount = frameVertices[0].length;
 
-		List<num> vertices = slot.attachmentVertices;
-		if (vertices.length != vertexCount) alpha = 1;
-		vertices.length = vertexCount;
+    List<num> vertices = slot.attachmentVertices;
+    if (vertices.length != vertexCount) alpha = 1;
+    vertices.length = vertexCount;
 
-		if (time >= frames[frames.length - 1]) { // Time is after last frame.
+    if (time >= frames[frames.length - 1]) { // Time is after last frame.
 
-		  List<num> lastVertices = frameVertices[frames.length - 1];
+      List<num> lastVertices = frameVertices[frames.length - 1];
 
-			if (alpha < 1) {
-				for (int i = 0; i < vertexCount; i++) {
-					vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
-				}
-			} else {
-				for (int i = 0; i < vertexCount; i++) {
-					vertices[i] = lastVertices[i];
-				}
-			}
+      if (alpha < 1) {
+        for (int i = 0; i < vertexCount; i++) {
+          vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
+        }
+      } else {
+        for (int i = 0; i < vertexCount; i++) {
+          vertices[i] = lastVertices[i];
+        }
+      }
 
-			return;
-		}
+      return;
+    }
 
-		// Interpolate between the previous frame and the current frame.
+    // Interpolate between the previous frame and the current frame.
 
-		int frameIndex = Animation.binarySearch(frames, time, 1);
-		num frameTime = frames[frameIndex];
-		num percent = 1 - (time - frameTime) / (frames[frameIndex - 1] - frameTime);
-		percent = getCurvePercent(frameIndex - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+    int frameIndex = Animation.binarySearch(frames, time, 1);
+    num frameTime = frames[frameIndex];
+    num percent = 1 - (time - frameTime) / (frames[frameIndex - 1] - frameTime);
+    percent = getCurvePercent(frameIndex - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
-		List<num> prevVertices = frameVertices[frameIndex - 1];
-		List<num> nextVertices = frameVertices[frameIndex];
+    List<num> prevVertices = frameVertices[frameIndex - 1];
+    List<num> nextVertices = frameVertices[frameIndex];
 
-		num prev;
+    num prev;
 
-		if (alpha < 1) {
-			for (int i = 0; i < vertexCount; i++) {
-				prev = prevVertices[i];
-				vertices[i] += (prev + (nextVertices[i] - prev) * percent - vertices[i]) * alpha;
-			}
-		} else {
-			for (int i = 0; i < vertexCount; i++) {
-				prev = prevVertices[i];
-				vertices[i] = prev + (nextVertices[i] - prev) * percent;
-			}
-		}
-	}
+    if (alpha < 1) {
+      for (int i = 0; i < vertexCount; i++) {
+        prev = prevVertices[i];
+        vertices[i] += (prev + (nextVertices[i] - prev) * percent - vertices[i]) * alpha;
+      }
+    } else {
+      for (int i = 0; i < vertexCount; i++) {
+        prev = prevVertices[i];
+        vertices[i] = prev + (nextVertices[i] - prev) * percent;
+      }
+    }
+  }
 
 }

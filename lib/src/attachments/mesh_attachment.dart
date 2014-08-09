@@ -32,77 +32,78 @@ part of stagexl_spine;
 
 class MeshAttachment extends Attachment {
 
-	List<num> vertices;
-	List<num> uvs;
-	List<num> regionUVs;
-	List<int> triangles;
-	int hullLength;
-	num r = 1;
-	num g = 1;
-	num b = 1;
-	num a = 1;
+  List<num> vertices;
+  List<num> uvs;
+  List<num> regionUVs;
+  List<int> triangles;
+  int hullLength;
+  num r = 1;
+  num g = 1;
+  num b = 1;
+  num a = 1;
 
-	String path;
-	Object rendererObject;
+  String path;
+  Object rendererObject;
 
-	num regionU, regionV;
-	num regionU2, regionV2;
-	bool regionRotate;
-	num regionOffsetX;       // Pixels stripped from the bottom left, unrotated.
-	num regionOffsetY;
-	num regionWidth;         // Unrotated, stripped size.
-	num regionHeight;
-	num regionOriginalWidth; // Unrotated, unstripped size.
-	num regionOriginalHeight;
+  num regionU, regionV;
+  num regionU2, regionV2;
+  bool regionRotate;
 
-	// Nonessential.
-	List<int> edges;
-	num width;
-	num height;
+  num regionOffsetX; // Pixels stripped from the bottom left, unrotated.
+  num regionOffsetY;
+  num regionWidth; // Unrotated, stripped size.
+  num regionHeight;
+  num regionOriginalWidth; // Unrotated, unstripped size.
+  num regionOriginalHeight;
 
-	MeshAttachment(String name)  :super(name);
+  // Nonessential.
+  List<int> edges;
+  num width;
+  num height;
 
-	void updateUVs() {
+  MeshAttachment(String name) : super(name);
 
-	  num width = regionU2 - regionU;
-		num height = regionV2 - regionV;
+  void updateUVs() {
 
-		if (uvs == null || uvs.length != regionUVs.length) {
-		  uvs = new List<num>.filled(regionUVs.length, 0);
-		}
+    num width = regionU2 - regionU;
+    num height = regionV2 - regionV;
 
-		if (regionRotate) {
-			for (int i = 0; i < regionUVs.length; i += 2) {
-				uvs[i] = regionU + regionUVs[i + 1] * width;
-				uvs[i + 1] = regionV + height - regionUVs[i] * height;
-			}
-		} else {
-			for (int i = 0; i < regionUVs.length; i += 2) {
-				uvs[i] = regionU + regionUVs[i] * width;
-				uvs[i + 1] = regionV + regionUVs[i + 1] * height;
-			}
-		}
-	}
+    if (uvs == null || uvs.length != regionUVs.length) {
+      uvs = new List<num>.filled(regionUVs.length, 0);
+    }
 
-	void computeWorldVertices(num x, num y, Slot slot, List<num> worldVertices) {
+    if (regionRotate) {
+      for (int i = 0; i < regionUVs.length; i += 2) {
+        uvs[i] = regionU + regionUVs[i + 1] * width;
+        uvs[i + 1] = regionV + height - regionUVs[i] * height;
+      }
+    } else {
+      for (int i = 0; i < regionUVs.length; i += 2) {
+        uvs[i] = regionU + regionUVs[i] * width;
+        uvs[i + 1] = regionV + regionUVs[i + 1] * height;
+      }
+    }
+  }
 
-	  Bone bone = slot.bone;
-		x += bone.worldX;
-		y += bone.worldY;
-		num m00 = bone.m00;
-		num m01 = bone.m01;
-		num m10 = bone.m10;
-		num m11 = bone.m11;
+  void computeWorldVertices(num x, num y, Slot slot, List<num> worldVertices) {
 
-		if (slot.attachmentVertices.length == this.vertices.length) {
-		  this.vertices = slot.attachmentVertices;
-		}
+    Bone bone = slot.bone;
+    x += bone.worldX;
+    y += bone.worldY;
+    num m00 = bone.m00;
+    num m01 = bone.m01;
+    num m10 = bone.m10;
+    num m11 = bone.m11;
 
-		for (int i = 0; i < this.vertices.length; i += 2) {
-			num vx = this.vertices[i];
-			num vy = this.vertices[i + 1];
-			worldVertices[i] = vx * m00 + vy * m01 + x;
-			worldVertices[i + 1] = vx * m10 + vy * m11 + y;
-		}
-	}
+    if (slot.attachmentVertices.length == this.vertices.length) {
+      this.vertices = slot.attachmentVertices;
+    }
+
+    for (int i = 0; i < this.vertices.length; i += 2) {
+      num vx = this.vertices[i];
+      num vy = this.vertices[i + 1];
+      worldVertices[i] = vx * m00 + vy * m01 + x;
+      worldVertices[i + 1] = vx * m10 + vy * m11 + y;
+    }
+  }
 }

@@ -33,92 +33,92 @@ part of stagexl_spine;
 
 class SkeletonData {
 
-	String name;
-	List<BoneData> bones = new List<BoneData>(); // Ordered parents first.
-	List<SlotData> slots = new List<SlotData>(); // Setup pose draw order.
-	List<Skin> skins = new List<Skin>();
-	Skin defaultSkin;
-	List<EventData> events = new List<EventData>();
-	List<Animation> animations = new List<Animation>();
+  String name;
+  List<BoneData> bones = new List<BoneData>(); // Ordered parents first.
+  List<SlotData> slots = new List<SlotData>(); // Setup pose draw order.
+  List<Skin> skins = new List<Skin>();
+  Skin defaultSkin;
+  List<EventData> events = new List<EventData>();
+  List<Animation> animations = new List<Animation>();
 
-	// --- Bones.
+  // --- Bones.
 
-	void addBone(BoneData bone){
-		if (bone == null) throw new ArgumentError("bone cannot be null.");
-		bones.add(bone);
-	}
+  void addBone(BoneData bone) {
+    if (bone == null) throw new ArgumentError("bone cannot be null.");
+    bones.add(bone);
+  }
 
-	BoneData findBone(String boneName) {
-		if (boneName == null) throw new ArgumentError("boneName cannot be null.");
-		return bones.firstWhere((b) => b._name == boneName, orElse: () => null);
-	}
+  BoneData findBone(String boneName) {
+    if (boneName == null) throw new ArgumentError("boneName cannot be null.");
+    return bones.firstWhere((b) => b.name == boneName, orElse: () => null);
+  }
 
   int findBoneIndex(String boneName) {
-		if (boneName == null) throw new ArgumentError("boneName cannot be null.");
-		for (int i = 0; i < bones.length; i++) {
-			if (bones[i]._name == boneName) return i;
-		}
-		return -1;
-	}
+    if (boneName == null) throw new ArgumentError("boneName cannot be null.");
+    for (int i = 0; i < bones.length; i++) {
+      if (bones[i].name == boneName) return i;
+    }
+    return -1;
+  }
 
-	// --- Slots.
+  // --- Slots.
 
-	void addSlot(SlotData slot) {
-		if (slot == null) throw new ArgumentError("slot cannot be null.");
-		slots.add(slot);
-	}
+  void addSlot(SlotData slot) {
+    if (slot == null) throw new ArgumentError("slot cannot be null.");
+    slots.add(slot);
+  }
 
-	SlotData findSlot(String slotName) {
-		if (slotName == null) throw new ArgumentError("slotName cannot be null.");
-		return slots.firstWhere((s) => s._name == slotName, orElse: () => null);
-	}
+  SlotData findSlot(String slotName) {
+    if (slotName == null) throw new ArgumentError("slotName cannot be null.");
+    return slots.firstWhere((s) => s.name == slotName, orElse: () => null);
+  }
 
-	int findSlotIndex(String slotName) {
-		if (slotName == null) throw new ArgumentError("slotName cannot be null.");
-		for (int i = 0; i < slots.length; i++) {
-			if (slots[i]._name == slotName) return i;
-		}
-		return -1;
-	}
+  int findSlotIndex(String slotName) {
+    if (slotName == null) throw new ArgumentError("slotName cannot be null.");
+    for (int i = 0; i < slots.length; i++) {
+      if (slots[i].name == slotName) return i;
+    }
+    return -1;
+  }
 
-	// --- Skins.
+  // --- Skins.
 
-	void addSkin(Skin skin) {
-		if (skin == null) throw new ArgumentError("skin cannot be null.");
-		skins.add(skin);
-	}
+  void addSkin(Skin skin) {
+    if (skin == null) throw new ArgumentError("skin cannot be null.");
+    skins.add(skin);
+  }
 
-	Skin findSkin(String skinName){
-		if (skinName == null) throw new ArgumentError("skinName cannot be null.");
-		return skins.firstWhere((s) => s._name == skinName, orElse: () => null);
-	}
+  Skin findSkin(String skinName) {
+    if (skinName == null) throw new ArgumentError("skinName cannot be null.");
+    return skins.firstWhere((s) => s.name == skinName, orElse: () => null);
+  }
 
-	// --- Events.
+  // --- Events.
 
-	void addEvent(EventData eventData) {
-		if (eventData == null) throw new ArgumentError("eventData cannot be null.");
-		events.add(eventData);
-	}
+  void addEvent(EventData eventData) {
+    if (eventData == null) throw new ArgumentError("eventData cannot be null.");
+    events.add(eventData);
+  }
 
-	EventData findEvent(String eventName) {
-		if (eventName == null) throw new ArgumentError("eventName cannot be null.");
-		return events.firstWhere((e) => e.name == eventName, orElse: () => null);
-	}
+  EventData findEvent(String eventName) {
+    if (eventName == null) throw new ArgumentError("eventName cannot be null.");
+    return events.firstWhere((e) => e.name == eventName, orElse: () => null);
+  }
 
-	// --- Animations.
+  // --- Animations.
 
-	void addAnimation(Animation animation) {
-		if (animation == null) throw new ArgumentError("animation cannot be null.");
-		animations.add(animation);
-	}
+  void addAnimation(Animation animation) {
+    if (animation == null) throw new ArgumentError("animation cannot be null.");
+    animations.add(animation);
+  }
 
-	Animation findAnimation(String animationName) {
-		if (animationName == null) throw new ArgumentError("animationName cannot be null.");
-		return animations.firstWhere((a) => a.name == animationName, orElse: () => null);
-	}
+  Animation findAnimation(String animationName) {
+    if (animationName == null) throw new ArgumentError("animationName cannot be null.");
+    return animations.firstWhere((a) => a.name == animationName, orElse: () => null);
+  }
 
-	// ---
+  // ---
 
-	String toString() => name != null ? name : super.toString();
+  String toString() => name != null ? name : super.toString();
 
 }

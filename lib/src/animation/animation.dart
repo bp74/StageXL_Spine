@@ -32,91 +32,82 @@ part of stagexl_spine;
 
 class Animation {
 
-	String _name;  // internal
-	List<Timeline> _timelines;
-	num duration;
+  final String name;
+  final List<Timeline> timelines;
+  final num duration;
 
-	Animation (String name, List<Timeline> timelines, num duration) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-		if (timelines == null) throw new ArgumentError("timelines cannot be null.");
-		_name = name;
-		_timelines = timelines;
-		this.duration = duration;
-	}
+  Animation(this.name, this.timelines, this.duration) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
+    if (timelines == null) throw new ArgumentError("timelines cannot be null.");
+  }
 
-	List<Timeline> get timelines => _timelines;
+  /// Poses the skeleton at the specified time for this animation.
+  ///
+  void apply(Skeleton skeleton, num lastTime, num time, bool loop, List<Event> events) {
 
-	/// Poses the skeleton at the specified time for this animation.
-	///
-	void apply(Skeleton skeleton, num lastTime, num time, bool loop, List<Event> events) {
+    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
 
-		if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+    if (loop && duration != 0) {
+      time %= duration;
+      lastTime %= duration;
+    }
 
-		if (loop && duration != 0) {
-			time %= duration;
-			lastTime %= duration;
-		}
+    for (int i = 0; i < timelines.length; i++) {
+      timelines[i].apply(skeleton, lastTime, time, events, 1);
+    }
+  }
 
-		for (int i = 0; i < timelines.length; i++) {
-			timelines[i].apply(skeleton, lastTime, time, events, 1);
-		}
-	}
+  /// Poses the skeleton at the specified time for this animation mixed
+  /// with the current pose.
+  ///
+  /// alpha: The amount of this animation that affects the current pose.
+  ///
+  void mix(Skeleton skeleton, num lastTime, num time, bool loop, List<Event> events, num alpha) {
 
-	/// Poses the skeleton at the specified time for this animation mixed
-	/// with the current pose.
-	///
-	/// alpha: The amount of this animation that affects the current pose.
-	///
-	void mix (Skeleton skeleton, num lastTime, num time, bool loop, List<Event> events, num alpha) {
+    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
 
-		if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+    if (loop && duration != 0) {
+      time %= duration;
+      lastTime %= duration;
+    }
 
-		if (loop && duration != 0) {
-			time %= duration;
-			lastTime %= duration;
-		}
+    for (int i = 0; i < timelines.length; i++) {
+      timelines[i].apply(skeleton, lastTime, time, events, alpha);
+    }
+  }
 
-		for (int i = 0; i < timelines.length; i++) {
-			timelines[i].apply(skeleton, lastTime, time, events, alpha);
-		}
-	}
+  /// target: After the first and before the last entry.
+  static int binarySearch(List<num> values, num target, int step) {
 
-	String get name => _name;
-	String toString() => _name;
+    int low = 0;
+    int high = values.length ~/ step - 2;
+    int current = high >> 1;
+    if (high == 0) return step;
 
-	/// target: After the first and before the last entry.
-	static int binarySearch (List<num> values, num target, int step) {
+    while (true) {
+      if (values[(current + 1) * step] <= target) {
+        low = current + 1;
+      } else {
+        high = current;
+      }
 
-		int low = 0;
-		int high = values.length ~/ step - 2;
-		if (high == 0) return step;
+      if (low == high) {
+        return (low + 1) * step;
+      } else {
+        current = (low + high) >> 1;
+      }
+    }
 
-		int current = high >> 1;
+    return 0; // Can't happen.
+  }
 
-		while (true) {
+  static int linearSearch(List<num> values, num target, int step) {
+    for (int i = 0; i <= values.length - step; i += step) {
+      if (values[i] > target) return i;
+    }
+    return -1;
+  }
 
-			if (values[(current + 1) * step] <= target) {
-				low = current + 1;
-			} else {
-				high = current;
-			}
-
-			if (low == high) {
-				return (low + 1) * step;
-			}
-			current = (low + high) >> 1;
-
-		}
-
-		return 0; // Can't happen.
-	}
-
-	static int linearSearch (List<num> values, num target, int step) {
-
-		for (int i = 0; i <= values.length - step; i += step) {
-			if (values[i] > target) return i;
-		}
-		return -1;
-	}
+  String toString() => name;
 
 }

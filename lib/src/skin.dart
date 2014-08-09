@@ -34,35 +34,30 @@ part of stagexl_spine;
 ///
 class Skin {
 
-	String _name;  // internal
-	List<Map> _attachments = new List<Map>();
+  final String name;
+  final List<Map> attachments = new List<Map>();
 
-	Skin (String name) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-		_name = name;
-	}
+  Skin(this.name) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
+  }
 
-	 List<Map> get attachments=> _attachments;
-   String get name => _name;
-   String toString () => _name;
+  void addAttachment(int slotIndex, String name, Attachment attachment) {
+    if (attachment == null) throw new ArgumentError("attachment cannot be null.");
+    if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
+    if (attachments[slotIndex] == null) attachments[slotIndex] = new Map();
+    attachments[slotIndex][name] = attachment;
+  }
 
-	void addAttachment (int slotIndex, String name, Attachment attachment) {
-		if (attachment == null) throw new ArgumentError("attachment cannot be null.");
-		if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
-		if (attachments[slotIndex] == null) attachments[slotIndex] = new Map();
-		attachments[slotIndex][name] = attachment;
-	}
-
-	Attachment getAttachment (int slotIndex, String name) {
-		if (slotIndex >= attachments.length) return null;
-		Map map = attachments[slotIndex];
-		return map != null ? map[name] : null;
-	}
+  Attachment getAttachment(int slotIndex, String name) {
+    if (slotIndex >= attachments.length) return null;
+    Map map = attachments[slotIndex];
+    return map != null ? map[name] : null;
+  }
 
   /// Attach each attachment in this skin if the corresponding attachment in
   /// the old skin is currently attached.
   ///
-  void attachAll (Skeleton skeleton, Skin oldSkin) {
+  void attachAll(Skeleton skeleton, Skin oldSkin) {
     int slotIndex = 0;
     for (Slot slot in skeleton._slots) {
       Attachment slotAttachment = slot.attachment;
@@ -72,13 +67,14 @@ class Skin {
           Attachment skinAttachment = map[name];
           if (slotAttachment == skinAttachment) {
             Attachment attachment = getAttachment(slotIndex, name);
-  					if (attachment != null) slot.attachment = attachment;
-  					break;
+            if (attachment != null) slot.attachment = attachment;
+            break;
           }
-  		  }
-  		}
-  		slotIndex++;
+        }
+      }
+      slotIndex++;
     }
   }
 
+  String toString() => name;
 }

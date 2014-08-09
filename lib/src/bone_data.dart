@@ -32,26 +32,21 @@ part of stagexl_spine;
 
 class BoneData {
 
-  BoneData _parent;  // internal
-	String _name;  // internal
+  final String name;
+  final BoneData parent;
 
-	num length;
-	num x;
-	num y;
-	num rotation;
-	num scaleX = 1;
-	num scaleY= 1;
-	bool inheritScale = true;
-	bool inheritRotation = true;
+  num length;
+  num x;
+  num y;
+  num rotation;
+  num scaleX = 1;
+  num scaleY = 1;
+  bool inheritScale = true;
+  bool inheritRotation = true;
 
-	BoneData (String name, BoneData parent) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-		_name = name;
-		_parent = parent;
-	}
+  BoneData(this.name, this.parent) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
+  }
 
-	BoneData get parent => _parent;
-	String get name => _name;
-
-	String toString() =>_name;
+  String toString() => name;
 }

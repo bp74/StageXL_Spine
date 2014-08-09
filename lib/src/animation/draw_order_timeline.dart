@@ -32,49 +32,48 @@ part of stagexl_spine;
 
 class DrawOrderTimeline implements Timeline {
 
-	List<num> frames; // time, ...
-	List<List<int>> drawOrders;
+  final List<num> frames; // time, ...
+  final List<List<int>> drawOrders;
 
-	DrawOrderTimeline (int frameCount) {
-		frames = new List<num>.filled(frameCount, 0);
-		drawOrders = new List<List<int>>.filled(frameCount, null);
-	}
+  DrawOrderTimeline(int frameCount)
+      : frames = new List<num>.filled(frameCount, 0),
+        drawOrders = new List<List<int>>.filled(frameCount, null);
 
-	int get frameCount => frames.length;
+  int get frameCount => frames.length;
 
-	/// Sets the time and value of the specified keyframe.
-	///
-	void setFrame (int frameIndex, num time, List<int> drawOrder) {
-		frames[frameIndex] = time;
-		drawOrders[frameIndex] = drawOrder;
-	}
+  /// Sets the time and value of the specified keyframe.
+  ///
+  void setFrame(int frameIndex, num time, List<int> drawOrder) {
+    frames[frameIndex] = time;
+    drawOrders[frameIndex] = drawOrder;
+  }
 
-	void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-	  if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		int frameIndex;
+    int frameIndex;
 
-		if (time >= frames[frames.length - 1]) { // Time is after last frame.
-			frameIndex = frames.length - 1;
-		} else {
-			frameIndex = Animation.binarySearch(frames, time, 1) - 1;
-		}
+    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+      frameIndex = frames.length - 1;
+    } else {
+      frameIndex = Animation.binarySearch(frames, time, 1) - 1;
+    }
 
-		List<Slot> drawOrder = skeleton.drawOrder;
-		List<Slot> slots = skeleton.slots;
-		List<int> drawOrderToSetupIndex = drawOrders[frameIndex];
+    List<Slot> drawOrder = skeleton.drawOrder;
+    List<Slot> slots = skeleton.slots;
+    List<int> drawOrderToSetupIndex = drawOrders[frameIndex];
 
-		int i = 0;
-		if (drawOrderToSetupIndex == null) {
-			for(Slot slot in slots) {
-				drawOrder[i++] = slot;
-			}
-		} else {
-			for (int setupIndex in drawOrderToSetupIndex) {
-				drawOrder[i++] = slots[setupIndex];
-			}
-		}
-	}
+    int i = 0;
+    if (drawOrderToSetupIndex == null) {
+      for (Slot slot in slots) {
+        drawOrder[i++] = slot;
+      }
+    } else {
+      for (int setupIndex in drawOrderToSetupIndex) {
+        drawOrder[i++] = slots[setupIndex];
+      }
+    }
+  }
 
 }
