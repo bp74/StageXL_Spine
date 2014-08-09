@@ -32,10 +32,10 @@ part of stagexl_spine;
 
 class SkeletonBounds {
 
-  List<Polygon> _polygonPool = new List<Polygon>();
+  final List<Polygon> _polygonPool = new List<Polygon>();
+  final List<BoundingBoxAttachment> boundingBoxes = new List<BoundingBoxAttachment>();
+  final List<Polygon> polygons = new List<Polygon>();
 
-  List<BoundingBoxAttachment> boundingBoxes = new List<BoundingBoxAttachment>();
-  List<Polygon> polygons = new List<Polygon>();
   num minX, minY, maxX, maxY;
 
   num get width => maxX - minX;

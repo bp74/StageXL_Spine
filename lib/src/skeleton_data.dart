@@ -33,11 +33,11 @@ part of stagexl_spine;
 
 class SkeletonData {
 
-  String name;
+  String name = null;
   List<BoneData> bones = new List<BoneData>(); // Ordered parents first.
   List<SlotData> slots = new List<SlotData>(); // Setup pose draw order.
   List<Skin> skins = new List<Skin>();
-  Skin defaultSkin;
+  Skin defaultSkin = null;
   List<EventData> events = new List<EventData>();
   List<Animation> animations = new List<Animation>();
 

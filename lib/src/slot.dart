@@ -36,10 +36,10 @@ class Slot {
   final Skeleton skeleton;
   final Bone bone;
 
-  num r;
-  num g;
-  num b;
-  num a;
+  num r = 1.0;
+  num g = 1.0;
+  num b = 1.0;
+  num a = 1.0;
 
   Attachment _attachment; // internal
   num _attachmentTime;

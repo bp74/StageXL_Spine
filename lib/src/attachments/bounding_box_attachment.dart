@@ -47,9 +47,9 @@ class BoundingBoxAttachment extends Attachment {
     num m11 = bone.m11;
 
     for (int i = 0; i < this.vertices.length; i += 2) {
-      num px = this.vertices[i];
+      num px = this.vertices[i + 0];
       num py = this.vertices[i + 1];
-      worldVertices[i] = px * m00 + py * m01 + x;
+      worldVertices[i + 0] = px * m00 + py * m01 + x;
       worldVertices[i + 1] = px * m10 + py * m11 + y;
     }
   }

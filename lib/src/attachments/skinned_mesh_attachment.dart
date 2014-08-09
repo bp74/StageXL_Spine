@@ -78,12 +78,12 @@ class SkinnedMeshAttachment extends Attachment {
 
     if (regionRotate) {
       for (int i = 0; i < regionUVs.length; i += 2) {
-        uvs[i] = regionU + regionUVs[i + 1] * width;
-        uvs[i + 1] = regionV + height - regionUVs[i] * height;
+        uvs[i + 0] = regionU + regionUVs[i + 1] * width;
+        uvs[i + 1] = regionV - regionUVs[i + 0] * height + height;
       }
     } else {
       for (int i = 0; i < regionUVs.length; i += 2) {
-        uvs[i] = regionU + regionUVs[i] * width;
+        uvs[i + 0] = regionU + regionUVs[i + 0] * width;
         uvs[i + 1] = regionV + regionUVs[i + 1] * height;
       }
     }
@@ -115,13 +115,13 @@ class SkinnedMeshAttachment extends Attachment {
         int nn = bones[v++] + v;
         for ( ; v < nn; v++, b += 3) {
           bone = skeletonBones[bones[v]];
-          vx = weights[b];
+          vx = weights[b + 0];
           vy = weights[b + 1];
           weight = weights[b + 2];
           wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
           wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
         }
-        worldVertices[w] = wx + x;
+        worldVertices[w + 0] = wx + x;
         worldVertices[w + 1] = wy + y;
       }
 
@@ -133,13 +133,13 @@ class SkinnedMeshAttachment extends Attachment {
         int nn = bones[v++] + v;
         for ( ; v < nn; v++, b += 3, f += 2) {
           bone = skeletonBones[bones[v]];
-          vx = weights[b] + ffd[f];
+          vx = weights[b + 0] + ffd[f + 0];
           vy = weights[b + 1] + ffd[f + 1];
           weight = weights[b + 2];
           wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
           wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
         }
-        worldVertices[w] = wx + x;
+        worldVertices[w + 0] = wx + x;
         worldVertices[w + 1] = wy + y;
       }
     }

@@ -35,10 +35,10 @@ class SlotData {
   final String name;
   final BoneData boneData;
 
-  num r = 1;
-  num g = 1;
-  num b = 1;
-  num a = 1;
+  num r = 1.0;
+  num g = 1.0;
+  num b = 1.0;
+  num a = 1.0;
 
   String attachmentName;
   bool additiveBlending;

@@ -37,10 +37,8 @@ class Atlas {
   final TextureLoader _textureLoader;
 
   Atlas(String atlasText, TextureLoader textureLoader) : _textureLoader = textureLoader {
-
     if (atlasText == null) throw new ArgumentError("atlasText cannot be null.");
     if (textureLoader == null) throw new ArgumentError("textureLoader cannot be null.");
-
     _load(atlasText, _textureLoader);
   }
 
@@ -161,6 +159,9 @@ class Atlas {
     }
   }
 }
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 class _Reader {
 

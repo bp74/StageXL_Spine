@@ -32,11 +32,12 @@ part of stagexl_spine;
 
 class Skeleton {
 
-  SkeletonData _data; // internal
-  List<Bone> _bones; // internal
-  List<Slot> _slots; // internal
-  List<Slot> _drawOrder; // internal
-  Skin _skin; // internal
+  final SkeletonData data;
+  final List<Bone> bones = new List<Bone>();
+  final List<Slot> slots = new List<Slot>();
+  final List<Slot> drawOrder = new List<Slot>();
+
+  Skin _skin;
 
   num r = 1;
   num g = 1;
@@ -48,32 +49,29 @@ class Skeleton {
   num x = 0;
   num y = 0;
 
-  Skeleton(SkeletonData data) {
-
+  Skeleton(this.data) {
     if (data == null) throw new ArgumentError("data cannot be null.");
-    _data = data;
-
-    _bones = new List<Bone>();
-    _slots = new List<Slot>();
-    _drawOrder = new List<Slot>();
 
     for (BoneData boneData in data.bones) {
-      Bone parent = boneData.parent == null ? null : _bones[data.bones.indexOf(boneData.parent)];
-      _bones.add(new Bone(boneData, parent));
+      Bone parent = boneData.parent == null
+          ? null : this.bones[this.data.bones.indexOf(boneData.parent)];
+      this.bones.add(new Bone(boneData, parent));
     }
 
     for (SlotData slotData in data.slots) {
-      Bone bone = _bones[data.bones.indexOf(slotData.boneData)];
+      Bone bone = this.bones[data.bones.indexOf(slotData.boneData)];
       Slot slot = new Slot(slotData, this, bone);
-      _slots.add(slot);
-      _drawOrder.add(slot);
+      this.slots.add(slot);
+      this.drawOrder.add(slot);
     }
   }
 
   /// Updates the world transform for each bone.
   ///
   void updateWorldTransform() {
-    for (Bone bone in _bones) bone.updateWorldTransform(flipX, flipY);
+    for (Bone bone in this.bones) {
+      bone.updateWorldTransform(flipX, flipY);
+    }
   }
 
   /// Sets the bones and slots to their setup pose values.
@@ -84,47 +82,45 @@ class Skeleton {
   }
 
   void setBonesToSetupPose() {
-    for (Bone bone in _bones) bone.setToSetupPose();
+    for (Bone bone in this.bones) {
+      bone.setToSetupPose();
+    }
   }
 
   void setSlotsToSetupPose() {
     int i = 0;
-    for (Slot slot in _slots) {
+    for (Slot slot in this.slots) {
       drawOrder[i++] = slot;
       slot.setToSetupPose();
     }
   }
 
-  SkeletonData get data => _data;
-  List<Bone> get bones => _bones;
-  List<Slot> get slots => _slots;
-  List<Slot> get drawOrder => _drawOrder;
   Skin get skin => _skin;
 
-  Bone get rootBone => _bones.length == 0 ? null : _bones[0];
+  Bone get rootBone => this.bones.length == 0 ? null : this.bones[0];
 
   Bone findBone(String boneName) {
     if (boneName == null) throw new ArgumentError("boneName cannot be null.");
-    return _bones.firstWhere((b) => b.data.name == boneName, orElse: () => null);
+    return this.bones.firstWhere((b) => b.data.name == boneName, orElse: () => null);
   }
 
   int findBoneIndex(String boneName) {
     if (boneName == null) throw new ArgumentError("boneName cannot be null.");
-    for (int i = 0; i < _bones.length; i++) {
-      if (_bones[i].data.name == boneName) return i;
+    for (int i = 0; i < this.bones.length; i++) {
+      if (this.bones[i].data.name == boneName) return i;
     }
     return -1;
   }
 
   Slot findSlot(String slotName) {
     if (slotName == null) throw new ArgumentError("slotName cannot be null.");
-    return _slots.firstWhere((s) => s.data.name == slotName, orElse: () => null);
+    return this.slots.firstWhere((s) => s.data.name == slotName, orElse: () => null);
   }
 
   int findSlotIndex(String slotName) {
     if (slotName == null) throw new ArgumentError("slotName cannot be null.");
-    for (int i = 0; i < _slots.length; i++) {
-      if (_slots[i].data.name == slotName) return i;
+    for (int i = 0; i < this.slots.length; i++) {
+      if (this.slots[i].data.name == slotName) return i;
     }
     return -1;
   }
@@ -136,18 +132,18 @@ class Skeleton {
   }
 
   /// Sets the skin used to look up attachments not found in the
-  /// {@link SkeletonData#getDefaultSkin() default skin}. Attachments
-  /// from the new skin are attached if the corresponding attachment
-  /// from the old skin was attached. If there was no old skin,
-  /// each slot's setup mode attachment is attached from the new skin.
+  /// [SkeletonData.defaultSkin] default skin}. Attachments from the new skin
+  /// are attached if the corresponding attachment from the old
+  /// skin was attached. If there was no old skin, each slot's
+  /// setup mode attachment is attached from the new skin.
   ///
   void set skin(Skin newSkin) {
     if (newSkin != null) {
-      if (skin != null) {
-        newSkin.attachAll(this, skin);
+      if (_skin != null) {
+        newSkin.attachAll(this, _skin);
       } else {
-        for (int i = 0; i < _slots.length; i++) {
-          Slot slot = _slots[i];
+        for (int i = 0; i < this.slots.length; i++) {
+          Slot slot = this.slots[i];
           String name = slot.data.attachmentName;
           if (name != null) {
             Attachment attachment = newSkin.getAttachment(i, name);
@@ -165,20 +161,16 @@ class Skeleton {
   }
 
   Attachment getAttachmentForSlotIndex(int slotIndex, String attachmentName) {
-
     if (attachmentName == null) {
       throw new ArgumentError("attachmentName cannot be null.");
     }
-
-    if (skin != null) {
-      Attachment attachment = skin.getAttachment(slotIndex, attachmentName);
+    if (_skin != null) {
+      Attachment attachment = _skin.getAttachment(slotIndex, attachmentName);
       if (attachment != null) return attachment;
     }
-
     if (data.defaultSkin != null) {
       return data.defaultSkin.getAttachment(slotIndex, attachmentName);
     }
-
     return null;
   }
 
@@ -188,8 +180,8 @@ class Skeleton {
       throw new ArgumentError("slotName cannot be null.");
     }
 
-    for (int i = 0; i < _slots.length; i++) {
-      Slot slot = _slots[i];
+    for (int i = 0; i < this.slots.length; i++) {
+      Slot slot = this.slots[i];
       if (slot.data.name == slotName) {
         Attachment attachment = null;
         if (attachmentName != null) {
@@ -211,6 +203,6 @@ class Skeleton {
   }
 
   String toString() {
-    return _data.name != null ? _data.name : super.toString();
+    return this.data.name != null ? this.data.name : super.toString();
   }
 }

@@ -80,8 +80,9 @@ class EventTimeline implements Timeline {
       }
     }
 
-    for ( ; frameIndex < frameCount && time >= frames[frameIndex]; frameIndex++) {
-      firedEvents[firedEvents.length] = events[frameIndex];
+    while(frameIndex < frameCount && time >= frames[frameIndex]) {
+      firedEvents.add(events[frameIndex]);
+      frameIndex++;
     }
   }
 }

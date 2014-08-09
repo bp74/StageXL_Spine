@@ -74,12 +74,12 @@ class MeshAttachment extends Attachment {
 
     if (regionRotate) {
       for (int i = 0; i < regionUVs.length; i += 2) {
-        uvs[i] = regionU + regionUVs[i + 1] * width;
-        uvs[i + 1] = regionV + height - regionUVs[i] * height;
+        uvs[i + 0] = regionU + regionUVs[i + 1] * width;
+        uvs[i + 1] = regionV - regionUVs[i + 0] * height + height;
       }
     } else {
       for (int i = 0; i < regionUVs.length; i += 2) {
-        uvs[i] = regionU + regionUVs[i] * width;
+        uvs[i + 0] = regionU + regionUVs[i + 0] * width;
         uvs[i + 1] = regionV + regionUVs[i + 1] * height;
       }
     }
@@ -100,9 +100,9 @@ class MeshAttachment extends Attachment {
     }
 
     for (int i = 0; i < this.vertices.length; i += 2) {
-      num vx = this.vertices[i];
+      num vx = this.vertices[i + 0];
       num vy = this.vertices[i + 1];
-      worldVertices[i] = vx * m00 + vy * m01 + x;
+      worldVertices[i + 0] = vx * m00 + vy * m01 + x;
       worldVertices[i + 1] = vx * m10 + vy * m11 + y;
     }
   }

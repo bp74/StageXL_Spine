@@ -32,10 +32,11 @@ part of stagexl_spine;
 
 class Bone {
 
-  static bool yDown;
+  static bool yDown = false;
 
-  BoneData _data; // internal
-  Bone _parent; // internal
+  final BoneData data;
+  final Bone parent;
+
   num x;
   num y;
   num rotation;
@@ -52,27 +53,31 @@ class Bone {
   num _worldScaleX; // internal
   num _worldScaleY; // internal
 
-  Bone(BoneData data, Bone parent) {
+  Bone(this.data, this.parent) {
     if (data == null) throw new ArgumentError("data cannot be null.");
-    _data = data;
-    _parent = parent;
     setToSetupPose();
   }
 
   /** Computes the world SRT using the parent bone and the local SRT. */
   void updateWorldTransform(bool flipX, bool flipY) {
-    if (_parent != null) {
-      _worldX = x * _parent._m00 + y * _parent._m01 + _parent._worldX;
-      _worldY = x * _parent._m10 + y * _parent._m11 + _parent._worldY;
-      if (_data.inheritScale) {
-        _worldScaleX = _parent._worldScaleX * scaleX;
-        _worldScaleY = _parent._worldScaleY * scaleY;
+
+    if (this.parent != null) {
+
+      _worldX = x * this.parent._m00 + y * this.parent._m01 + this.parent._worldX;
+      _worldY = x * this.parent._m10 + y * this.parent._m11 + this.parent._worldY;
+
+      if (this.data.inheritScale) {
+        _worldScaleX = parent._worldScaleX * scaleX;
+        _worldScaleY = parent._worldScaleY * scaleY;
       } else {
         _worldScaleX = scaleX;
         _worldScaleY = scaleY;
       }
-      _worldRotation = _data.inheritRotation ? _parent._worldRotation + rotation : rotation;
+
+      _worldRotation = this.data.inheritRotation ? this.parent._worldRotation + rotation : rotation;
+
     } else {
+
       _worldX = flipX ? -x : x;
       _worldY = flipY != yDown ? -y : y;
       _worldScaleX = scaleX;
@@ -87,6 +92,7 @@ class Bone {
     _m10 = sin * _worldScaleX;
     _m01 = -sin * _worldScaleY;
     _m11 = cos * _worldScaleY;
+
     if (flipX) {
       _m00 = -_m00;
       _m01 = -_m01;
@@ -98,15 +104,12 @@ class Bone {
   }
 
   void setToSetupPose() {
-    x = _data.x;
-    y = _data.y;
-    rotation = _data.rotation;
-    scaleX = _data.scaleX;
-    scaleY = _data.scaleY;
+    x = this.data.x;
+    y = this.data.y;
+    rotation = this.data.rotation;
+    scaleX = this.data.scaleX;
+    scaleY = this.data.scaleY;
   }
-
-  BoneData get data => _data;
-  Bone get parent => _parent;
 
   num get m00 => _m00;
   num get m01 => _m01;
@@ -118,5 +121,5 @@ class Bone {
   num get worldScaleX => _worldScaleX;
   num get worldScaleY => _worldScaleY;
 
-  String toString() => _data.name;
+  String toString() => this.data.name;
 }

@@ -38,12 +38,10 @@ class SkeletonJson {
   static const String TIMELINE_ATTACHMENT = "attachment";
   static const String TIMELINE_COLOR = "color";
 
-  AttachmentLoader attachmentLoader;
+  final AttachmentLoader attachmentLoader;
   num scale = 1;
 
-  SkeletonJson([AttachmentLoader attachmentLoader = null]) {
-    this.attachmentLoader = attachmentLoader;
-  }
+  SkeletonJson([this.attachmentLoader = null]);
 
   /// Parameter 'object' must be a String or Map.
   ///
@@ -539,10 +537,11 @@ class SkeletonJson {
     skeletonData.addAnimation(new Animation(name, timelines, duration));
   }
 
-  static void _readCurve(CurveTimeline timeline, int frameIndex, Map valueMap) {
+  //-----------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------
 
+  void _readCurve(CurveTimeline timeline, int frameIndex, Map valueMap) {
     if (valueMap.containsKey("curve") == false) return;
-
     var curve = valueMap["curve"];
     if (curve == "stepped") {
       timeline.setStepped(frameIndex);
@@ -551,7 +550,7 @@ class SkeletonJson {
     }
   }
 
-  static num _toColor(String hexString, int colorIndex) {
+  num _toColor(String hexString, int colorIndex) {
     if (hexString.length != 8) {
       throw new ArgumentError("Color hexidecimal length must be 8, recieved: $hexString");
     }
@@ -559,7 +558,7 @@ class SkeletonJson {
     return int.parse(substring, radix: 16) / 255;
   }
 
-  static List<num> _getFloatArray(Map map, String name, num scale) {
+  List<num> _getFloatArray(Map map, String name, num scale) {
     List<num> values = map[name];
     for (int i = 0; i < values.length; i++) {
       values[i] *= scale;
@@ -567,7 +566,7 @@ class SkeletonJson {
     return values;
   }
 
-  static List<int> _getIntArray(Map map, String name) {
+  List<int> _getIntArray(Map map, String name) {
     List<int> values = map[name];
     return values;
   }

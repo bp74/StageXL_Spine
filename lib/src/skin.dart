@@ -59,7 +59,7 @@ class Skin {
   ///
   void attachAll(Skeleton skeleton, Skin oldSkin) {
     int slotIndex = 0;
-    for (Slot slot in skeleton._slots) {
+    for (Slot slot in skeleton.slots) {
       Attachment slotAttachment = slot.attachment;
       if (slotAttachment != null && slotIndex < oldSkin.attachments.length) {
         Map map = oldSkin.attachments[slotIndex];
