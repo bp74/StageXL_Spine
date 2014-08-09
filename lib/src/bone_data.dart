@@ -35,12 +35,12 @@ class BoneData {
   final String name;
   final BoneData parent;
 
-  num length;
-  num x;
-  num y;
-  num rotation;
-  num scaleX = 1;
-  num scaleY = 1;
+  num length = 0.0;
+  num x = 0.0;
+  num y = 0.0;
+  num rotation = 0.0;
+  num scaleX = 1.0;
+  num scaleY = 1.0;
   bool inheritScale = true;
   bool inheritRotation = true;
 

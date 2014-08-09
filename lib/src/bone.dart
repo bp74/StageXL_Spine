@@ -37,21 +37,21 @@ class Bone {
   final BoneData data;
   final Bone parent;
 
-  num x;
-  num y;
-  num rotation;
-  num scaleX;
-  num scaleY;
+  num x = 0.0;
+  num y= 0.0;
+  num rotation= 0.0;
+  num scaleX= 0.0;
+  num scaleY= 0.0;
 
-  num _m00; // internal
-  num _m01; // internal
-  num _m10; // internal
-  num _m11; // internal
-  num _worldX; // internal
-  num _worldY; // internal
-  num _worldRotation; // internal
-  num _worldScaleX; // internal
-  num _worldScaleY; // internal
+  num _m00 = 0.0;
+  num _m01 = 0.0;
+  num _m10 = 0.0;
+  num _m11 = 0.0;
+  num _worldX = 0.0;
+  num _worldY = 0.0;
+  num _worldRotation = 0.0;
+  num _worldScaleX = 0.0;
+  num _worldScaleY = 0.0;
 
   Bone(this.data, this.parent) {
     if (data == null) throw new ArgumentError("data cannot be null.");

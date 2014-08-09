@@ -37,15 +37,16 @@ class Skeleton {
   final List<Slot> slots = new List<Slot>();
   final List<Slot> drawOrder = new List<Slot>();
 
-  Skin _skin;
+  Skin _skin = null;
 
-  num r = 1;
-  num g = 1;
-  num b = 1;
-  num a = 1;
-  num time = 0;
-  bool flipX;
-  bool flipY;
+  num r = 1.0;
+  num g = 1.0;
+  num b = 1.0;
+  num a = 1.0;
+
+  bool flipX = false;
+  bool flipY = false;
+  num time = 0.0;
   num x = 0;
   num y = 0;
 

@@ -36,7 +36,10 @@ class SkeletonBounds {
   final List<BoundingBoxAttachment> boundingBoxes = new List<BoundingBoxAttachment>();
   final List<Polygon> polygons = new List<Polygon>();
 
-  num minX, minY, maxX, maxY;
+  num minX = 0.0;
+  num minY = 0.0;
+  num maxX = 0.0;
+  num maxY = 0.0;
 
   num get width => maxX - minX;
   num get height => maxY - minY;

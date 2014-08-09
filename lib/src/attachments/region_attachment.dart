@@ -41,30 +41,30 @@ class RegionAttachment extends Attachment {
   final int X4 = 6;
   final int Y4 = 7;
 
-  num x;
-  num y;
-  num scaleX = 1;
-  num scaleY = 1;
-  num rotation;
-  num width;
-  num height;
-  num r = 1;
-  num g = 1;
-  num b = 1;
-  num a = 1;
+  final List<num> offset = new List<num>.filled(8, 0);
+  final List<num> uvs = new List<num>.filled(8, 0);
 
-  String path;
-  Object rendererObject;
+  num x = 0.0;
+  num y = 0.0;
+  num scaleX = 1.0;
+  num scaleY = 1.0;
+  num rotation = 0.0;
+  num width = 0.0;
+  num height = 0.0;
+  num r = 1.0;
+  num g = 1.0;
+  num b = 1.0;
+  num a = 1.0;
 
-  num regionOffsetX; // Pixels stripped from the bottom left, unrotated.
-  num regionOffsetY;
-  num regionWidth; // Unrotated, stripped size.
-  num regionHeight;
-  num regionOriginalWidth; // Unrotated, unstripped size.
-  num regionOriginalHeight;
+  String path = null;
+  Object rendererObject = null;
 
-  List<num> offset = new List<num>.filled(8, 0);
-  List<num> uvs = new List<num>.filled(8, 0);
+  num regionOffsetX = 0.0; // Pixels stripped from the bottom left, unrotated.
+  num regionOffsetY = 0.0;
+  num regionWidth = 0.0; // Unrotated, stripped size.
+  num regionHeight = 0.0;
+  num regionOriginalWidth = 0.0; // Unrotated, unstripped size.
+  num regionOriginalHeight = 0.0;
 
   RegionAttachment(String name) : super(name);
 
@@ -129,6 +129,7 @@ class RegionAttachment extends Attachment {
     num m01 = bone.m01;
     num m10 = bone.m10;
     num m11 = bone.m11;
+
     num x1 = offset[X1];
     num y1 = offset[Y1];
     num x2 = offset[X2];
@@ -137,6 +138,7 @@ class RegionAttachment extends Attachment {
     num y3 = offset[Y3];
     num x4 = offset[X4];
     num y4 = offset[Y4];
+
     worldVertices[X1] = x1 * m00 + y1 * m01 + x;
     worldVertices[Y1] = x1 * m10 + y1 * m11 + y;
     worldVertices[X2] = x2 * m00 + y2 * m01 + x;

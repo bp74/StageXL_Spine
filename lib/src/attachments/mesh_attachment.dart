@@ -32,34 +32,36 @@ part of stagexl_spine;
 
 class MeshAttachment extends Attachment {
 
-  List<num> vertices;
-  List<num> uvs;
-  List<num> regionUVs;
-  List<int> triangles;
-  int hullLength;
-  num r = 1;
-  num g = 1;
-  num b = 1;
-  num a = 1;
+  List<num> vertices = null;
+  List<num> uvs = null;
+  List<num> regionUVs = null;
+  List<int> triangles = null;
+  int hullLength = 0;
+  num r = 1.0;
+  num g = 1.0;
+  num b = 1.0;
+  num a = 1.0;
 
-  String path;
-  Object rendererObject;
+  String path = null;
+  Object rendererObject = null;
 
-  num regionU, regionV;
-  num regionU2, regionV2;
-  bool regionRotate;
+  num regionU = 0.0;
+  num regionV = 0.0;
+  num regionU2 = 0.0;
+  num regionV2 = 0.0;
+  bool regionRotate = false;
 
-  num regionOffsetX; // Pixels stripped from the bottom left, unrotated.
-  num regionOffsetY;
-  num regionWidth; // Unrotated, stripped size.
-  num regionHeight;
-  num regionOriginalWidth; // Unrotated, unstripped size.
-  num regionOriginalHeight;
+  num regionOffsetX = 0.0; // Pixels stripped from the bottom left, unrotated.
+  num regionOffsetY = 0.0;
+  num regionWidth = 0.0; // Unrotated, stripped size.
+  num regionHeight = 0.0;
+  num regionOriginalWidth = 0.0; // Unrotated, unstripped size.
+  num regionOriginalHeight = 0.0;
 
   // Nonessential.
-  List<int> edges;
-  num width;
-  num height;
+  List<int> edges = null;
+  num width = 0.0;
+  num height = 0.0;
 
   MeshAttachment(String name) : super(name);
 

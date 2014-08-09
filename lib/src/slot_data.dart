@@ -40,8 +40,8 @@ class SlotData {
   num b = 1.0;
   num a = 1.0;
 
-  String attachmentName;
-  bool additiveBlending;
+  String attachmentName = null;
+  bool additiveBlending = false;
 
   SlotData(this.name, this.boneData) {
     if (name == null) throw new ArgumentError("name cannot be null.");

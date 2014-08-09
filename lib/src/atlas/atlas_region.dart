@@ -31,24 +31,23 @@
 part of stagexl_spine;
 
 class AtlasRegion {
-
-  AtlasPage page;
-  String name;
-  int x;
-  int y;
-  int width;
-  int height;
-  num u;
-  num v;
-  num u2;
-  num v2;
-  num offsetX;
-  num offsetY;
-  int originalWidth;
-  int originalHeight;
-  int index;
-  bool rotate;
-  List<int> splits;
-  List<int> pads;
-  Object rendererObject;
+  AtlasPage page = null;
+  String name = null;
+  int x = 0;
+  int y = 0;
+  int width = 0;
+  int height = 0;
+  num u = 0.0;
+  num v = 0.0;
+  num u2 = 0.0;
+  num v2 = 0.0;
+  num offsetX = 0.0;
+  num offsetY = 0.0;
+  int originalWidth = 0;
+  int originalHeight = 0;
+  int index = 0;
+  bool rotate = false;
+  List<int> splits = null;
+  List<int> pads = null;
+  Object rendererObject = null;
 }

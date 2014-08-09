@@ -41,8 +41,8 @@ class Slot {
   num b = 1.0;
   num a = 1.0;
 
-  Attachment _attachment; // internal
-  num _attachmentTime;
+  Attachment _attachment = null;
+  num _attachmentTime = 0;
   List<num> attachmentVertices = new List<num>();
 
   Slot(this.data, this.skeleton, this.bone) {

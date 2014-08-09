@@ -34,9 +34,9 @@ class EventData {
 
   final String name;
 
-  int intValue;
-  num floatValue;
-  String stringValue;
+  int intValue = null;
+  num floatValue = null;
+  String stringValue = null;
 
   EventData(this.name) {
     if (name == null) throw new ArgumentError("name cannot be null.");
