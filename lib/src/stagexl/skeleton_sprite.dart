@@ -62,9 +62,8 @@ class SkeletonSprite extends DisplayObjectContainer implements Animatable {
 
       if (regionAttachment != null) {
 
-        var region = regionAttachment.rendererObject as AtlasRegion;
-        var bitmapData = region.page.rendererObject as BitmapData;
-
+        AtlasRegion region = regionAttachment.rendererObject as AtlasRegion;
+        BitmapData bitmapData = region.page.rendererObject as BitmapData;
         RenderTextureQuad renderTextureQuad;
 
         if (region.rotate) {
@@ -77,14 +76,15 @@ class SkeletonSprite extends DisplayObjectContainer implements Animatable {
               region.x, region.y, region.width, region.height);
         }
 
-        var regionBitmapData = new BitmapData.fromRenderTextureQuad(renderTextureQuad);
-        var regionBitmap = new Bitmap(regionBitmapData);
+        BitmapData regionBitmapData = new BitmapData.fromRenderTextureQuad(renderTextureQuad);
+        Bitmap regionBitmap = new Bitmap(regionBitmapData);
 
-        regionBitmap.rotation = - regionAttachment.rotation * math.PI / 180;
-        regionBitmap.scaleX = regionAttachment.scaleX * (regionAttachment.width / region.width);
-        regionBitmap.scaleY = regionAttachment.scaleY * (regionAttachment.height / region.height);
+        regionBitmap.rotation = -regionAttachment.rotation * math.PI / 180;
+        regionBitmap.scaleX = regionAttachment.scaleX * regionAttachment.width / region.width;
+        regionBitmap.scaleY = regionAttachment.scaleY * regionAttachment.height / region.height;
+
         regionBitmap.x = regionAttachment.x;
-        regionBitmap.y = regionAttachment.y;
+        regionBitmap.y = - regionAttachment.y;
         regionBitmap.pivotX = regionAttachment.width / 2;
         regionBitmap.pivotY = regionAttachment.height / 2;
 

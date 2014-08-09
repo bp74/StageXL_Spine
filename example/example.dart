@@ -17,8 +17,8 @@ void main() {
   resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
   resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
 
-  //resourceManager.load().then((rm) => startSpineboy());
-  resourceManager.load().then((rm) => startPowerup());
+  resourceManager.load().then((rm) => startSpineboy());
+  //resourceManager.load().then((rm) => startPowerup());
 }
 
 //-----------------------------------------------------------------------------
@@ -65,27 +65,25 @@ void startSpineboy() {
   skeleton.x = 400;
   skeleton.y = 300;
 
-/*
-  skeleton.state.onStart.add(function (trackIndex:int) : void {
-        trace(trackIndex + " start: " + skeleton.state.getCurrent(trackIndex));
-      });
-      skeleton.state.onEnd.add(function (trackIndex:int) : void {
-        trace(trackIndex + " end: " + skeleton.state.getCurrent(trackIndex));
-      });
-      skeleton.state.onComplete.add(function (trackIndex:int, count:int) : void {
-        trace(trackIndex + " complete: " + skeleton.state.getCurrent(trackIndex) + ", " + count);
-      });
-      skeleton.state.onEvent.add(function (trackIndex:int, event:Event) : void {
-        trace(trackIndex + " event: " + skeleton.state.getCurrent(trackIndex) + ", "
-          + event.data.name + ": " + event.intValue + ", " + event.floatValue + ", " + event.stringValue);
-      });
-*/
+  skeleton.state.onTrackStart.listen((ts) {
+    print("${ts.index} start: ${skeleton.state.getCurrent(ts.index)}");
+  });
+  skeleton.state.onTrackEnd.listen((ts) {
+    print("${ts.index} end: ${skeleton.state.getCurrent(ts.index)}");
+  });
+  skeleton.state.onTrackComplete.listen((ts) {
+    print("${ts.index} complete: ${skeleton.state.getCurrent(ts.index)}, ${ts.count}");
+  });
+  skeleton.state.onTrackEvent.listen((ts) {
+    print("${ts.index} event: ${skeleton.state.getCurrent(ts.index)}, "
+      "${ts.event.data.name}: ${ts.event.intValue}, ${ts.event.floatValue}, ${ts.event.stringValue}");
+  });
 
   //skeleton.state.setAnimationByName(0, "test", true);
 
   skeleton.state.setAnimationByName(0, "walk", true);
-  //skeleton.state.addAnimationByName(0, "run", false, 3);
-  //skeleton.state.addAnimationByName(0, "jump", true, 0);
+  skeleton.state.addAnimationByName(0, "run", false, 3);
+  skeleton.state.addAnimationByName(0, "jump", true, 0);
 
   stage.addChild(skeleton);
   stage.juggler.add(skeleton);
