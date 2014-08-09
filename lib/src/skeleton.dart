@@ -1,0 +1,218 @@
+/******************************************************************************
+ * Spine Runtimes Software License
+ * Version 2.1
+ *
+ * Copyright (c) 2013, Esoteric Software
+ * All rights reserved.
+ *
+ * You are granted a perpetual, non-exclusive, non-sublicensable and
+ * non-transferable license to install, execute and perform the Spine Runtimes
+ * Software (the "Software") solely for internal use. Without the written
+ * permission of Esoteric Software (typically granted by licensing Spine), you
+ * may not (a) modify, translate, adapt or otherwise create derivative works,
+ * improvements of the Software or develop new applications using the Software
+ * or (b) remove, delete, alter or obscure any trademarks or any copyright,
+ * trademark, patent or other intellectual property or proprietary rights
+ * notices on or in the Software, including any copy thereof. Redistributions
+ * in binary or source form must include this license and terms.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+ * EVENT SHALL ESOTERIC SOFTARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *****************************************************************************/
+
+part of stagexl_spine;
+
+class Skeleton {
+
+  SkeletonData _data;  // internal
+	List<Bone> _bones;  // internal
+	List<Slot> _slots;  // internal
+	List<Slot> _drawOrder;  // internal
+	Skin _skin;  // internal
+
+	num r = 1;
+	num g = 1;
+	num b = 1;
+	num a = 1;
+	num time = 0;
+	bool flipX;
+	bool flipY;
+	num x = 0;
+	num y = 0;
+
+	Skeleton (SkeletonData data) {
+
+		if (data == null) throw new ArgumentError("data cannot be null.");
+		_data = data;
+
+		_bones = new List<Bone>();
+    _slots = new List<Slot>();
+    _drawOrder = new List<Slot>();
+
+		for (BoneData boneData in data.bones) {
+			Bone parent = boneData.parent == null ? null : _bones[data.bones.indexOf(boneData.parent)];
+			_bones.add(new Bone(boneData, parent));
+		}
+
+		for (SlotData slotData in data.slots) {
+			Bone bone = _bones[data.bones.indexOf(slotData.boneData)];
+			Slot slot = new Slot(slotData, this, bone);
+			_slots.add(slot);
+			_drawOrder.add(slot);
+		}
+	}
+
+	/// Updates the world transform for each bone.
+	///
+	void updateWorldTransform() {
+		for (Bone bone in _bones)
+			bone.updateWorldTransform(flipX, flipY);
+	}
+
+	/// Sets the bones and slots to their setup pose values.
+	///
+	void setToSetupPose() {
+		setBonesToSetupPose();
+		setSlotsToSetupPose();
+	}
+
+	void setBonesToSetupPose() {
+		for(Bone bone in _bones)
+			bone.setToSetupPose();
+	}
+
+	void setSlotsToSetupPose() {
+		int i = 0;
+		for(Slot slot in _slots) {
+			drawOrder[i++] = slot;
+			slot.setToSetupPose();
+		}
+	}
+
+	SkeletonData get data => _data;
+	List<Bone> get bones => _bones;
+  List<Slot> get slots => _slots;
+  List<Slot> get drawOrder => _drawOrder;
+  Skin get skin => _skin;
+
+	Bone get rootBone => _bones.length == 0 ? null : _bones[0];
+
+	Bone findBone(String boneName) {
+		if (boneName == null) throw new ArgumentError("boneName cannot be null.");
+		return _bones.firstWhere((b) => b.data.name == boneName, orElse: () => null);
+	}
+
+	int findBoneIndex(String boneName) {
+		if (boneName == null) throw new ArgumentError("boneName cannot be null.");
+		for(int i = 0; i < _bones.length; i++) {
+		  if (_bones[i].data.name == boneName) return i;
+		}
+		return -1;
+	}
+
+	Slot findSlot(String slotName)  {
+		if (slotName == null) throw new ArgumentError("slotName cannot be null.");
+		return _slots.firstWhere((s) => s.data.name == slotName, orElse: () => null);
+	}
+
+	int findSlotIndex (String slotName) {
+		if (slotName == null) throw new ArgumentError("slotName cannot be null.");
+		for(int i = 0; i < _slots.length; i++) {
+		  if (_slots[i].data.name == slotName) return i;
+		}
+		return -1;
+	}
+
+	void set skinName (String skinName) {
+		Skin skin = data.findSkin(skinName);
+		if (skin == null) throw new ArgumentError("Skin not found: $skinName");
+		this.skin = skin;
+	}
+
+	/// Sets the skin used to look up attachments not found in the
+	/// {@link SkeletonData#getDefaultSkin() default skin}. Attachments
+	/// from the new skin are attached if the corresponding attachment
+	/// from the old skin was attached. If there was no old skin,
+	/// each slot's setup mode attachment is attached from the new skin.
+	///
+	void set skin (Skin newSkin)  {
+		if (newSkin != null) {
+			if (skin != null) {
+				newSkin.attachAll(this, skin);
+			} else {
+			  for(int i = 0; i < _slots.length; i++) {
+			    Slot slot = _slots[i];
+			    String name = slot.data.attachmentName;
+			    if (name != null) {
+			      Attachment attachment = newSkin.getAttachment(i, name);
+            if (attachment != null) slot.attachment = attachment;
+			    }
+			  }
+			}
+		}
+		_skin = newSkin;
+	}
+
+
+	Attachment getAttachmentForSlotName(String slotName, String attachmentName) {
+		return getAttachmentForSlotIndex(data.findSlotIndex(slotName), attachmentName);
+	}
+
+	Attachment getAttachmentForSlotIndex(int slotIndex, String attachmentName) {
+
+	  if (attachmentName == null) {
+	    throw new ArgumentError("attachmentName cannot be null.");
+	  }
+
+		if (skin != null) {
+		  Attachment attachment = skin.getAttachment(slotIndex, attachmentName);
+			if (attachment != null) return attachment;
+		}
+
+		if (data.defaultSkin != null) {
+			return data.defaultSkin.getAttachment(slotIndex, attachmentName);
+		}
+
+		return null;
+	}
+
+	void setAttachment (String slotName, String attachmentName) {
+
+		if (slotName == null) {
+		  throw new ArgumentError("slotName cannot be null.");
+		}
+
+		for(int i = 0; i < _slots.length; i++) {
+		  Slot slot = _slots[i];
+      if (slot.data.name == slotName) {
+        Attachment attachment = null;
+        if (attachmentName != null) {
+          attachment = getAttachmentForSlotIndex(i, attachmentName);
+          if (attachment == null) {
+            throw new ArgumentError("Attachment not found: $attachmentName, for slot: $slotName");
+          }
+        }
+        slot.attachment = attachment;
+        return;
+      }
+		}
+
+		throw new ArgumentError("Slot not found: $slotName");
+	}
+
+	void update(num delta) {
+		time += delta;
+	}
+
+	String toString () {
+		return _data.name != null ? _data.name : super.toString();
+	}
+}

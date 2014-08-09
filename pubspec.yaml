@@ -1,0 +1,10 @@
+name: stagexl_spine
+version: 0.1.0
+author: Bernhard Pichler <support@stagexl.org>
+description: The Flump runtime for the StageXL library.
+homepage: http://www.stagexl.org
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+dependencies:
+  browser: '>=0.9.0 <0.11.0'
+  stagexl: '>=0.9.3 <0.10.0'
