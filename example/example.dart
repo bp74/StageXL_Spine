@@ -60,7 +60,7 @@ void startSpineboy() {
   textField.width = 480;
   textField.x = 0;
   textField.y = 550;
-  textField.text = "Click to change animation";
+  textField.text = "tap to change animation";
   textField.addTo(stage);
 
   var spineJson = resourceManager.getTextFile("spineboyJson");
