@@ -45,9 +45,7 @@ class AtlasAttachmentLoader implements AttachmentLoader {
 
     RegionAttachment attachment = new RegionAttachment(name);
     attachment.rendererObject = region;
-    num scaleX = region.page.width / nextPOT(region.page.width);
-    num scaleY = region.page.height / nextPOT(region.page.height);
-    attachment.setUVs(region.u * scaleX, region.v * scaleY, region.u2 * scaleX, region.v2 * scaleY, region.rotate);
+    attachment.setUVs(region.u, region.v, region.u2, region.v2, region.rotate);
     attachment.regionOffsetX = region.offsetX;
     attachment.regionOffsetY = region.offsetY;
     attachment.regionWidth = region.width;
@@ -64,12 +62,10 @@ class AtlasAttachmentLoader implements AttachmentLoader {
 
     MeshAttachment attachment = new MeshAttachment(name);
     attachment.rendererObject = region;
-    num scaleX = region.page.width / nextPOT(region.page.width);
-    num scaleY = region.page.height / nextPOT(region.page.height);
-    attachment.regionU = region.u * scaleX;
-    attachment.regionV = region.v * scaleY;
-    attachment.regionU2 = region.u2 * scaleX;
-    attachment.regionV2 = region.v2 * scaleY;
+    attachment.regionU = region.u;
+    attachment.regionV = region.v;
+    attachment.regionU2 = region.u2;
+    attachment.regionV2 = region.v2;
     attachment.regionRotate = region.rotate;
     attachment.regionOffsetX = region.offsetX;
     attachment.regionOffsetY = region.offsetY;
@@ -87,12 +83,10 @@ class AtlasAttachmentLoader implements AttachmentLoader {
 
     SkinnedMeshAttachment attachment = new SkinnedMeshAttachment(name);
     attachment.rendererObject = region;
-    num scaleX = region.page.width / nextPOT(region.page.width);
-    num scaleY = region.page.height / nextPOT(region.page.height);
-    attachment.regionU = region.u * scaleX;
-    attachment.regionV = region.v * scaleY;
-    attachment.regionU2 = region.u2 * scaleX;
-    attachment.regionV2 = region.v2 * scaleY;
+    attachment.regionU = region.u;
+    attachment.regionV = region.v;
+    attachment.regionU2 = region.u2;
+    attachment.regionV2 = region.v2;
     attachment.regionRotate = region.rotate;
     attachment.regionOffsetX = region.offsetX;
     attachment.regionOffsetY = region.offsetY;
@@ -107,13 +101,4 @@ class AtlasAttachmentLoader implements AttachmentLoader {
     return new BoundingBoxAttachment(name);
   }
 
-  static int nextPOT(int value) {
-    value--;
-    value |= value >> 1;
-    value |= value >> 2;
-    value |= value >> 4;
-    value |= value >> 8;
-    value |= value >> 16;
-    return value + 1;
-  }
 }

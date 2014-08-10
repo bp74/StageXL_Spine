@@ -3,6 +3,8 @@ library stagexl_spine;
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:web_gl' as gl;
 import 'package:stagexl/stagexl.dart';
 
 part 'src/bone.dart';
@@ -51,6 +53,7 @@ part 'src/attachments/mesh_attachment.dart';
 part 'src/attachments/region_attachment.dart';
 part 'src/attachments/skinned_mesh_attachment.dart';
 
-part 'src/stagexl/skeleton_animation.dart';
-part 'src/stagexl/skeleton_sprite.dart';
 part 'src/stagexl/bitmap_data_texture_loader.dart';
+part 'src/stagexl/skeleton_animation.dart';
+part 'src/stagexl/skeleton_render_program.dart';
+part 'src/stagexl/skeleton_sprite.dart';

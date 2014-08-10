@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class SkeletonSprite extends DisplayObjectContainer implements Animatable {
+class SkeletonSprite extends DisplayObject {
 
   static Point _tempPoint = new Point<num>(0.0, 0.0);
   static Matrix _tempMatrix = new Matrix.fromIdentity();
@@ -44,7 +44,95 @@ class SkeletonSprite extends DisplayObjectContainer implements Animatable {
     skeleton.updateWorldTransform();
   }
 
-  bool advanceTime(num delta) {
+  //-----------------------------------------------------------------------------------------------
+
+  void render(RenderState renderState) {
+    var renderContext = renderState.renderContext;
+    if (renderContext is RenderContextWebGL) {
+      _renderWebGL(renderState);
+    } else {
+      _renderCanvas(renderState);
+    }
+  }
+
+  //-----------------------------------------------------------------------------------------------
+
+  void _renderWebGL(RenderState renderState) {
+
+    var renderProgram = _SpineRenderProgram.instance;
+    var renderContext = renderState.renderContext;
+    var matrix = renderState.globalMatrix;
+    var blendMode = renderState.globalBlendMode;
+
+    RenderContextWebGL renderContextWebGL = renderContext;
+    RenderTexture renderTexture = null;
+
+    num skeletonX = skeleton.x;
+    num skeletonY = skeleton.y;
+    num skeletonR = skeleton.r;
+    num skeletonG = skeleton.g;
+    num skeletonB = skeleton.b;
+    num skeletonA = skeleton.a;
+
+    List<Slot> drawOrder = skeleton.drawOrder;
+    List<num> uvList = new List<num>(8);
+    List<num> xyList = new List<num>(8);
+
+    renderProgram.configure(renderContextWebGL, matrix);
+
+    for (var i = 0; i < drawOrder.length; i++) {
+
+      var slot= drawOrder[i];
+      var attachment = slot.attachment;
+
+      num attachmentR = 0.0;
+      num attachmentG = 0.0;
+      num attachmentB = 0.0;
+      num attachmentA = 0.0;
+
+      if (attachment is RegionAttachment) {
+
+        RegionAttachment regionAttachment = slot.attachment;
+        AtlasRegion altasRegion = regionAttachment.rendererObject;
+        BitmapData bitmapData = altasRegion.page.rendererObject;
+
+        regionAttachment.computeWorldVertices(skeletonX, skeletonY, slot.bone, xyList);
+        uvList = regionAttachment.uvs;
+        attachmentR = regionAttachment.r;
+        attachmentG = regionAttachment.g;
+        attachmentB = regionAttachment.b;
+        attachmentA = regionAttachment.a;
+        renderTexture = bitmapData.renderTexture;
+
+      } else if (attachment is MeshAttachment) {
+
+        // TODO: attachment is MeshAttachment
+
+      } else if (attachment is SkinnedMeshAttachment) {
+
+        // TODO: attachment is SkinnedMeshAttachment
+
+      }
+
+      num rr = attachmentR * skeletonR * slot.r;
+      num gg = attachmentG * skeletonG * slot.g;
+      num bb = attachmentB * skeletonB * slot.b;
+      num aa = attachmentA * skeletonA * slot.a;
+
+      renderContextWebGL.activateRenderTexture(renderTexture);
+      renderContextWebGL.activateBlendMode(slot.data.additiveBlending ? BlendMode.ADD : blendMode);
+      renderProgram.renderRegion(uvList, xyList, rr, gg, bb, aa);
+    }
+  }
+
+  //-----------------------------------------------------------------------------------------------
+
+  void _renderCanvas(RenderState renderState) {
+    // TODO: render with RenderContextCanvas
+  }
+
+  /*
+  void advanceTime(num delta) {
 
     skeleton.update(delta * timeScale);
 
@@ -116,6 +204,6 @@ class SkeletonSprite extends DisplayObjectContainer implements Animatable {
 
     return true;
   }
-
+  */
 
 }

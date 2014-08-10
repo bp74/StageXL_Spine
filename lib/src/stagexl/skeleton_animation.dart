@@ -39,10 +39,11 @@ class SkeletonAnimation extends SkeletonSprite implements Animatable {
         state = new AnimationState(stateData != null ? stateData : new AnimationStateData(skeletonData));
 
   advanceTime(num time) {
-    state.update(time * timeScale);
+    time = time * timeScale;
+    skeleton.update(time);
+    state.update(time);
     state.apply(skeleton);
     skeleton.updateWorldTransform();
-    super.advanceTime(time);
   }
 
 }
