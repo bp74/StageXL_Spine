@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class SkeletonAnimation extends SkeletonSprite implements Animatable {
+class SkeletonAnimation extends SkeletonDisplayObject implements Animatable {
 
   final AnimationState state;
 

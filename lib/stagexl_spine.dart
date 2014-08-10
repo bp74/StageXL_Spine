@@ -55,5 +55,6 @@ part 'src/attachments/skinned_mesh_attachment.dart';
 
 part 'src/stagexl/bitmap_data_texture_loader.dart';
 part 'src/stagexl/skeleton_animation.dart';
+part 'src/stagexl/skeleton_display_object.dart';
 part 'src/stagexl/skeleton_render_program.dart';
-part 'src/stagexl/skeleton_sprite.dart';
+

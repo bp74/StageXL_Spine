@@ -32,7 +32,7 @@ part of stagexl_spine;
 
 class Bone {
 
-  static bool yDown = false;
+  static bool yDown = true;
 
   final BoneData data;
   final Bone parent;

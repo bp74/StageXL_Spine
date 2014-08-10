@@ -30,17 +30,12 @@
 
 part of stagexl_spine;
 
-class SkeletonSprite extends DisplayObject {
-
-  static Point _tempPoint = new Point<num>(0.0, 0.0);
-  static Matrix _tempMatrix = new Matrix.fromIdentity();
+class SkeletonDisplayObject extends DisplayObject {
 
   final Skeleton skeleton;
-
   num timeScale = 1.0;
 
-  SkeletonSprite(SkeletonData skeletonData) : skeleton = new Skeleton(skeletonData) {
-    Bone.yDown = true;
+  SkeletonDisplayObject(SkeletonData skeletonData) : skeleton = new Skeleton(skeletonData) {
     skeleton.updateWorldTransform();
   }
 
