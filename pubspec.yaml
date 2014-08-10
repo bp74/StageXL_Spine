@@ -10,9 +10,8 @@ dependencies:
   stagexl: '>=0.9.4 <0.10.0'
 dependency_overrides:
   stagexl:
-    path: D:\GitHub\bp74\StageXL
-
-#transformers:
-#- $dart2js:
-#    commandLineOptions: ["--trust-type-annotations"]
-#    minify: false
+    path: C:\Users\PICHLER\Documents\GitHub\bp74\StageXL
+transformers:
+- $dart2js:
+    commandLineOptions: ["--trust-type-annotations"]
+    minify: true

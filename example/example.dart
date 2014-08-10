@@ -8,15 +8,23 @@ RenderLoop renderLoop = new RenderLoop();
 ResourceManager resourceManager = new ResourceManager();
 
 void main() {
+
+  var canvas = html.querySelector('#stage');
+
+  stage = new Stage(canvas, webGL: true, width:480, height: 600, color: Color.DarkSlateGray);
+  stage.scaleMode = StageScaleMode.SHOW_ALL;
+  stage.align = StageAlign.NONE;
+
+  renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
   resourceManager.addTextFile("spineboyJson", "spine/spineboy.json");
   resourceManager.addTextFile("spineboyAtlas", "spine/spineboy.atlas");
   resourceManager.addBitmapData("spineboyPng", "spine/spineboy.png");
 
-  resourceManager.addTextFile("powerupJson", "spine/powerup.json");
-  resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
-  resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
+  //resourceManager.addTextFile("powerupJson", "spine/powerup.json");
+  //resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
+  //resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
 
   resourceManager.load().then((rm) => startSpineboy());
   //resourceManager.load().then((rm) => startPowerup());
@@ -49,9 +57,9 @@ void startSpineboy() {
 
   var textField = new TextField();
   textField.defaultTextFormat = new TextFormat("Arial", 24, Color.White, align: TextFormatAlign.CENTER);
-  textField.width = 400;
-  textField.x = 200;
-  textField.y = 530;
+  textField.width = 480;
+  textField.x = 0;
+  textField.y = 550;
   textField.text = "Click to change animation";
   textField.addTo(stage);
 
@@ -62,7 +70,6 @@ void startSpineboy() {
   var textureLoader = new BitmapDataTextureLoader(atlasBitmapData);
   var atlas = new Atlas(atlasText, textureLoader);
   var json = new SkeletonJson(new AtlasAttachmentLoader(atlas));
-  json.scale = 0.6;
 
   var skeletonData = json.readSkeletonData(spineJson);
 
@@ -73,8 +80,9 @@ void startSpineboy() {
   animationStateData.setMixByName("walk", "idle", 0.2);
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
-  skeletonAnimation.x = 400;
-  skeletonAnimation.y = 480;
+  skeletonAnimation.x = 240;
+  skeletonAnimation.y = 520;
+  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
 
   skeletonAnimation.state.onTrackStart.listen((ts) {
     print("${ts.index} start: ${skeletonAnimation.state.getCurrent(ts.index)}");
