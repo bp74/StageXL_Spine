@@ -3,8 +3,8 @@ import 'dart:html' as html;
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
-Stage stage = new Stage(html.querySelector('#stage'), webGL: true, color: Color.DarkSlateGray);
-RenderLoop renderLoop = new RenderLoop();
+Stage stage;
+RenderLoop renderLoop;
 ResourceManager resourceManager = new ResourceManager();
 
 void main() {
