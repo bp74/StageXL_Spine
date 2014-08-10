@@ -18,8 +18,8 @@ void main() {
   resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
   resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
 
-  //resourceManager.load().then((rm) => startSpineboy());
-  resourceManager.load().then((rm) => startPowerup());
+  resourceManager.load().then((rm) => startSpineboy());
+  //resourceManager.load().then((rm) => startPowerup());
 }
 
 //-----------------------------------------------------------------------------
@@ -47,6 +47,14 @@ void startPowerup() {
 
 void startSpineboy() {
 
+  var textField = new TextField();
+  textField.defaultTextFormat = new TextFormat("Arial", 24, Color.White, align: TextFormatAlign.CENTER);
+  textField.width = 400;
+  textField.x = 200;
+  textField.y = 530;
+  textField.text = "Click to change animation";
+  textField.addTo(stage);
+
   var spineJson = resourceManager.getTextFile("spineboyJson");
   var atlasText = resourceManager.getTextFile("spineboyAtlas");
   var atlasBitmapData = resourceManager.getBitmapData("spineboyPng");
@@ -59,13 +67,14 @@ void startSpineboy() {
   var skeletonData = json.readSkeletonData(spineJson);
 
   var animationStateData = new AnimationStateData(skeletonData);
-  animationStateData.setMixByName("walk", "jump", 0.2);
-  animationStateData.setMixByName("jump", "run", 0.4);
-  animationStateData.setMixByName("jump", "jump", 0.2);
+  animationStateData.setMixByName("idle", "walk", 0.2);
+  animationStateData.setMixByName("walk", "run", 0.2);
+  animationStateData.setMixByName("run", "walk", 0.2);
+  animationStateData.setMixByName("walk", "idle", 0.2);
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 400;
-  skeletonAnimation.y = 300;
+  skeletonAnimation.y = 480;
 
   skeletonAnimation.state.onTrackStart.listen((ts) {
     print("${ts.index} start: ${skeletonAnimation.state.getCurrent(ts.index)}");
@@ -81,11 +90,21 @@ void startSpineboy() {
       "${ts.event.data.name}: ${ts.event.intValue}, ${ts.event.floatValue}, ${ts.event.stringValue}");
   });
 
-  //skeleton.state.setAnimationByName(0, "test", true);
+  var animations = ["idle", "walk", "run", "walk"];
+  var animationIndex = 0;
+  stage.onMouseClick.listen((me) {
+    animationIndex = (animationIndex + 1) % animations.length;
+    skeletonAnimation.state.setAnimationByName(0, animations[animationIndex], true);
+  });
 
-  skeletonAnimation.state.setAnimationByName(0, "walk", true);
-  skeletonAnimation.state.addAnimationByName(0, "run", false, 3);
-  skeletonAnimation.state.addAnimationByName(0, "jump", true, 0);
+  // death, hit, idle, jump, run, shoot, test, walk,
+
+  //skeletonAnimation.state.setAnimationByName(0, "test", true);
+  skeletonAnimation.state.setAnimationByName(0, "idle", true);
+
+//  skeletonAnimation.state.setAnimationByName(0, "walk", true);
+//  skeletonAnimation.state.addAnimationByName(0, "death", false, 2);
+//  skeletonAnimation.state.addAnimationByName(0, "shoot", false, 6);
 
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);

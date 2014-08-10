@@ -64,7 +64,7 @@ class BitmapDataTextureLoader implements TextureLoader {
       throw new ArgumentError("BitmapData not found with name: $path");
     }
 
-    page.rendererObject = bitmapData;
+    page.rendererObject = bitmapData.renderTexture;
     page.width = bitmapData.width;
     page.height = bitmapData.height;
   }

@@ -70,7 +70,7 @@ class SkeletonJson {
 
       BoneData parent = null;
 
-      if (boneMap.containsKey("parant")) {
+      if (boneMap.containsKey("parent")) {
         String parentName = boneMap["parent"];
         parent = skeletonData.findBone(parentName);
         if (parent == null) throw new StateError("Parent bone not found: $parentName");

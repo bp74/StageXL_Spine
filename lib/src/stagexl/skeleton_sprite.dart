@@ -80,29 +80,33 @@ class SkeletonSprite extends DisplayObject {
 
     renderProgram.configure(renderContextWebGL, matrix);
 
+    //---------------------------------------------------
+
     for (var i = 0; i < drawOrder.length; i++) {
 
-      var slot= drawOrder[i];
-      var attachment = slot.attachment;
+      Slot slot= drawOrder[i];
+      Bone bone = slot.bone;
+      Attachment attachment = slot.attachment;
 
       num attachmentR = 0.0;
       num attachmentG = 0.0;
       num attachmentB = 0.0;
       num attachmentA = 0.0;
 
+      //---------------------------------------------------
+
       if (attachment is RegionAttachment) {
 
-        RegionAttachment regionAttachment = slot.attachment;
+        RegionAttachment regionAttachment = attachment;
         AtlasRegion altasRegion = regionAttachment.rendererObject;
-        BitmapData bitmapData = altasRegion.page.rendererObject;
 
-        regionAttachment.computeWorldVertices(skeletonX, skeletonY, slot.bone, xyList);
+        regionAttachment.computeWorldVertices(skeletonX, skeletonY, bone, xyList);
         uvList = regionAttachment.uvs;
         attachmentR = regionAttachment.r;
         attachmentG = regionAttachment.g;
         attachmentB = regionAttachment.b;
         attachmentA = regionAttachment.a;
-        renderTexture = bitmapData.renderTexture;
+        renderTexture = altasRegion.page.rendererObject;
 
       } else if (attachment is MeshAttachment) {
 
@@ -114,14 +118,19 @@ class SkeletonSprite extends DisplayObject {
 
       }
 
-      num rr = attachmentR * skeletonR * slot.r;
-      num gg = attachmentG * skeletonG * slot.g;
-      num bb = attachmentB * skeletonB * slot.b;
-      num aa = attachmentA * skeletonA * slot.a;
+      //---------------------------------------------------
 
-      renderContextWebGL.activateRenderTexture(renderTexture);
-      renderContextWebGL.activateBlendMode(slot.data.additiveBlending ? BlendMode.ADD : blendMode);
-      renderProgram.renderRegion(uvList, xyList, rr, gg, bb, aa);
+      if (renderTexture != null) {
+
+        num rr = attachmentR * skeletonR * slot.r;
+        num gg = attachmentG * skeletonG * slot.g;
+        num bb = attachmentB * skeletonB * slot.b;
+        num aa = attachmentA * skeletonA * slot.a;
+
+        renderContextWebGL.activateRenderTexture(renderTexture);
+        renderContextWebGL.activateBlendMode(slot.data.additiveBlending ? BlendMode.ADD : blendMode);
+        renderProgram.renderRegion(uvList, xyList, rr, gg, bb, aa);
+      }
     }
   }
 
