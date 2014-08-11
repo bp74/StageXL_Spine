@@ -161,82 +161,74 @@ class SkeletonDisplayObject extends DisplayObject {
   //-----------------------------------------------------------------------------------------------
 
   void _renderCanvas(RenderState renderState) {
-    // TODO: render with RenderContextCanvas
-  }
 
-  /*
-  void advanceTime(num delta) {
+    var renderContext = renderState.renderContext;
+    var globalMatrix = renderState.globalMatrix.clone();
+    var globalBlendMode = renderState.globalBlendMode;
+    var globalAlpha = renderState.globalAlpha;
 
-    skeleton.update(delta * timeScale);
+    var tmpMatrix = new Matrix.fromIdentity();
+    var tmpRenderState = new RenderState(renderContext);
 
-    // This is just a test implementation! Not optimized yet :)
-    // Of course we will override the render method in the future.
-
-    removeChildren();
+    num skeletonX = skeleton.x;
+    num skeletonY = skeleton.y;
+    num skeletonR = skeleton.r;
+    num skeletonG = skeleton.g;
+    num skeletonB = skeleton.b;
+    num skeletonA = skeleton.a;
 
     List<Slot> drawOrder = skeleton.drawOrder;
 
     for (int i = 0; i < drawOrder.length; i++) {
 
       Slot slot = drawOrder[i];
-      RegionAttachment regionAttachment = slot.attachment as RegionAttachment;
+      Bone bone = slot.bone;
+      Attachment attachment = slot.attachment;
 
-      if (regionAttachment != null) {
+      if (attachment is RegionAttachment) {
 
-        AtlasRegion region = regionAttachment.rendererObject as AtlasRegion;
-        BitmapData bitmapData = region.page.rendererObject as BitmapData;
-        RenderTextureQuad renderTextureQuad;
+        RegionAttachment regionAttachment = attachment;
+        AtlasRegion region = regionAttachment.atlasRegion;
+        RenderTextureQuad renderTextureQuad = region.renderTextureQuad;
 
-        if (region.rotate) {
-          renderTextureQuad = new RenderTextureQuad(bitmapData.renderTexture, 3,
-              region.offsetX, region.offsetY,
-              region.x, region.y + region.width, region.width, region.height);
-        } else {
-          renderTextureQuad = new RenderTextureQuad(bitmapData.renderTexture, 0,
-              region.offsetX, region.offsetY,
-              region.x, region.y, region.width, region.height);
-        }
+        num raRotation = regionAttachment.rotation * math.PI / 180;
+        num raScaleX = regionAttachment.scaleX * regionAttachment.width / region.width;
+        num raScaleY = regionAttachment.scaleY * regionAttachment.height / region.height;
+        num raPivotX = regionAttachment.width / 2;
+        num raPivotY = regionAttachment.height / 2;
+        num raCos = math.cos(-raRotation);
+        num raSin = math.sin(-raRotation);
 
-        BitmapData regionBitmapData = new BitmapData.fromRenderTextureQuad(renderTextureQuad);
-        Bitmap regionBitmap = new Bitmap(regionBitmapData);
+        num a1 =   raScaleX * raCos;
+        num b1 = - raScaleX * raSin;
+        num c1 = - raScaleY * raSin;
+        num d1 = - raScaleY * raCos;
+        num tx1 =  regionAttachment.x - raPivotX * a1 - raPivotY * c1;
+        num ty1 =  regionAttachment.y - raPivotX * b1 - raPivotY * d1;
 
-        regionBitmap.rotation = -regionAttachment.rotation * math.PI / 180;
-        regionBitmap.scaleX = regionAttachment.scaleX * regionAttachment.width / region.width;
-        regionBitmap.scaleY = regionAttachment.scaleY * regionAttachment.height / region.height;
+        num a2 =  bone.m00;
+        num b2 =  bone.m10;
+        num c2 =  bone.m01;
+        num d2 =  bone.m11;
+        num tx2 = bone.worldX;
+        num ty2 = bone.worldY;
 
-        regionBitmap.x = regionAttachment.x;
-        regionBitmap.y = - regionAttachment.y;
-        regionBitmap.pivotX = regionAttachment.width / 2;
-        regionBitmap.pivotY = regionAttachment.height / 2;
+        num a3 = a1 * a2 + b1 * c2;
+        num b3 = a1 * b2 + b1 * d2;
+        num c3 = c1 * a2 + d1 * c2;
+        num d3 = c1 * b2 + d1 * d2;
+        num tx3 = tx2 + tx1 * a2 + ty1 * c2;
+        num ty3 = ty2 + tx1 * b2 + ty1 * d2;
 
-        /*
-        var colorTransform:ColorTransform = wrapper.transform.colorTransform;
-        colorTransform.redMultiplier = skeleton.r * slot.r * regionAttachment.r;
-        colorTransform.greenMultiplier = skeleton.g * slot.g * regionAttachment.g;
-        colorTransform.blueMultiplier = skeleton.b * slot.b * regionAttachment.b;
-        colorTransform.alphaMultiplier = skeleton.a * slot.a * regionAttachment.a;
-        */
+        num alpha = globalAlpha * skeletonA * regionAttachment.a * slot.a;
+        BlendMode blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
 
-        int flipX = skeleton.flipX ? -1 : 1;
-        int flipY = skeleton.flipY ? -1 : 1;
-        Bone bone = slot.bone;
-
-        Sprite wrapper = new Sprite();
-        wrapper.addChild(regionBitmap);
-        wrapper.x = bone.worldX;
-        wrapper.y = bone.worldY;
-        wrapper.rotation = -bone.worldRotation * flipX * flipY * math.PI / 180.0;
-        wrapper.scaleX = bone.worldScaleX * flipX;
-        wrapper.scaleY = bone.worldScaleY * flipY;
-        wrapper.alpha = skeleton.a * slot.a * regionAttachment.a;
-        wrapper.blendMode = slot.data.additiveBlending ? BlendMode.ADD : BlendMode.NORMAL;
-
-        addChild(wrapper);
+        tmpMatrix.setTo(a3, b3, c3, d3, tx3, ty3);
+        tmpMatrix.concat(globalMatrix);
+        tmpRenderState.reset(tmpMatrix, alpha, blendMode);
+        tmpRenderState.renderQuad(renderTextureQuad);
       }
     }
-
-    return true;
   }
-  */
 
 }

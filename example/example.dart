@@ -17,23 +17,23 @@ void main() {
   renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  switch(3) {
+  switch(2) {
 
-    case 1:
+    case 1: // powerup
       resourceManager.addTextFile("powerupJson", "spine/powerup.json");
       resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
       resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
       resourceManager.load().then((rm) => startPowerup());
       break;
 
-    case 2:
+    case 2: // spineboy
       resourceManager.addTextFile("spineboyJson", "spine/spineboy.json");
       resourceManager.addTextFile("spineboyAtlas", "spine/spineboy.atlas");
       resourceManager.addBitmapData("spineboyPng", "spine/spineboy.png");
       resourceManager.load().then((rm) => startSpineboy());
       break;
 
-    case 3:
+    case 3: // goblins
       resourceManager.addTextFile("goblinsJson", "spine/goblins-ffd.json");
       resourceManager.addTextFile("goblinsAtlas", "spine/goblins-ffd.atlas");
       resourceManager.addBitmapData("goblinsPng", "spine/goblins-ffd.png");
