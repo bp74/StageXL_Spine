@@ -64,16 +64,17 @@ class BitmapDataTextureLoader implements TextureLoader {
       throw new ArgumentError("BitmapData not found with name: $path");
     }
 
-    page.rendererObject = bitmapData.renderTexture;
-    page.width = bitmapData.width;
-    page.height = bitmapData.height;
+    RenderTexture renderTexture = bitmapData.renderTexture;
+    page.rendererObject = renderTexture;
+    page.width = renderTexture.storeWidth;
+    page.height = renderTexture.storeHeight;
   }
 
   //-----------------------------------------------------------------------------------------------
 
   void unloadPage(AtlasPage page) {
-    BitmapData bitmapData = page.rendererObject;
-    bitmapData.renderTexture.dispose();
+    RenderTexture renderTexture = page.rendererObject;
+    renderTexture.dispose();
   }
 
   //-----------------------------------------------------------------------------------------------
