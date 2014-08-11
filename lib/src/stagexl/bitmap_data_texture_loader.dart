@@ -66,15 +66,15 @@ class BitmapDataTextureLoader implements TextureLoader {
 
     RenderTexture renderTexture = bitmapData.renderTexture;
     page.rendererObject = renderTexture;
-    page.width = renderTexture.storeWidth;
-    page.height = renderTexture.storeHeight;
+    page.width = renderTexture.width;
+    page.height = renderTexture.height;
   }
 
   //-----------------------------------------------------------------------------------------------
 
   void unloadPage(AtlasPage page) {
-    RenderTexture renderTexture = page.rendererObject;
-    renderTexture.dispose();
+    //RenderTexture renderTexture = page.rendererObject;
+    //renderTexture.dispose();
   }
 
   //-----------------------------------------------------------------------------------------------
