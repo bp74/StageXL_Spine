@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:html' as html;
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
@@ -18,21 +17,36 @@ void main() {
   renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  resourceManager.addTextFile("spineboyJson", "spine/spineboy.json");
-  resourceManager.addTextFile("spineboyAtlas", "spine/spineboy.atlas");
-  resourceManager.addBitmapData("spineboyPng", "spine/spineboy.png");
+  switch(3) {
 
-  //resourceManager.addTextFile("powerupJson", "spine/powerup.json");
-  //resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
-  //resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
+    case 1:
+      resourceManager.addTextFile("powerupJson", "spine/powerup.json");
+      resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
+      resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
+      resourceManager.load().then((rm) => startPowerup());
+      break;
 
-  resourceManager.load().then((rm) => startSpineboy());
-  //resourceManager.load().then((rm) => startPowerup());
+    case 2:
+      resourceManager.addTextFile("spineboyJson", "spine/spineboy.json");
+      resourceManager.addTextFile("spineboyAtlas", "spine/spineboy.atlas");
+      resourceManager.addBitmapData("spineboyPng", "spine/spineboy.png");
+      resourceManager.load().then((rm) => startSpineboy());
+      break;
+
+    case 3:
+      resourceManager.addTextFile("goblinsJson", "spine/goblins-ffd.json");
+      resourceManager.addTextFile("goblinsAtlas", "spine/goblins-ffd.atlas");
+      resourceManager.addBitmapData("goblinsPng", "spine/goblins-ffd.png");
+      resourceManager.load().then((rm) => startGoblins());
+      break;
+  }
 }
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void startPowerup() {
+
   var spineJson = resourceManager.getTextFile("powerupJson");
   var atlasText = resourceManager.getTextFile("powerupAtlas");
   var atlasBitmapData = resourceManager.getBitmapData("powerupPng");
@@ -44,14 +58,17 @@ void startPowerup() {
   var skeletonData = json.readSkeletonData(spineJson);
   var animationStateData = new AnimationStateData(skeletonData);
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
+  skeletonAnimation.x = 240;
+  skeletonAnimation.y = 430;
+  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.8;
 
-  skeletonAnimation.x = 400;
-  skeletonAnimation.y = 300;
   skeletonAnimation.state.setAnimationByName(0, "animation", true);
 
    stage.addChild(skeletonAnimation);
    stage.juggler.add(skeletonAnimation);
 }
+
+//-----------------------------------------------------------------------------
 
 void startSpineboy() {
 
@@ -116,5 +133,36 @@ void startSpineboy() {
 
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);
-
 }
+
+//-----------------------------------------------------------------------------
+
+
+void startGoblins() {
+
+  var spineJson = resourceManager.getTextFile("goblinsJson");
+  var atlasText = resourceManager.getTextFile("goblinsAtlas");
+  var atlasBitmapData = resourceManager.getBitmapData("goblinsPng");
+
+  var textureLoader = new BitmapDataTextureLoader(atlasBitmapData);
+  var atlas = new Atlas(atlasText, textureLoader);
+  var json = new SkeletonJson(new AtlasAttachmentLoader(atlas));
+
+  var skeletonData = json.readSkeletonData(spineJson);
+  var animationStateData = new AnimationStateData(skeletonData);
+
+  var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
+  skeletonAnimation.x = 240;
+  skeletonAnimation.y = 450;
+  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 1.0;
+
+  skeletonAnimation.skeleton.skinName = "goblin";
+  //skeletonAnimation.skeleton.skinName = "goblingirl";
+
+  skeletonAnimation.state.setAnimationByName(0, "walk", true);
+
+   stage.addChild(skeletonAnimation);
+   stage.juggler.add(skeletonAnimation);
+}
+
+

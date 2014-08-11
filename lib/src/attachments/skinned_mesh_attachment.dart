@@ -45,7 +45,7 @@ class SkinnedMeshAttachment extends Attachment {
   num a = 1.0;
 
   String path = null;
-  Object rendererObject = null;
+  AtlasRegion atlasRegion = null;
 
   num regionU = 0.0;
   num regionV = 0.0;

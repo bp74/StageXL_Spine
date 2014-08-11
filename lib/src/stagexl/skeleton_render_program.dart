@@ -37,16 +37,14 @@ class _SpineRenderProgram extends RenderProgram {
 
   static final _SpineRenderProgram instance = new _SpineRenderProgram();
 
-  static const int _maxQuadCount = 256;
-
   int _contextIdentifier = -1;
   gl.RenderingContext _renderingContext = null;
   gl.Program _program = null;
   gl.Buffer _vertexBuffer = null;
   gl.Buffer _indexBuffer = null;
 
-  Int16List _indexList = new Int16List(_maxQuadCount * 6);
-  Float32List _vertexList = new Float32List(_maxQuadCount * 4 * 8);
+  Int16List _indexList = new Int16List(2048);
+  Float32List _vertexList = new Float32List(1024 * 8);
 
   gl.UniformLocation _uGlobalMatrixLocation;
   gl.UniformLocation _uSamplerLocation;
@@ -54,18 +52,8 @@ class _SpineRenderProgram extends RenderProgram {
   int _aVertexPositionLocation = 0;
   int _aVertexTextCoordLocation = 0;
   int _aVertexColorLocation = 0;
-  int _quadCount = 0;
-
-  _SpineRenderProgram() {
-    for(int i = 0, j = 0; i <= _indexList.length - 6; i += 6, j +=4 ) {
-      _indexList[i + 0] = j + 0;
-      _indexList[i + 1] = j + 1;
-      _indexList[i + 2] = j + 2;
-      _indexList[i + 3] = j + 0;
-      _indexList[i + 4] = j + 2;
-      _indexList[i + 5] = j + 3;
-    }
-  }
+  int _vertexCount = 0;
+  int _indexCount = 0;
 
   //-----------------------------------------------------------------------------------------------
 
@@ -91,7 +79,7 @@ class _SpineRenderProgram extends RenderProgram {
       _renderingContext.enableVertexAttribArray(_aVertexColorLocation);
 
       _renderingContext.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _indexBuffer);
-      _renderingContext.bufferDataTyped(gl.ELEMENT_ARRAY_BUFFER, _indexList, gl.STATIC_DRAW);
+      _renderingContext.bufferDataTyped(gl.ELEMENT_ARRAY_BUFFER, _indexList, gl.DYNAMIC_DRAW);
 
       _renderingContext.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
       _renderingContext.bufferData(gl.ARRAY_BUFFER, _vertexList, gl.DYNAMIC_DRAW);
@@ -122,71 +110,66 @@ class _SpineRenderProgram extends RenderProgram {
 
   //-----------------------------------------------------------------------------------------------
 
-  void renderRegion(List<num> uvList, List<num> xyList, num r, num g, num b, num a) {
+  void renderMesh(List<int> indexList, List<num> xyList, List<num> uvList, num r, num g, num b, num a) {
 
-    int index = _quadCount * 32;
-    if (index > _vertexList.length - 32) return; // dart2js_hint
+    int indexCount = _indexCount;
+    int indexOffset = indexCount;
+    int indexLength = indexList.length;
+    bool indexFlush  = indexOffset + indexLength >= _indexList.length;
 
-    // vertex 1
-    _vertexList[index + 00] = xyList[0];
-    _vertexList[index + 01] = xyList[1];
-    _vertexList[index + 02] = uvList[0];
-    _vertexList[index + 03] = uvList[1];
-    _vertexList[index + 04] = r;
-    _vertexList[index + 05] = g;
-    _vertexList[index + 06] = b;
-    _vertexList[index + 07] = a;
+    int vertexCount = _vertexCount;
+    int vertexOffset = vertexCount * 8;
+    int vertexLength = uvList.length ~/ 2;
+    bool vertexFlush = vertexOffset + vertexLength * 8 >= _vertexList.length;
 
-    // vertex 2
-    _vertexList[index + 08] = xyList[2];
-    _vertexList[index + 09] = xyList[3];
-    _vertexList[index + 10] = uvList[2];
-    _vertexList[index + 11] = uvList[3];
-    _vertexList[index + 12] = r;
-    _vertexList[index + 13] = g;
-    _vertexList[index + 14] = b;
-    _vertexList[index + 15] = a;
+    if (indexFlush || vertexFlush) {
+      this.flush();
+      indexCount = indexOffset = 0;
+      vertexCount = vertexOffset = 0;
+    }
 
-    // vertex 3
-    _vertexList[index + 16] = xyList[4];
-    _vertexList[index + 17] = xyList[5];
-    _vertexList[index + 18] = uvList[4];
-    _vertexList[index + 19] = uvList[5];
-    _vertexList[index + 20] = r;
-    _vertexList[index + 21] = g;
-    _vertexList[index + 22] = b;
-    _vertexList[index + 23] = a;
+    for(int i = 0; i < indexLength; i++) {
+      _indexList[indexOffset++] = vertexCount + indexList[i];
+    }
 
-    // vertex 4
-    _vertexList[index + 24] = xyList[6];
-    _vertexList[index + 25] = xyList[7];
-    _vertexList[index + 26] = uvList[6];
-    _vertexList[index + 27] = uvList[7];
-    _vertexList[index + 28] = r;
-    _vertexList[index + 29] = g;
-    _vertexList[index + 30] = b;
-    _vertexList[index + 31] = a;
+    for(int i = 0; i < vertexLength; i++) {
+      _vertexList[vertexOffset++] = xyList[i * 2 + 0];
+      _vertexList[vertexOffset++] = xyList[i * 2 + 1];
+      _vertexList[vertexOffset++] = uvList[i * 2 + 0];
+      _vertexList[vertexOffset++] = uvList[i * 2 + 1];
+      _vertexList[vertexOffset++] = r;
+      _vertexList[vertexOffset++] = g;
+      _vertexList[vertexOffset++] = b;
+      _vertexList[vertexOffset++] = a;
+    }
 
-    _quadCount += 1;
-
-    if (_quadCount == _maxQuadCount) flush();
+    _indexCount = indexCount + indexLength;
+    _vertexCount = vertexCount + vertexLength;
   }
 
   //-----------------------------------------------------------------------------------------------
 
   void flush() {
 
-    Float32List vertexUpdate = _vertexList;
+    if (_vertexCount == 0 || _indexCount == 0) return;
 
-    if (_quadCount == 0) {
-      return;
-    } else if (_quadCount < _maxQuadCount) {
-      vertexUpdate = new Float32List.view(_vertexList.buffer, 0, _quadCount * 4 * 8);
+    Float32List vertexUpdate = _vertexList;
+    Int16List indexUpdate = _indexList;
+
+    if (_vertexCount * 8 < _vertexList.length) {
+      vertexUpdate = new Float32List.view(_vertexList.buffer, 0, _vertexCount * 8);
     }
 
+    if (_indexCount < _indexList.length) {
+      indexUpdate = new Int16List.view(_indexList.buffer, 0, _indexCount);
+    }
+
+    _renderingContext.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, indexUpdate);
     _renderingContext.bufferSubData(gl.ARRAY_BUFFER, 0, vertexUpdate);
-    _renderingContext.drawElements(gl.TRIANGLES, _quadCount * 8, gl.UNSIGNED_SHORT, 0);
-    _quadCount = 0;
+    _renderingContext.drawElements(gl.TRIANGLES, _indexCount, gl.UNSIGNED_SHORT, 0);
+
+    _indexCount = 0;
+    _vertexCount = 0;
   }
 
 }

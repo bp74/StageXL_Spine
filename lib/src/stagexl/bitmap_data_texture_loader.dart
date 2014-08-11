@@ -64,10 +64,7 @@ class BitmapDataTextureLoader implements TextureLoader {
       throw new ArgumentError("BitmapData not found with name: $path");
     }
 
-    RenderTexture renderTexture = bitmapData.renderTexture;
-    page.rendererObject = renderTexture;
-    page.width = renderTexture.width;
-    page.height = renderTexture.height;
+    page.renderTexture = bitmapData.renderTexture;
   }
 
   //-----------------------------------------------------------------------------------------------
@@ -81,6 +78,17 @@ class BitmapDataTextureLoader implements TextureLoader {
 
   void loadRegion(AtlasRegion region) {
 
+    var renderTexture = region.page.renderTexture;
+
+    if (region.rotate) {
+      region.renderTextureQuad = new RenderTextureQuad(renderTexture, 3,
+          region.offsetX, region.offsetY,
+          region.x, region.y + region.width, region.width, region.height);
+    } else {
+      region.renderTextureQuad = new RenderTextureQuad(renderTexture, 0,
+          region.offsetX, region.offsetY,
+          region.x, region.y, region.width, region.height);
+    }
   }
 
 }

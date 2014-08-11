@@ -58,7 +58,7 @@ class RegionAttachment extends Attachment {
   num a = 1.0;
 
   String path = null;
-  Object rendererObject = null;
+  AtlasRegion atlasRegion = null;
 
   num regionOffsetX = 0.0; // Pixels stripped from the bottom left, unrotated.
   num regionOffsetY = 0.0;

@@ -62,8 +62,8 @@ class Atlas {
 
         if (reader.readTuple(tuple) == 2) {
           // size is only optional for an atlas packed with an old TexturePacker.
-          page.width = int.parse(tuple[0]);
-          page.height = int.parse(tuple[1]);
+          //var width = int.parse(tuple[0]);
+          //var height = int.parse(tuple[1]);
           reader.readTuple(tuple);
         }
 
@@ -104,15 +104,15 @@ class Atlas {
         int width = int.parse(tuple[0]);
         int height = int.parse(tuple[1]);
 
-        region.u = x / page.width;
-        region.v = y / page.height;
+        region.u = x / page.renderTexture.width;
+        region.v = y / page.renderTexture.height;
 
         if (region.rotate) {
-          region.u2 = (x + height) / page.width;
-          region.v2 = (y + width) / page.height;
+          region.u2 = (x + height) / page.renderTexture.width;
+          region.v2 = (y + width) / page.renderTexture.height;
         } else {
-          region.u2 = (x + width) / page.width;
-          region.v2 = (y + height) / page.height;
+          region.u2 = (x + width) / page.renderTexture.width;
+          region.v2 = (y + height) / page.renderTexture.height;
         }
         region.x = x;
         region.y = y;

@@ -43,7 +43,7 @@ class MeshAttachment extends Attachment {
   num a = 1.0;
 
   String path = null;
-  Object rendererObject = null;
+  AtlasRegion atlasRegion = null;
 
   num regionU = 0.0;
   num regionV = 0.0;
@@ -92,6 +92,7 @@ class MeshAttachment extends Attachment {
     Bone bone = slot.bone;
     x += bone.worldX;
     y += bone.worldY;
+
     num m00 = bone.m00;
     num m01 = bone.m01;
     num m10 = bone.m10;

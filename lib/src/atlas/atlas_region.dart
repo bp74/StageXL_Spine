@@ -31,6 +31,7 @@
 part of stagexl_spine;
 
 class AtlasRegion {
+
   AtlasPage page = null;
   String name = null;
   int x = 0;
@@ -49,5 +50,7 @@ class AtlasRegion {
   bool rotate = false;
   List<int> splits = null;
   List<int> pads = null;
-  Object rendererObject = null;
+
+  RenderTextureQuad renderTextureQuad = null;
+  //Object rendererObject = null;
 }

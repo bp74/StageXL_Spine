@@ -70,16 +70,19 @@ class SkeletonDisplayObject extends DisplayObject {
     num skeletonA = skeleton.a;
 
     List<Slot> drawOrder = skeleton.drawOrder;
-    List<num> uvList = new List<num>(8);
-    List<num> xyList = new List<num>(8);
+    List<num> uvList = new List<num>();
+    List<num> xyList = new List<num>();
+    List<int> indexList = new List<int>();
+    List<int> regionIndexList = new List<int>.from([0, 1, 2, 0, 2, 3]);
 
     renderProgram.configure(renderContextWebGL, matrix);
+    xyList.length = 8;
 
     //---------------------------------------------------
 
     for (var i = 0; i < drawOrder.length; i++) {
 
-      Slot slot= drawOrder[i];
+      Slot slot = drawOrder[i];
       Bone bone = slot.bone;
       Attachment attachment = slot.attachment;
 
@@ -87,30 +90,56 @@ class SkeletonDisplayObject extends DisplayObject {
       num attachmentG = 0.0;
       num attachmentB = 0.0;
       num attachmentA = 0.0;
+      int verticesLength = 0;
 
       //---------------------------------------------------
 
       if (attachment is RegionAttachment) {
 
         RegionAttachment regionAttachment = attachment;
-        AtlasRegion altasRegion = regionAttachment.rendererObject;
 
+        verticesLength = 8;
         regionAttachment.computeWorldVertices(skeletonX, skeletonY, bone, xyList);
         uvList = regionAttachment.uvs;
+        indexList = regionIndexList;
+
         attachmentR = regionAttachment.r;
         attachmentG = regionAttachment.g;
         attachmentB = regionAttachment.b;
         attachmentA = regionAttachment.a;
-        renderTexture = altasRegion.page.rendererObject;
+        renderTexture = regionAttachment.atlasRegion.page.renderTexture;
 
       } else if (attachment is MeshAttachment) {
 
-        // TODO: attachment is MeshAttachment
+        MeshAttachment meshAttachment = attachment;
+
+        verticesLength = meshAttachment.vertices.length;
+        if (xyList.length < verticesLength) xyList.length = verticesLength;
+        meshAttachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
+        uvList = meshAttachment.uvs;
+        indexList = meshAttachment.triangles;
+
+        attachmentR = meshAttachment.r;
+        attachmentG = meshAttachment.g;
+        attachmentB = meshAttachment.b;
+        attachmentA = meshAttachment.a;
+        renderTexture = meshAttachment.atlasRegion.page.renderTexture;
 
       } else if (attachment is SkinnedMeshAttachment) {
 
-        // TODO: attachment is SkinnedMeshAttachment
+        SkinnedMeshAttachment skinnedMesh = attachment;
 
+        verticesLength = skinnedMesh.uvs.length;
+        if (xyList.length < verticesLength) xyList.length = verticesLength;
+        skinnedMesh.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
+        uvList = skinnedMesh.uvs;
+        indexList = skinnedMesh.triangles;
+
+        attachmentR = skinnedMesh.r;
+        attachmentG = skinnedMesh.g;
+        attachmentB = skinnedMesh.b;
+        attachmentA = skinnedMesh.a;
+        renderTexture = skinnedMesh.atlasRegion.page.renderTexture;
       }
 
       //---------------------------------------------------
@@ -124,7 +153,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
         renderContextWebGL.activateRenderTexture(renderTexture);
         renderContextWebGL.activateBlendMode(slot.data.additiveBlending ? BlendMode.ADD : blendMode);
-        renderProgram.renderRegion(uvList, xyList, rr, gg, bb, aa);
+        renderProgram.renderMesh(indexList, xyList, uvList, rr, gg, bb, aa);
       }
     }
   }

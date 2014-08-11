@@ -227,7 +227,7 @@ class SkeletonJson {
           int boneCount = vertices[i++].toInt();
           bones.add(boneCount);
           for (int nn = i + boneCount * 4; i < nn; ) {
-            bones[bones.length] = vertices[i];
+            bones.add(vertices[i]);
             weights.add(vertices[i + 1] * scale);
             weights.add(vertices[i + 2] * scale);
             weights.add(vertices[i + 3]);
@@ -432,7 +432,7 @@ class SkeletonJson {
           int frameIndex = 0;
           for (Map valueMap in values) {
             List<num> vertices;
-            if (valueMap.containsKey("vertices")) {
+            if (valueMap.containsKey("vertices") == false) {
               if (attachment is MeshAttachment) {
                 var meshAttachment = attachment;
                 vertices = meshAttachment.vertices;
