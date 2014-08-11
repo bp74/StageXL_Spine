@@ -119,7 +119,7 @@ class _SpineRenderProgram extends RenderProgram {
 
     int vertexCount = _vertexCount;
     int vertexOffset = vertexCount * 8;
-    int vertexLength = uvList.length ~/ 2;
+    int vertexLength = uvList.length >> 1;
     bool vertexFlush = vertexOffset + vertexLength * 8 >= _vertexList.length;
 
     if (indexFlush || vertexFlush) {
@@ -129,18 +129,20 @@ class _SpineRenderProgram extends RenderProgram {
     }
 
     for(int i = 0; i < indexLength; i++) {
-      _indexList[indexOffset++] = vertexCount + indexList[i];
+      _indexList[indexOffset + i] = vertexCount + indexList[i];
     }
 
-    for(int i = 0; i < vertexLength; i++) {
-      _vertexList[vertexOffset++] = xyList[i * 2 + 0];
-      _vertexList[vertexOffset++] = xyList[i * 2 + 1];
-      _vertexList[vertexOffset++] = uvList[i * 2 + 0];
-      _vertexList[vertexOffset++] = uvList[i * 2 + 1];
-      _vertexList[vertexOffset++] = r;
-      _vertexList[vertexOffset++] = g;
-      _vertexList[vertexOffset++] = b;
-      _vertexList[vertexOffset++] = a;
+    for(int i = 0, j = 0; i < vertexLength; i++, j+=2) {
+      if (vertexOffset >= _vertexList.length - 8) continue; // dart2js_hint
+      _vertexList[vertexOffset + 0] = xyList[j + 0];
+      _vertexList[vertexOffset + 1] = xyList[j + 1];
+      _vertexList[vertexOffset + 2] = uvList[j + 0];
+      _vertexList[vertexOffset + 3] = uvList[j + 1];
+      _vertexList[vertexOffset + 4] = r;
+      _vertexList[vertexOffset + 5] = g;
+      _vertexList[vertexOffset + 6] = b;
+      _vertexList[vertexOffset + 7] = a;
+      vertexOffset += 8;
     }
 
     _indexCount = indexCount + indexLength;
