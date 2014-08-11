@@ -162,21 +162,13 @@ class SkeletonDisplayObject extends DisplayObject {
 
   void _renderCanvas(RenderState renderState) {
 
-    var renderContext = renderState.renderContext;
-    var globalMatrix = renderState.globalMatrix.clone();
-    var globalBlendMode = renderState.globalBlendMode;
-    var globalAlpha = renderState.globalAlpha;
+    RenderContext renderContext = renderState.renderContext;
+    Matrix globalMatrix = renderState.globalMatrix.clone();
+    BlendMode globalBlendMode = renderState.globalBlendMode;
+    num globalAlpha = renderState.globalAlpha;
 
-    var tmpMatrix = new Matrix.fromIdentity();
-    var tmpRenderState = new RenderState(renderContext);
-
-    num skeletonX = skeleton.x;
-    num skeletonY = skeleton.y;
-    num skeletonR = skeleton.r;
-    num skeletonG = skeleton.g;
-    num skeletonB = skeleton.b;
-    num skeletonA = skeleton.a;
-
+    Matrix tmpMatrix = new Matrix.fromIdentity();
+    RenderState tmpRenderState = new RenderState(renderContext);
     List<Slot> drawOrder = skeleton.drawOrder;
 
     for (int i = 0; i < drawOrder.length; i++) {
@@ -220,7 +212,7 @@ class SkeletonDisplayObject extends DisplayObject {
         num tx3 = tx2 + tx1 * a2 + ty1 * c2;
         num ty3 = ty2 + tx1 * b2 + ty1 * d2;
 
-        num alpha = globalAlpha * skeletonA * regionAttachment.a * slot.a;
+        num alpha = globalAlpha * skeleton.a * regionAttachment.a * slot.a;
         BlendMode blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
 
         tmpMatrix.setTo(a3, b3, c3, d3, tx3, ty3);
