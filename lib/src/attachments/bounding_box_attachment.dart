@@ -38,19 +38,20 @@ class BoundingBoxAttachment extends Attachment {
 
   void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
 
-    x += bone.worldX;
-    y += bone.worldY;
+    Matrix matrix = bone.worldMatrix;
 
-    num m00 = bone.m00;
-    num m01 = bone.m01;
-    num m10 = bone.m10;
-    num m11 = bone.m11;
+    num a  = matrix.a;
+    num b  = matrix.b;
+    num c  = matrix.c;
+    num d  = matrix.d;
+    num tx = matrix.tx + x;
+    num ty = matrix.ty + y;
 
     for (int i = 0; i < this.vertices.length; i += 2) {
       num px = this.vertices[i + 0];
       num py = this.vertices[i + 1];
-      worldVertices[i + 0] = px * m00 + py * m01 + x;
-      worldVertices[i + 1] = px * m10 + py * m11 + y;
+      worldVertices[i + 0] = px * a + py * c + tx;
+      worldVertices[i + 1] = px * b + py * d + ty;
     }
   }
 

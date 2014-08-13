@@ -34,17 +34,14 @@ class Bone {
 
   final BoneData data;
   final Bone parent;
+  final Matrix worldMatrix = new Matrix.fromIdentity();
 
   num x = 0.0;
-  num y= 0.0;
-  num rotation= 0.0;
-  num scaleX= 0.0;
-  num scaleY= 0.0;
+  num y = 0.0;
+  num rotation = 0.0;
+  num scaleX = 0.0;
+  num scaleY = 0.0;
 
-  num _m00 = 0.0;
-  num _m01 = 0.0;
-  num _m10 = 0.0;
-  num _m11 = 0.0;
   num _worldX = 0.0;
   num _worldY = 0.0;
   num _worldRotation = 0.0;
@@ -62,18 +59,13 @@ class Bone {
 
     if (this.parent != null) {
 
-      _worldX = x * this.parent._m00 + y * this.parent._m01 + this.parent._worldX;
-      _worldY = x * this.parent._m10 + y * this.parent._m11 + this.parent._worldY;
+      Matrix parentMatrix = parent.worldMatrix;
 
-      if (this.data.inheritScale) {
-        _worldScaleX = parent._worldScaleX * scaleX;
-        _worldScaleY = parent._worldScaleY * scaleY;
-      } else {
-        _worldScaleX = scaleX;
-        _worldScaleY = scaleY;
-      }
-
-      _worldRotation = this.data.inheritRotation ? this.parent._worldRotation + rotation : rotation;
+      _worldX = x * parentMatrix.a + y * parentMatrix.c + parentMatrix.tx;
+      _worldY = x * parentMatrix.b + y * parentMatrix.d + parentMatrix.ty;
+      _worldScaleX = data.inheritScale ? parent._worldScaleX * scaleX : scaleX;
+      _worldScaleY = data.inheritScale ? parent._worldScaleY * scaleY : scaleY;
+      _worldRotation = data.inheritRotation ? parent._worldRotation + rotation : rotation;
 
     } else {
 
@@ -88,19 +80,15 @@ class Bone {
     num cos = math.cos(radians);
     num sin = math.sin(radians);
 
-    _m00 =  cos * _worldScaleX;
-    _m10 = -sin * _worldScaleX;
-    _m01 = -sin * _worldScaleY;
-    _m11 = -cos * _worldScaleY;
+    num a =  cos * _worldScaleX;
+    num b = -sin * _worldScaleX;
+    num c = -sin * _worldScaleY;
+    num d = -cos * _worldScaleY;
 
-    if (flipX) {
-      _m00 = -_m00;
-      _m01 = -_m01;
-    }
-    if (flipY) {
-      _m10 = -_m10;
-      _m11 = -_m11;
-    }
+    if (flipX) { a = -a; c = -c; }
+    if (flipY) { b = -b; d = -d; }
+
+    this.worldMatrix.setTo(a, b, c, d, _worldX, _worldY);
   }
 
   void setToSetupPose() {
@@ -111,10 +99,6 @@ class Bone {
     scaleY = this.data.scaleY;
   }
 
-  num get m00 => _m00;
-  num get m01 => _m01;
-  num get m10 => _m10;
-  num get m11 => _m11;
   num get worldX => _worldX;
   num get worldY => _worldY;
   num get worldRotation => _worldRotation;

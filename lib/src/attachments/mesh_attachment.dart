@@ -89,14 +89,14 @@ class MeshAttachment extends Attachment {
 
   void computeWorldVertices(num x, num y, Slot slot, List<num> worldVertices) {
 
-    Bone bone = slot.bone;
-    x += bone.worldX;
-    y += bone.worldY;
+    Matrix matrix = slot.bone.worldMatrix;
 
-    num m00 = bone.m00;
-    num m01 = bone.m01;
-    num m10 = bone.m10;
-    num m11 = bone.m11;
+    num a  = matrix.a;
+    num b  = matrix.b;
+    num c  = matrix.c;
+    num d  = matrix.d;
+    num tx = matrix.tx + x;
+    num ty = matrix.ty + y;
 
     if (slot.attachmentVertices.length == this.vertices.length) {
       this.vertices = slot.attachmentVertices;
@@ -105,8 +105,8 @@ class MeshAttachment extends Attachment {
     for (int i = 0; i < this.vertices.length; i += 2) {
       num vx = this.vertices[i + 0];
       num vy = this.vertices[i + 1];
-      worldVertices[i + 0] = vx * m00 + vy * m01 + x;
-      worldVertices[i + 1] = vx * m10 + vy * m11 + y;
+      worldVertices[i + 0] = vx * a + vy * c + tx;
+      worldVertices[i + 1] = vx * b + vy * d + ty;
     }
   }
 }

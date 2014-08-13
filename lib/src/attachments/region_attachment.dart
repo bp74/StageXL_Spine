@@ -41,6 +41,7 @@ class RegionAttachment extends Attachment {
   final int X4 = 6;
   final int Y4 = 7;
 
+  final Matrix matrix = new Matrix.fromIdentity();
   final List<num> offset = new List<num>.filled(8, 0);
   final List<num> uvs = new List<num>.filled(8, 0);
 
@@ -93,15 +94,32 @@ class RegionAttachment extends Attachment {
 
   void updateOffset() {
 
-    num regionScaleX = width / regionOriginalWidth * scaleX;
-    num regionScaleY = height / regionOriginalHeight * scaleY;
-    num localX = -width / 2 * scaleX + regionOffsetX * regionScaleX;
-    num localY = -height / 2 * scaleY + regionOffsetY * regionScaleY;
-    num localX2 = localX + regionWidth * regionScaleX;
-    num localY2 = localY + regionHeight * regionScaleY;
+    num regionScaleX = scaleX * width / regionOriginalWidth;
+    num regionScaleY = scaleY * height / regionOriginalHeight;
     num radians = rotation * math.PI / 180;
     num cos = math.cos(radians);
     num sin = math.sin(radians);
+    num pivotX = width / 2;
+    num pivotY = height / 2;
+
+    //--------------------------------------------
+
+    num a  =   regionScaleX * cos;
+    num b  =   regionScaleX * sin;
+    num c  =   regionScaleY * sin;
+    num d  = - regionScaleY * cos;
+    num tx = x - pivotX * a - pivotY * c;
+    num ty = y - pivotX * b - pivotY * d;
+
+    this.matrix.setTo(a, b, c, d, tx, ty);
+
+    //--------------------------------------------
+
+    num localX = regionOffsetX * regionScaleX - scaleX * pivotX;
+    num localY = regionOffsetY * regionScaleY - scaleY * pivotY;
+    num localX2 = localX + regionWidth * regionScaleX;
+    num localY2 = localY + regionHeight * regionScaleY;
+
     num localXCos = localX * cos + x;
     num localXSin = localX * sin;
     num localYCos = localY * cos + y;
@@ -123,13 +141,14 @@ class RegionAttachment extends Attachment {
 
   void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
 
-    x += bone.worldX;
-    y += bone.worldY;
+    Matrix matrix = bone.worldMatrix;
 
-    num m00 = bone.m00;
-    num m01 = bone.m01;
-    num m10 = bone.m10;
-    num m11 = bone.m11;
+    num a  = matrix.a;
+    num b  = matrix.b;
+    num c  = matrix.c;
+    num d  = matrix.d;
+    num tx = matrix.tx + x;
+    num ty = matrix.ty + y;
 
     num x1 = offset[X1];
     num y1 = offset[Y1];
@@ -140,14 +159,14 @@ class RegionAttachment extends Attachment {
     num x4 = offset[X4];
     num y4 = offset[Y4];
 
-    worldVertices[X1] = x1 * m00 + y1 * m01 + x;
-    worldVertices[Y1] = x1 * m10 + y1 * m11 + y;
-    worldVertices[X2] = x2 * m00 + y2 * m01 + x;
-    worldVertices[Y2] = x2 * m10 + y2 * m11 + y;
-    worldVertices[X3] = x3 * m00 + y3 * m01 + x;
-    worldVertices[Y3] = x3 * m10 + y3 * m11 + y;
-    worldVertices[X4] = x4 * m00 + y4 * m01 + x;
-    worldVertices[Y4] = x4 * m10 + y4 * m11 + y;
+    worldVertices[X1] = x1 * a + y1 * c + tx;
+    worldVertices[Y1] = x1 * b + y1 * d + ty;
+    worldVertices[X2] = x2 * a + y2 * c + tx;
+    worldVertices[Y2] = x2 * b + y2 * d + ty;
+    worldVertices[X3] = x3 * a + y3 * c + tx;
+    worldVertices[Y3] = x3 * b + y3 * d + ty;
+    worldVertices[X4] = x4 * a + y4 * c + tx;
+    worldVertices[Y4] = x4 * b + y4 * d + ty;
   }
 
 }

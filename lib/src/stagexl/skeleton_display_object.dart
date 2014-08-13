@@ -152,40 +152,10 @@ class SkeletonDisplayObject extends DisplayObject {
         RegionAttachment regionAttachment = attachment;
         AtlasRegion region = regionAttachment.atlasRegion;
         RenderTextureQuad renderTextureQuad = region.renderTextureQuad;
-
-        num raRotation = regionAttachment.rotation * math.PI / 180;
-        num raScaleX = regionAttachment.scaleX * regionAttachment.width / region.width;
-        num raScaleY = regionAttachment.scaleY * regionAttachment.height / region.height;
-        num raPivotX = regionAttachment.width / 2;
-        num raPivotY = regionAttachment.height / 2;
-        num raCos = math.cos(-raRotation);
-        num raSin = math.sin(-raRotation);
-
-        num a1 =   raScaleX * raCos;
-        num b1 = - raScaleX * raSin;
-        num c1 = - raScaleY * raSin;
-        num d1 = - raScaleY * raCos;
-        num tx1 =  regionAttachment.x - raPivotX * a1 - raPivotY * c1;
-        num ty1 =  regionAttachment.y - raPivotX * b1 - raPivotY * d1;
-
-        num a2 =  bone.m00;
-        num b2 =  bone.m10;
-        num c2 =  bone.m01;
-        num d2 =  bone.m11;
-        num tx2 = bone.worldX;
-        num ty2 = bone.worldY;
-
-        num a3 = a1 * a2 + b1 * c2;
-        num b3 = a1 * b2 + b1 * d2;
-        num c3 = c1 * a2 + d1 * c2;
-        num d3 = c1 * b2 + d1 * d2;
-        num tx3 = tx2 + tx1 * a2 + ty1 * c2;
-        num ty3 = ty2 + tx1 * b2 + ty1 * d2;
-
-        num alpha = globalAlpha * skeleton.a * regionAttachment.a * slot.a;
         BlendMode blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
+        num alpha = globalAlpha * skeleton.a * regionAttachment.a * slot.a;
 
-        tmpMatrix.setTo(a3, b3, c3, d3, tx3, ty3);
+        tmpMatrix.copyFromAndConcat(regionAttachment.matrix, bone.worldMatrix);
         tmpMatrix.concat(globalMatrix);
         tmpRenderState.reset(tmpMatrix, alpha, blendMode);
         tmpRenderState.renderQuad(renderTextureQuad);
