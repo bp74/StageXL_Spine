@@ -38,15 +38,15 @@ class Bone {
 
   num x = 0.0;
   num y = 0.0;
-  num rotation = 0.0;
   num scaleX = 0.0;
   num scaleY = 0.0;
+  num rotation = 0.0;
 
   num _worldX = 0.0;
   num _worldY = 0.0;
-  num _worldRotation = 0.0;
   num _worldScaleX = 0.0;
   num _worldScaleY = 0.0;
+  num _worldRotation = 0.0;
 
   Bone(this.data, this.parent) {
     if (data == null) throw new ArgumentError("data cannot be null.");
@@ -94,16 +94,16 @@ class Bone {
   void setToSetupPose() {
     x = this.data.x;
     y = this.data.y;
-    rotation = this.data.rotation;
     scaleX = this.data.scaleX;
     scaleY = this.data.scaleY;
+    rotation = this.data.rotation;
   }
 
   num get worldX => _worldX;
   num get worldY => _worldY;
-  num get worldRotation => _worldRotation;
   num get worldScaleX => _worldScaleX;
   num get worldScaleY => _worldScaleY;
+  num get worldRotation => _worldRotation;
 
   String toString() => this.data.name;
 }

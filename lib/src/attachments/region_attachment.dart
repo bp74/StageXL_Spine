@@ -94,24 +94,13 @@ class RegionAttachment extends Attachment {
 
   void updateOffset() {
 
+    num pivotX = width / 2;
+    num pivotY = height / 2;
     num regionScaleX = scaleX * width / regionOriginalWidth;
     num regionScaleY = scaleY * height / regionOriginalHeight;
     num radians = rotation * math.PI / 180;
     num cos = math.cos(radians);
     num sin = math.sin(radians);
-    num pivotX = width / 2;
-    num pivotY = height / 2;
-
-    //--------------------------------------------
-
-    num a  =   regionScaleX * cos;
-    num b  =   regionScaleX * sin;
-    num c  =   regionScaleY * sin;
-    num d  = - regionScaleY * cos;
-    num tx = x - pivotX * a - pivotY * c;
-    num ty = y - pivotX * b - pivotY * d;
-
-    this.matrix.setTo(a, b, c, d, tx, ty);
 
     //--------------------------------------------
 
@@ -119,7 +108,6 @@ class RegionAttachment extends Attachment {
     num localY = regionOffsetY * regionScaleY - scaleY * pivotY;
     num localX2 = localX + regionWidth * regionScaleX;
     num localY2 = localY + regionHeight * regionScaleY;
-
     num localXCos = localX * cos + x;
     num localXSin = localX * sin;
     num localYCos = localY * cos + y;
@@ -137,6 +125,17 @@ class RegionAttachment extends Attachment {
     offset[Y3] = localY2Cos + localX2Sin;
     offset[X4] = localX2Cos - localYSin;
     offset[Y4] = localYCos + localX2Sin;
+
+    //--------------------------------------------
+
+    num a  =   regionScaleX * cos;
+    num b  =   regionScaleX * sin;
+    num c  =   regionScaleY * sin;
+    num d  = - regionScaleY * cos;
+    num tx = x - pivotX * a - pivotY * c;
+    num ty = y - pivotX * b - pivotY * d;
+
+    this.matrix.setTo(a, b, c, d, tx, ty);
   }
 
   void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
