@@ -32,8 +32,6 @@ part of stagexl_spine;
 
 class Bone {
 
-  static bool yDown = true;
-
   final BoneData data;
   final Bone parent;
 
@@ -80,7 +78,7 @@ class Bone {
     } else {
 
       _worldX = flipX ? -x : x;
-      _worldY = flipY != yDown ? -y : y;
+      _worldY = flipY ? y : -y;
       _worldScaleX = scaleX;
       _worldScaleY = scaleY;
       _worldRotation = rotation;
@@ -90,16 +88,16 @@ class Bone {
     num cos = math.cos(radians);
     num sin = math.sin(radians);
 
-    _m00 = cos * _worldScaleX;
-    _m10 = sin * _worldScaleX;
+    _m00 =  cos * _worldScaleX;
+    _m10 = -sin * _worldScaleX;
     _m01 = -sin * _worldScaleY;
-    _m11 = cos * _worldScaleY;
+    _m11 = -cos * _worldScaleY;
 
     if (flipX) {
       _m00 = -_m00;
       _m01 = -_m01;
     }
-    if (flipY != yDown) {
+    if (flipY) {
       _m10 = -_m10;
       _m11 = -_m11;
     }
