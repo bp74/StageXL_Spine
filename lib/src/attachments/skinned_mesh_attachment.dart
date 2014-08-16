@@ -32,6 +32,10 @@ part of stagexl_spine;
 
 class SkinnedMeshAttachment extends Attachment {
 
+  final BitmapData bitmapData;
+
+  String path = null;
+
   Int16List bones = null;
   Float32List weights = null;
   Float32List uvs = null;
@@ -44,47 +48,35 @@ class SkinnedMeshAttachment extends Attachment {
   num b = 1.0;
   num a = 1.0;
 
-  String path = null;
-  AtlasRegion atlasRegion = null;
-
-  num regionU = 0.0;
-  num regionV = 0.0;
-  num regionU2 = 1.0;
-  num regionV2 = 1.0;
-  bool regionRotate = false;
-
-  num regionOffsetX = 0.0; // Pixels stripped from the bottom left, unrotated.
-  num regionOffsetY = 0.0;
-  num regionWidth = 0.0; // Unrotated, stripped size.
-  num regionHeight = 0.0;
-  num regionOriginalWidth = 0.0; // Unrotated, unstripped size.
-  num regionOriginalHeight = 0.0;
-
   // Nonessential.
   Int16List edges = null;
   num width = 0.0;
   num height = 0.0;
 
-  SkinnedMeshAttachment(String name) : super(name);
+  SkinnedMeshAttachment(String name, this.bitmapData) : super(name);
 
   void updateUVs() {
-
-    num width = regionU2 - regionU;
-    num height = regionV2 - regionV;
 
     if (uvs == null || uvs.length != regionUVs.length) {
       uvs = new Float32List(regionUVs.length);
     }
 
-    if (regionRotate) {
+    var renderTextureQuad = bitmapData.renderTextureQuad;
+    var uvList = renderTextureQuad.uvList;
+    var u1 = uvList[0];
+    var v1 = uvList[1];
+    var u2 = uvList[4];
+    var v2 = uvList[5];
+
+    if (renderTextureQuad.rotation == 0 || renderTextureQuad.rotation == 2) {
       for (int i = 0; i < regionUVs.length; i += 2) {
-        uvs[i + 0] = regionU + regionUVs[i + 1] * width;
-        uvs[i + 1] = regionV - regionUVs[i + 0] * height + height;
+        uvs[i + 0] = u1 + regionUVs[i + 0] * (u2 - u1);
+        uvs[i + 1] = v1 + regionUVs[i + 1] * (v2 - v1);
       }
     } else {
       for (int i = 0; i < regionUVs.length; i += 2) {
-        uvs[i + 0] = regionU + regionUVs[i + 0] * width;
-        uvs[i + 1] = regionV + regionUVs[i + 1] * height;
+        uvs[i + 0] = u1 + regionUVs[i + 1] * (u2 - u1);
+        uvs[i + 1] = v1 + regionUVs[i + 0] * (v2 - v1);
       }
     }
   }

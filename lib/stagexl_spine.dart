@@ -15,7 +15,7 @@ part 'src/polygon.dart';
 part 'src/skeleton.dart';
 part 'src/skeleton_bounds.dart';
 part 'src/skeleton_data.dart';
-part 'src/skeleton_json.dart';
+part 'src/skeleton_loader.dart';
 part 'src/skin.dart';
 part 'src/slot.dart';
 part 'src/slot_data.dart';
@@ -44,7 +44,6 @@ part 'src/atlas/texture_filter.dart';
 part 'src/atlas/texture_loader.dart';
 part 'src/atlas/texture_wrap.dart';
 
-part 'src/attachments/atlas_attachment_loader.dart';
 part 'src/attachments/attachment.dart';
 part 'src/attachments/attachment_loader.dart';
 part 'src/attachments/attachment_type.dart';
@@ -53,8 +52,7 @@ part 'src/attachments/mesh_attachment.dart';
 part 'src/attachments/region_attachment.dart';
 part 'src/attachments/skinned_mesh_attachment.dart';
 
-part 'src/stagexl/bitmap_data_texture_loader.dart';
 part 'src/stagexl/skeleton_animation.dart';
 part 'src/stagexl/skeleton_display_object.dart';
 part 'src/stagexl/skeleton_render_program.dart';
-
+part 'src/stagexl/texture_atlas_attachment_loader.dart';

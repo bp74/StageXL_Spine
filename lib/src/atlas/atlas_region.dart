@@ -34,23 +34,20 @@ class AtlasRegion {
 
   AtlasPage page = null;
   String name = null;
+
+  bool rotate = false;
   int x = 0;
   int y = 0;
   int width = 0;
   int height = 0;
-  num u = 0.0;
-  num v = 0.0;
-  num u2 = 0.0;
-  num v2 = 0.0;
-  num offsetX = 0.0;
-  num offsetY = 0.0;
-  int originalWidth = 0;
-  int originalHeight = 0;
-  int index = 0;
-  bool rotate = false;
   Int16List splits = null;
   Int16List pads = null;
+  int originalWidth = 0;
+  int originalHeight = 0;
+  num offsetX = 0.0;
+  num offsetY = 0.0;
+  int index = 0;
 
+  RenderTexture renderTexture = null;
   RenderTextureQuad renderTextureQuad = null;
-  //Object rendererObject = null;
 }

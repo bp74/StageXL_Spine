@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class SkeletonJson {
+class SkeletonLoader {
 
   static const String TIMELINE_SCALE = "scale";
   static const String TIMELINE_ROTATE = "rotate";
@@ -39,9 +39,9 @@ class SkeletonJson {
   static const String TIMELINE_COLOR = "color";
 
   final AttachmentLoader attachmentLoader;
-  num scale = 1;
+  final num scale;
 
-  SkeletonJson([this.attachmentLoader = null]);
+  SkeletonLoader(this.attachmentLoader, {this.scale: 1.0});
 
   /// Parameter 'object' must be a String or Map.
   ///
@@ -168,6 +168,7 @@ class SkeletonJson {
 
         RegionAttachment region = attachmentLoader.newRegionAttachment(skin, name, path);
         if (region == null) return null;
+
         region.path = path;
         region.x = (map.containsKey("x") ? map["x"] : 0) * scale;
         region.y = (map.containsKey("y") ? map["y"] : 0) * scale;
@@ -185,6 +186,7 @@ class SkeletonJson {
           region.a = _toColor(color, 3);
         }
 
+        region.updateUVs();
         region.updateOffset();
         return region;
 

@@ -54,16 +54,20 @@ class Atlas {
       if (line == null) break;
 
       line = reader.trim(line);
+
       if (line.length == 0) {
+
         page = null;
+
       } else if (page == null) {
+
         page = new AtlasPage();
         page.name = line;
 
         if (reader.readTuple(tuple) == 2) {
           // size is only optional for an atlas packed with an old TexturePacker.
-          //var width = int.parse(tuple[0]);
-          //var height = int.parse(tuple[1]);
+          page.width = int.parse(tuple[0]);
+          page.height = int.parse(tuple[1]);
           reader.readTuple(tuple);
         }
 
@@ -92,33 +96,19 @@ class Atlas {
       } else {
 
         AtlasRegion region = new AtlasRegion();
+        RenderTextureQuad renderTextureQuad = region.renderTextureQuad;
+
         region.name = line;
         region.page = page;
         region.rotate = reader.readValue() == "true";
 
         reader.readTuple(tuple);
-        int x = int.parse(tuple[0]);
-        int y = int.parse(tuple[1]);
+        region.x = int.parse(tuple[0]);
+        region.y = int.parse(tuple[1]);
 
         reader.readTuple(tuple);
-        int width = int.parse(tuple[0]);
-        int height = int.parse(tuple[1]);
-
-        region.u = x / page.renderTexture.width;
-        region.v = y / page.renderTexture.height;
-
-        if (region.rotate) {
-          region.u2 = (x + height) / page.renderTexture.width;
-          region.v2 = (y + width) / page.renderTexture.height;
-        } else {
-          region.u2 = (x + width) / page.renderTexture.width;
-          region.v2 = (y + height) / page.renderTexture.height;
-        }
-
-        region.x = x;
-        region.y = y;
-        region.width = width.abs();
-        region.height = height.abs();
+        region.width = int.parse(tuple[0]);
+        region.height = int.parse(tuple[1]);
 
         if (reader.readTuple(tuple) == 4) {
           // split is optional

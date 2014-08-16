@@ -33,6 +33,9 @@ part of stagexl_spine;
 class AtlasPage {
 
   String name = null;
+  int width = 0;
+  int height = 0;
+
   TextureFormat format = null;
   TextureFilter minFilter = null;
   TextureFilter magFilter = null;
@@ -40,8 +43,5 @@ class AtlasPage {
   TextureWrap vWrap = null;
 
   RenderTexture renderTexture = null;
-
-  //Object rendererObject = null;
-  //int width = 0;
-  //int height = 0;
+  RenderTextureQuad renderTextureQuad = null;
 }

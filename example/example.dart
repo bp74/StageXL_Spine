@@ -19,26 +19,23 @@ void main() {
 
   BitmapData.defaultLoadOptions.webp = true;
 
-  switch(2) {
+  switch(3) {
 
     case 1: // powerup
-      resourceManager.addTextFile("powerupJson", "spine/powerup.json");
-      resourceManager.addTextFile("powerupAtlas", "spine/powerup.atlas");
-      resourceManager.addBitmapData("powerupPng", "spine/powerup.png");
+      resourceManager.addTextFile("powerup", "spine/powerup.json");
+      resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
       resourceManager.load().then((rm) => startPowerup());
       break;
 
     case 2: // spineboy
-      resourceManager.addTextFile("spineboyJson", "spine/spineboy.json");
-      resourceManager.addTextFile("spineboyAtlas", "spine/spineboy.atlas");
-      resourceManager.addBitmapData("spineboyPng", "spine/spineboy.png");
+      resourceManager.addTextFile("spineboy", "spine/spineboy.json");
+      resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy.json", TextureAtlasFormat.JSONARRAY);
       resourceManager.load().then((rm) => startSpineboy());
       break;
 
     case 3: // goblins
-      resourceManager.addTextFile("goblinsJson", "spine/goblins-ffd.json");
-      resourceManager.addTextFile("goblinsAtlas", "spine/goblins-ffd.atlas");
-      resourceManager.addBitmapData("goblinsPng", "spine/goblins-ffd.png");
+      resourceManager.addTextFile("goblins-ffd", "spine/goblins-ffd.json");
+      resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
       resourceManager.load().then((rm) => startGoblins());
       break;
   }
@@ -49,16 +46,14 @@ void main() {
 
 void startPowerup() {
 
-  var spineJson = resourceManager.getTextFile("powerupJson");
-  var atlasText = resourceManager.getTextFile("powerupAtlas");
-  var atlasBitmapData = resourceManager.getBitmapData("powerupPng");
+  var spineJson = resourceManager.getTextFile("powerup");
+  var textureAtlas = resourceManager.getTextureAtlas("powerup");
+  var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
+  var skeletonLoader = new SkeletonLoader(attachmentLoader);
+  var skeletonData = skeletonLoader.readSkeletonData(spineJson);
 
-  var textureLoader = new BitmapDataTextureLoader(atlasBitmapData);
-  var atlas = new Atlas(atlasText, textureLoader);
-  var json = new SkeletonJson(new AtlasAttachmentLoader(atlas));
-
-  var skeletonData = json.readSkeletonData(spineJson);
   var animationStateData = new AnimationStateData(skeletonData);
+
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 240;
   skeletonAnimation.y = 430;
@@ -82,15 +77,11 @@ void startSpineboy() {
   textField.text = "tap to change animation";
   textField.addTo(stage);
 
-  var spineJson = resourceManager.getTextFile("spineboyJson");
-  var atlasText = resourceManager.getTextFile("spineboyAtlas");
-  var atlasBitmapData = resourceManager.getBitmapData("spineboyPng");
-
-  var textureLoader = new BitmapDataTextureLoader(atlasBitmapData);
-  var atlas = new Atlas(atlasText, textureLoader);
-  var json = new SkeletonJson(new AtlasAttachmentLoader(atlas));
-
-  var skeletonData = json.readSkeletonData(spineJson);
+  var spineJson = resourceManager.getTextFile("spineboy");
+  var textureAtlas = resourceManager.getTextureAtlas("spineboy");
+  var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
+  var skeletonLoader = new SkeletonLoader(attachmentLoader);
+  var skeletonData = skeletonLoader.readSkeletonData(spineJson);
 
   var animationStateData = new AnimationStateData(skeletonData);
   animationStateData.setMixByName("idle", "walk", 0.2);
@@ -142,15 +133,12 @@ void startSpineboy() {
 
 void startGoblins() {
 
-  var spineJson = resourceManager.getTextFile("goblinsJson");
-  var atlasText = resourceManager.getTextFile("goblinsAtlas");
-  var atlasBitmapData = resourceManager.getBitmapData("goblinsPng");
+  var spineJson = resourceManager.getTextFile("goblins-ffd");
+  var textureAtlas = resourceManager.getTextureAtlas("goblins-ffd");
+  var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
+  var skeletonLoader = new SkeletonLoader(attachmentLoader);
+  var skeletonData = skeletonLoader.readSkeletonData(spineJson);
 
-  var textureLoader = new BitmapDataTextureLoader(atlasBitmapData);
-  var atlas = new Atlas(atlasText, textureLoader);
-  var json = new SkeletonJson(new AtlasAttachmentLoader(atlas));
-
-  var skeletonData = json.readSkeletonData(spineJson);
   var animationStateData = new AnimationStateData(skeletonData);
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
@@ -165,6 +153,7 @@ void startGoblins() {
 
    stage.addChild(skeletonAnimation);
    stage.juggler.add(skeletonAnimation);
+
 }
 
 

@@ -32,18 +32,12 @@ part of stagexl_spine;
 
 class RegionAttachment extends Attachment {
 
-  final int X1 = 0;
-  final int Y1 = 1;
-  final int X2 = 2;
-  final int Y2 = 3;
-  final int X3 = 4;
-  final int Y3 = 5;
-  final int X4 = 6;
-  final int Y4 = 7;
-
+  final BitmapData bitmapData;
   final Matrix matrix = new Matrix.fromIdentity();
   final Float32List offset = new Float32List(8);
   final Float32List uvs = new Float32List(8);
+
+  String path = null;
 
   num x = 0.0;
   num y = 0.0;
@@ -58,45 +52,42 @@ class RegionAttachment extends Attachment {
   num b = 1.0;
   num a = 1.0;
 
-  String path = null;
-  AtlasRegion atlasRegion = null;
+  RegionAttachment(String name, this.bitmapData) : super(name);
 
-  num regionOffsetX = 0.0; // Pixels stripped from the bottom left, unrotated.
-  num regionOffsetY = 0.0;
-  num regionWidth = 0.0; // Unrotated, stripped size.
-  num regionHeight = 0.0;
-  num regionOriginalWidth = 0.0; // Unrotated, unstripped size.
-  num regionOriginalHeight = 0.0;
+  void updateUVs() {
 
-  RegionAttachment(String name) : super(name);
+    Float32List uvList = bitmapData.renderTextureQuad.uvList;
 
-  void setUVs(num u, num v, num u2, num v2, bool rotate) {
-    uvs[0] = rotate ? u2 : u;
-    uvs[1] = v2;
-    uvs[2] = u;
-    uvs[3] = rotate ? v2 : v;
-    uvs[4] = rotate ? u : u2;
-    uvs[5] = v;
-    uvs[6] = u2;
-    uvs[7] = rotate ? v : v2;
+    uvs[0] = uvList[6];  // bottom-left
+    uvs[1] = uvList[7];
+    uvs[2] = uvList[0];  // top-left
+    uvs[3] = uvList[1];
+    uvs[4] = uvList[2];  // top-right
+    uvs[5] = uvList[3];
+    uvs[6] = uvList[4];  // bottom-right
+    uvs[7] = uvList[5];
   }
 
   void updateOffset() {
 
+    RenderTextureQuad renderTextureQuad = bitmapData.renderTextureQuad;
+    int offsetX = renderTextureQuad.offsetX;
+    int offsetY = bitmapData.height - renderTextureQuad.textureHeight - renderTextureQuad.offsetY;
+
     num pivotX = width / 2;
     num pivotY = height / 2;
-    num regionScaleX = scaleX * width / regionOriginalWidth;
-    num regionScaleY = scaleY * height / regionOriginalHeight;
+    num regionScaleX = scaleX * width / bitmapData.width;
+    num regionScaleY = scaleY * height / bitmapData.height;
     num radians = rotation * math.PI / 180;
     num cos = math.cos(radians);
     num sin = math.sin(radians);
 
     //--------------------------------------------
 
-    num localX = regionOffsetX * regionScaleX - scaleX * pivotX;
-    num localY = regionOffsetY * regionScaleY - scaleY * pivotY;
-    num localX2 = localX + regionWidth * regionScaleX;
-    num localY2 = localY + regionHeight * regionScaleY;
+    num localX = offsetX * regionScaleX - scaleX * pivotX;
+    num localY = offsetY * regionScaleY - scaleY * pivotY;
+    num localX2 = localX + renderTextureQuad.textureWidth * regionScaleX;
+    num localY2 = localY + renderTextureQuad.textureHeight * regionScaleY;
     num localXCos = localX * cos + x;
     num localXSin = localX * sin;
     num localYCos = localY * cos + y;

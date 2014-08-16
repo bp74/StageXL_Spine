@@ -77,7 +77,7 @@ class SkeletonDisplayObject extends DisplayObject {
         attachmentG = regionAttachment.g;
         attachmentB = regionAttachment.b;
         attachmentA = regionAttachment.a;
-        renderTexture = regionAttachment.atlasRegion.page.renderTexture;
+        renderTexture = regionAttachment.bitmapData.renderTexture;
 
       } else if (attachment is MeshAttachment) {
 
@@ -95,7 +95,7 @@ class SkeletonDisplayObject extends DisplayObject {
         attachmentG = meshAttachment.g;
         attachmentB = meshAttachment.b;
         attachmentA = meshAttachment.a;
-        renderTexture = meshAttachment.atlasRegion.page.renderTexture;
+        renderTexture = meshAttachment.bitmapData.renderTexture;
 
       } else if (attachment is SkinnedMeshAttachment) {
 
@@ -113,7 +113,7 @@ class SkeletonDisplayObject extends DisplayObject {
         attachmentG = skinnedMesh.g;
         attachmentB = skinnedMesh.b;
         attachmentA = skinnedMesh.a;
-        renderTexture = skinnedMesh.atlasRegion.page.renderTexture;
+        renderTexture = skinnedMesh.bitmapData.renderTexture;
       }
 
       //---------------------------------------------------
@@ -154,8 +154,7 @@ class SkeletonDisplayObject extends DisplayObject {
       if (attachment is RegionAttachment) {
 
         RegionAttachment regionAttachment = attachment;
-        AtlasRegion region = regionAttachment.atlasRegion;
-        RenderTextureQuad renderTextureQuad = region.renderTextureQuad;
+        RenderTextureQuad renderTextureQuad = regionAttachment.bitmapData.renderTextureQuad;
         BlendMode blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
         num alpha = globalAlpha * skeleton.a * regionAttachment.a * slot.a;
 
