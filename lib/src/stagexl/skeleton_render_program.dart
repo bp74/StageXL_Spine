@@ -110,7 +110,7 @@ class _SpineRenderProgram extends RenderProgram {
 
   //-----------------------------------------------------------------------------------------------
 
-  void renderMesh(List<int> indexList, List<num> xyList, List<num> uvList, num r, num g, num b, num a) {
+  void renderMesh(Int16List indexList, Float32List xyList, Float32List uvList, num r, num g, num b, num a) {
 
     int indexCount = _indexCount;
     int indexOffset = indexCount;

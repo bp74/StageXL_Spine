@@ -42,8 +42,8 @@ class RegionAttachment extends Attachment {
   final int Y4 = 7;
 
   final Matrix matrix = new Matrix.fromIdentity();
-  final List<num> offset = new List<num>.filled(8, 0);
-  final List<num> uvs = new List<num>.filled(8, 0);
+  final Float32List offset = new Float32List(8);
+  final Float32List uvs = new Float32List(8);
 
   num x = 0.0;
   num y = 0.0;
@@ -71,25 +71,14 @@ class RegionAttachment extends Attachment {
   RegionAttachment(String name) : super(name);
 
   void setUVs(num u, num v, num u2, num v2, bool rotate) {
-    if (rotate) {
-      uvs[X2] = u;
-      uvs[Y2] = v2;
-      uvs[X3] = u;
-      uvs[Y3] = v;
-      uvs[X4] = u2;
-      uvs[Y4] = v;
-      uvs[X1] = u2;
-      uvs[Y1] = v2;
-    } else {
-      uvs[X1] = u;
-      uvs[Y1] = v2;
-      uvs[X2] = u;
-      uvs[Y2] = v;
-      uvs[X3] = u2;
-      uvs[Y3] = v;
-      uvs[X4] = u2;
-      uvs[Y4] = v2;
-    }
+    uvs[0] = rotate ? u2 : u;
+    uvs[1] = v2;
+    uvs[2] = u;
+    uvs[3] = rotate ? v2 : v;
+    uvs[4] = rotate ? u : u2;
+    uvs[5] = v;
+    uvs[6] = u2;
+    uvs[7] = rotate ? v : v2;
   }
 
   void updateOffset() {
@@ -117,14 +106,14 @@ class RegionAttachment extends Attachment {
     num localY2Cos = localY2 * cos + y;
     num localY2Sin = localY2 * sin;
 
-    offset[X1] = localXCos - localYSin;
-    offset[Y1] = localYCos + localXSin;
-    offset[X2] = localXCos - localY2Sin;
-    offset[Y2] = localY2Cos + localXSin;
-    offset[X3] = localX2Cos - localY2Sin;
-    offset[Y3] = localY2Cos + localX2Sin;
-    offset[X4] = localX2Cos - localYSin;
-    offset[Y4] = localYCos + localX2Sin;
+    offset[0] = localXCos - localYSin;
+    offset[1] = localYCos + localXSin;
+    offset[2] = localXCos - localY2Sin;
+    offset[3] = localY2Cos + localXSin;
+    offset[4] = localX2Cos - localY2Sin;
+    offset[5] = localY2Cos + localX2Sin;
+    offset[6] = localX2Cos - localYSin;
+    offset[7] = localYCos + localX2Sin;
 
     //--------------------------------------------
 
@@ -138,7 +127,7 @@ class RegionAttachment extends Attachment {
     this.matrix.setTo(a, b, c, d, tx, ty);
   }
 
-  void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
+  void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
 
     Matrix matrix = bone.worldMatrix;
 
@@ -149,23 +138,25 @@ class RegionAttachment extends Attachment {
     num tx = matrix.tx + x;
     num ty = matrix.ty + y;
 
-    num x1 = offset[X1];
-    num y1 = offset[Y1];
-    num x2 = offset[X2];
-    num y2 = offset[Y2];
-    num x3 = offset[X3];
-    num y3 = offset[Y3];
-    num x4 = offset[X4];
-    num y4 = offset[Y4];
+    num x1 = offset[0];
+    num y1 = offset[1];
+    num x2 = offset[2];
+    num y2 = offset[3];
+    num x3 = offset[4];
+    num y3 = offset[5];
+    num x4 = offset[6];
+    num y4 = offset[7];
 
-    worldVertices[X1] = x1 * a + y1 * c + tx;
-    worldVertices[Y1] = x1 * b + y1 * d + ty;
-    worldVertices[X2] = x2 * a + y2 * c + tx;
-    worldVertices[Y2] = x2 * b + y2 * d + ty;
-    worldVertices[X3] = x3 * a + y3 * c + tx;
-    worldVertices[Y3] = x3 * b + y3 * d + ty;
-    worldVertices[X4] = x4 * a + y4 * c + tx;
-    worldVertices[Y4] = x4 * b + y4 * d + ty;
+    if (worldVertices.length < 8) return; // dart2js_hint
+
+    worldVertices[0] = x1 * a + y1 * c + tx;
+    worldVertices[1] = x1 * b + y1 * d + ty;
+    worldVertices[2] = x2 * a + y2 * c + tx;
+    worldVertices[3] = x2 * b + y2 * d + ty;
+    worldVertices[4] = x3 * a + y3 * c + tx;
+    worldVertices[5] = x3 * b + y3 * d + ty;
+    worldVertices[6] = x4 * a + y4 * c + tx;
+    worldVertices[7] = x4 * b + y4 * d + ty;
   }
 
 }

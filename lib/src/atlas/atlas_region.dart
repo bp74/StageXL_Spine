@@ -48,8 +48,8 @@ class AtlasRegion {
   int originalHeight = 0;
   int index = 0;
   bool rotate = false;
-  List<int> splits = null;
-  List<int> pads = null;
+  Int16List splits = null;
+  Int16List pads = null;
 
   RenderTextureQuad renderTextureQuad = null;
   //Object rendererObject = null;

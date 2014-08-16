@@ -38,22 +38,22 @@ class ColorTimeline extends CurveTimeline {
   static const int _FRAME_B = 3;
   static const int _FRAME_A = 4;
 
-  final List<num> frames; // time, r, g, b, a, ...
+  final Float32List frames; // time, r, g, b, a, ...
   int slotIndex = 0;
 
   ColorTimeline(int frameCount)
       : super(frameCount),
-        frames = new List<num>.filled(frameCount * 5, 0);
+        frames = new Float32List(frameCount * 5);
 
   /// Sets the time and value of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, num r, num g, num b, num a) {
     frameIndex *= 5;
-    frames[frameIndex] = time;
-    frames[frameIndex + 1] = r;
-    frames[frameIndex + 2] = g;
-    frames[frameIndex + 3] = b;
-    frames[frameIndex + 4] = a;
+    frames[frameIndex + 0] = time.toDouble();
+    frames[frameIndex + 1] = r.toDouble();
+    frames[frameIndex + 2] = g.toDouble();
+    frames[frameIndex + 3] = b.toDouble();
+    frames[frameIndex + 4] = a.toDouble();
   }
 
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {

@@ -22,6 +22,9 @@ class SkeletonDisplayObject extends DisplayObject {
 
   //-----------------------------------------------------------------------------------------------
 
+  static Float32List _xyList = new Float32List(256);
+  static Int16List _indexList = new Int16List.fromList([0, 1, 2, 0, 2, 3]);
+
   void _renderWebGL(RenderState renderState) {
 
     var renderProgram = _SpineRenderProgram.instance;
@@ -39,16 +42,15 @@ class SkeletonDisplayObject extends DisplayObject {
     num skeletonB = skeleton.b;
     num skeletonA = skeleton.a;
 
-    List<Slot> drawOrder = skeleton.drawOrder;
-    List<num> uvList = new List<num>();
-    List<num> xyList = new List<num>();
-    List<int> indexList = new List<int>();
-    List<int> regionIndexList = new List<int>.from([0, 1, 2, 0, 2, 3]);
-
     renderProgram.configure(renderContextWebGL, matrix);
-    xyList.length = 8;
+
+    Float32List xyList = _xyList;
+    Float32List uvList = new Float32List(0);
+    Int16List indexList = new Int16List(0);
 
     //---------------------------------------------------
+
+    List<Slot> drawOrder = skeleton.drawOrder;
 
     for (var i = 0; i < drawOrder.length; i++) {
 
@@ -60,7 +62,6 @@ class SkeletonDisplayObject extends DisplayObject {
       num attachmentG = 0.0;
       num attachmentB = 0.0;
       num attachmentA = 0.0;
-      int verticesLength = 0;
 
       //---------------------------------------------------
 
@@ -68,10 +69,9 @@ class SkeletonDisplayObject extends DisplayObject {
 
         RegionAttachment regionAttachment = attachment;
 
-        verticesLength = 8;
         regionAttachment.computeWorldVertices(skeletonX, skeletonY, bone, xyList);
         uvList = regionAttachment.uvs;
-        indexList = regionIndexList;
+        indexList = _indexList;
 
         attachmentR = regionAttachment.r;
         attachmentG = regionAttachment.g;
@@ -83,8 +83,10 @@ class SkeletonDisplayObject extends DisplayObject {
 
         MeshAttachment meshAttachment = attachment;
 
-        verticesLength = meshAttachment.vertices.length;
-        if (xyList.length < verticesLength) xyList.length = verticesLength;
+        if (xyList.length < meshAttachment.vertices.length) {
+          xyList = _xyList = new Float32List(meshAttachment.vertices.length);
+        }
+
         meshAttachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
         uvList = meshAttachment.uvs;
         indexList = meshAttachment.triangles;
@@ -99,8 +101,10 @@ class SkeletonDisplayObject extends DisplayObject {
 
         SkinnedMeshAttachment skinnedMesh = attachment;
 
-        verticesLength = skinnedMesh.uvs.length;
-        if (xyList.length < verticesLength) xyList.length = verticesLength;
+        if (xyList.length < skinnedMesh.uvs.length) {
+          xyList = _xyList = new Float32List(skinnedMesh.uvs.length);
+        }
+
         skinnedMesh.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
         uvList = skinnedMesh.uvs;
         indexList = skinnedMesh.triangles;

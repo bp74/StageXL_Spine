@@ -77,7 +77,7 @@ class Animation {
   }
 
   /// target: After the first and before the last entry.
-  static int binarySearch(List<num> values, num target, int step) {
+  static int binarySearch(Float32List values, num target, int step) {
 
     int low = 0;
     int high = values.length ~/ step - 2;
@@ -101,7 +101,7 @@ class Animation {
     return 0; // Can't happen.
   }
 
-  static int linearSearch(List<num> values, num target, int step) {
+  static int linearSearch(Float32List values, num target, int step) {
     for (int i = 0; i <= values.length - step; i += step) {
       if (values[i] > target) return i;
     }

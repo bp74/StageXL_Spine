@@ -32,20 +32,20 @@ part of stagexl_spine;
 
 class FfdTimeline extends CurveTimeline {
 
-  final List<num> frames;
-  final List<List<num>> frameVertices;
+  final Float32List frames;
+  final List<Float32List> frameVertices;
   Attachment attachment = null;
   int slotIndex = 0;
 
   FfdTimeline(int frameCount)
       : super(frameCount),
-        frames = new List<num>.filled(frameCount, 0),
-        frameVertices = new List<List<num>>.filled(frameCount, null);
+        frames = new Float32List(frameCount),
+        frameVertices = new List<Float32List>(frameCount);
 
   /// Sets the time and value of the specified keyframe.
   ///
-  void setFrame(int frameIndex, num time, List<num> vertices) {
-    frames[frameIndex] = time;
+  void setFrame(int frameIndex, num time, Float32List vertices) {
+    frames[frameIndex] = time.toDouble();
     frameVertices[frameIndex] = vertices;
   }
 
@@ -54,31 +54,33 @@ class FfdTimeline extends CurveTimeline {
     Slot slot = skeleton.slots[slotIndex];
     if (slot.attachment != attachment) return;
 
-    List<num> frames = this.frames;
+    Float32List frames = this.frames;
 
     if (time < frames[0]) {
-      slot.attachmentVertices.length = 0;
+      slot.attachmentVertices = new Float32List(0);
       return; // Time is before first frame.
     }
 
-    List<List<num>> frameVertices = this.frameVertices;
+    Float32List attachmentVertices = slot.attachmentVertices;
+    List<Float32List> frameVertices = this.frameVertices;
     int vertexCount = frameVertices[0].length;
 
-    List<num> vertices = slot.attachmentVertices;
-    if (vertices.length != vertexCount) alpha = 1;
-    vertices.length = vertexCount;
+    if (attachmentVertices.length != vertexCount) {
+      attachmentVertices = slot.attachmentVertices = new Float32List(vertexCount);
+      alpha = 1;
+    }
 
     if (time >= frames[frames.length - 1]) { // Time is after last frame.
 
-      List<num> lastVertices = frameVertices[frames.length - 1];
+      Float32List lastVertices = frameVertices[frames.length - 1];
 
       if (alpha < 1) {
         for (int i = 0; i < vertexCount; i++) {
-          vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
+          attachmentVertices[i] += (lastVertices[i] - attachmentVertices[i]) * alpha;
         }
       } else {
         for (int i = 0; i < vertexCount; i++) {
-          vertices[i] = lastVertices[i];
+          attachmentVertices[i] = lastVertices[i];
         }
       }
 
@@ -92,20 +94,20 @@ class FfdTimeline extends CurveTimeline {
     num percent = 1 - (time - frameTime) / (frames[frameIndex - 1] - frameTime);
     percent = getCurvePercent(frameIndex - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
-    List<num> prevVertices = frameVertices[frameIndex - 1];
-    List<num> nextVertices = frameVertices[frameIndex];
+    Float32List prevVertices = frameVertices[frameIndex - 1];
+    Float32List nextVertices = frameVertices[frameIndex];
 
     num prev;
 
     if (alpha < 1) {
       for (int i = 0; i < vertexCount; i++) {
         prev = prevVertices[i];
-        vertices[i] += (prev + (nextVertices[i] - prev) * percent - vertices[i]) * alpha;
+        attachmentVertices[i] += (prev + (nextVertices[i] - prev) * percent - attachmentVertices[i]) * alpha;
       }
     } else {
       for (int i = 0; i < vertexCount; i++) {
         prev = prevVertices[i];
-        vertices[i] = prev + (nextVertices[i] - prev) * percent;
+        attachmentVertices[i] = prev + (nextVertices[i] - prev) * percent;
       }
     }
   }

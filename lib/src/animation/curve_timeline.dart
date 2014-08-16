@@ -34,13 +34,13 @@ part of stagexl_spine;
 ///
 class CurveTimeline implements Timeline {
 
-  static const num _LINEAR = 0;
-  static const num _STEPPED = -1;
+  static const num _LINEAR = 0.0;
+  static const num _STEPPED = -1.0;
   static const int _BEZIER_SEGMENTS = 10;
 
-  final List<num> _curves; // dfx, dfy, ddfx, ddfy, dddfx, dddfy, ...
+  final Float32List _curves; // dfx, dfy, ddfx, ddfy, dddfx, dddfy, ...
 
-  CurveTimeline(int frameCount) : _curves = new List<num>.filled(frameCount * 6, 0);
+  CurveTimeline(int frameCount) : _curves = new Float32List(frameCount * 6);
 
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
   }
@@ -73,10 +73,10 @@ class CurveTimeline implements Timeline {
     num pre4 = 6 * subdiv_step2;
     num pre5 = 6 * subdiv_step3;
 
-    num tmp1x = -cx1 * 2 + cx2;
-    num tmp1y = -cy1 * 2 + cy2;
-    num tmp2x = (cx1 - cx2) * 3 + 1;
-    num tmp2y = (cy1 - cy2) * 3 + 1;
+    num tmp1x = -cx1 * 2.0 + cx2;
+    num tmp1y = -cy1 * 2.0 + cy2;
+    num tmp2x = (cx1 - cx2) * 3.0 + 1.0;
+    num tmp2y = (cy1 - cy2) * 3.0 + 1.0;
 
     int i = frameIndex * 6;
 

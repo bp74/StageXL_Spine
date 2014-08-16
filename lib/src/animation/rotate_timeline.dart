@@ -35,19 +35,19 @@ class RotateTimeline extends CurveTimeline {
   static const int _PREV_FRAME_TIME = -2;
   static const int _FRAME_VALUE = 1;
 
-  final List<num> frames; // time, value, ...
+  final Float32List frames; // time, value, ...
   int boneIndex = 0;
 
   RotateTimeline(int frameCount)
       : super(frameCount),
-        frames = new List<num>.filled(frameCount * 2, 0);
+        frames = new Float32List(frameCount * 2);
 
   /// Sets the time and angle of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, num angle) {
-    frameIndex *= 2;
-    frames[frameIndex] = time;
-    frames[frameIndex + 1] = angle;
+    frameIndex = frameIndex << 1;
+    frames[frameIndex + 0] = time.toDouble();
+    frames[frameIndex + 1] = angle.toDouble();
   }
 
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {

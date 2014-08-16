@@ -36,19 +36,19 @@ class TranslateTimeline extends CurveTimeline {
   static const int _FRAME_X = 1;
   static const int _FRAME_Y = 2;
 
-  final List<num> frames; // time, value, value, ...
+  final Float32List frames; // time, value, value, ...
   int boneIndex = 0;
 
   TranslateTimeline(int frameCount)
       : super(frameCount),
-        frames = new List<num>.filled(frameCount * 3, 0);
+        frames = new Float32List(frameCount * 3);
 
   /// Sets the time and value of the specified keyframe.
   void setFrame(int frameIndex, num time, num x, num y) {
     frameIndex *= 3;
-    frames[frameIndex] = time;
-    frames[frameIndex + 1] = x;
-    frames[frameIndex + 2] = y;
+    frames[frameIndex + 0] = time.toDouble();
+    frames[frameIndex + 1] = x.toDouble();
+    frames[frameIndex + 2] = y.toDouble();
   }
 
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {

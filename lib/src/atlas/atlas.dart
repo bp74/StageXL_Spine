@@ -114,6 +114,7 @@ class Atlas {
           region.u2 = (x + width) / page.renderTexture.width;
           region.v2 = (y + height) / page.renderTexture.height;
         }
+
         region.x = x;
         region.y = y;
         region.width = width.abs();
@@ -121,10 +122,16 @@ class Atlas {
 
         if (reader.readTuple(tuple) == 4) {
           // split is optional
-          region.splits = new List<int>.generate(4, (int i) => int.parse(tuple[i]));
+          region.splits = new Int16List(4);
+          for(int i = 0; i < region.splits.length; i++) {
+            region.splits[i] = int.parse(tuple[i]);
+          }
           if (reader.readTuple(tuple) == 4) {
             // pad is optional, but only present with splits
-            region.pads = new List<int>.generate(4, (int i) => int.parse(tuple[i]));
+            region.pads = new Int16List(4);
+            for(int i = 0; i < region.pads.length; i++) {
+              region.pads[i] = int.parse(tuple[i]);
+            }
             reader.readTuple(tuple);
           }
         }

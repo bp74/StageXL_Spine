@@ -32,19 +32,19 @@ part of stagexl_spine;
 
 class EventTimeline implements Timeline {
 
-  final List<num> frames; // time, ...
+  final Float32List frames; // time, ...
   final List<Event> events;
 
   EventTimeline(int frameCount)
-      : frames = new List<num>.filled(frameCount, 0),
-        events = new List<Event>.filled(frameCount, null);
+      : frames = new Float32List(frameCount),
+        events = new List<Event>(frameCount);
 
   int get frameCount => frames.length;
 
   /// Sets the time and value of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, Event event) {
-    frames[frameIndex] = time;
+    frames[frameIndex] = time.toDouble();
     events[frameIndex] = event;
   }
 
@@ -54,10 +54,12 @@ class EventTimeline implements Timeline {
 
     if (firedEvents == null) return;
 
-    if (lastTime > time) { // Fire events after last time for looped animations.
+    if (lastTime > time) {
+      // Fire events after last time for looped animations.
       apply(skeleton, lastTime, double.INFINITY, firedEvents, alpha);
       lastTime = -1;
-    } else if (lastTime >= frames[frameCount - 1]) { // Last time is after last frame.
+    } else if (lastTime >= frames[frameCount - 1]) {
+      // Last time is after last frame.
       return;
     }
 

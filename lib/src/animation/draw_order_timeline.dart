@@ -32,19 +32,19 @@ part of stagexl_spine;
 
 class DrawOrderTimeline implements Timeline {
 
-  final List<num> frames; // time, ...
-  final List<List<int>> drawOrders;
+  final Float32List frames; // time, ...
+  final List<Int16List> drawOrders;
 
   DrawOrderTimeline(int frameCount)
-      : frames = new List<num>.filled(frameCount, 0),
-        drawOrders = new List<List<int>>.filled(frameCount, null);
+      : frames = new Float32List(frameCount),
+        drawOrders = new List<Int16List>(frameCount);
 
   int get frameCount => frames.length;
 
   /// Sets the time and value of the specified keyframe.
   ///
-  void setFrame(int frameIndex, num time, List<int> drawOrder) {
-    frames[frameIndex] = time;
+  void setFrame(int frameIndex, num time, Int16List drawOrder) {
+    frames[frameIndex] = time.toDouble();
     drawOrders[frameIndex] = drawOrder;
   }
 
@@ -62,7 +62,7 @@ class DrawOrderTimeline implements Timeline {
 
     List<Slot> drawOrder = skeleton.drawOrder;
     List<Slot> slots = skeleton.slots;
-    List<int> drawOrderToSetupIndex = drawOrders[frameIndex];
+    Int16List drawOrderToSetupIndex = drawOrders[frameIndex];
 
     int i = 0;
     if (drawOrderToSetupIndex == null) {

@@ -193,9 +193,9 @@ class SkeletonJson {
         MeshAttachment mesh = attachmentLoader.newMeshAttachment(skin, name, path);
         if (mesh == null) return null;
         mesh.path = path;
-        mesh.vertices = _getFloatArray(map, "vertices", scale);
-        mesh.triangles = _getIntArray(map, "triangles");
-        mesh.regionUVs = _getFloatArray(map, "uvs", 1);
+        mesh.vertices = _getFloat32List(map, "vertices", scale);
+        mesh.triangles = _getInt16List(map, "triangles");
+        mesh.regionUVs = _getFloat32List(map, "uvs", 1);
         mesh.updateUVs();
 
         if (map.containsKey("color")) {
@@ -207,7 +207,7 @@ class SkeletonJson {
         }
 
         mesh.hullLength = (map.containsKey("hull") ? map["hull"] : 0) * 2;
-        if (map.containsKey("edges")) mesh.edges = _getIntArray(map, "edges");
+        if (map.containsKey("edges")) mesh.edges = _getInt16List(map, "edges");
         mesh.width = (map.containsKey("width") ? map["width"] : 0) * scale;
         mesh.height = (map.containsKey("height") ? map["height"] : 0) * scale;
         return mesh;
@@ -218,16 +218,16 @@ class SkeletonJson {
         if (skinnedMesh == null) return null;
         skinnedMesh.path = path;
 
-        List<num> uvs = _getFloatArray(map, "uvs", 1);
-        List<num> vertices = _getFloatArray(map, "vertices", 1);
-        List<num> weights = new List<num>();
+        Float32List uvs = _getFloat32List(map, "uvs", 1);
+        Float32List vertices = _getFloat32List(map, "vertices", 1);
+        List<double> weights = new List<double>();
         List<int> bones = new List<int>();
 
         for (int i = 0; i < vertices.length; ) {
           int boneCount = vertices[i++].toInt();
           bones.add(boneCount);
           for (int nn = i + boneCount * 4; i < nn; ) {
-            bones.add(vertices[i]);
+            bones.add(vertices[i].toInt());
             weights.add(vertices[i + 1] * scale);
             weights.add(vertices[i + 2] * scale);
             weights.add(vertices[i + 3]);
@@ -235,9 +235,9 @@ class SkeletonJson {
           }
         }
 
-        skinnedMesh.bones = bones;
-        skinnedMesh.weights = weights;
-        skinnedMesh.triangles = _getIntArray(map, "triangles");
+        skinnedMesh.bones = new Int16List.fromList(bones);
+        skinnedMesh.weights = new Float32List.fromList(weights);
+        skinnedMesh.triangles = _getInt16List(map, "triangles");
         skinnedMesh.regionUVs = uvs;
         skinnedMesh.updateUVs();
 
@@ -250,7 +250,7 @@ class SkeletonJson {
         }
 
         skinnedMesh.hullLength = (map.containsKey("hull") ? map["hull"] : 0) * 2;
-        if (map.containsKey("edges")) skinnedMesh.edges = _getIntArray(map, "edges");
+        if (map.containsKey("edges")) skinnedMesh.edges = _getInt16List(map, "edges");
         skinnedMesh.width = (map.containsKey("width") ? map["width"] : 0) * scale;
         skinnedMesh.height = (map.containsKey("height") ? map["height"] : 0) * scale;
         return skinnedMesh;
@@ -258,10 +258,7 @@ class SkeletonJson {
       case AttachmentType.boundingbox:
 
         BoundingBoxAttachment box = attachmentLoader.newBoundingBoxAttachment(skin, name);
-        List<num> vertices = box.vertices;
-        for (num point in map["vertices"]) {
-          vertices.add(point * scale);
-        }
+        box.vertices = _getFloat32List(map, "vertices", scale);
         return box;
     }
 
@@ -431,26 +428,24 @@ class SkeletonJson {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            List<num> vertices;
+            Float32List vertices;
             if (valueMap.containsKey("vertices") == false) {
               if (attachment is MeshAttachment) {
                 var meshAttachment = attachment;
                 vertices = meshAttachment.vertices;
               } else {
-                vertices = new List<num>.filled(vertexCount, 0);
+                vertices = new Float32List(vertexCount);
               }
             } else {
-              List verticesValue = valueMap["vertices"];
-              vertices = new List<num>.filled(vertexCount, 0);
+              Float32List verticesValue = _getFloat32List(valueMap, "vertices", scale);
               int start = valueMap.containsKey("offset") ? valueMap["offset"] : 0;
-              if (scale == 1) {
-                for (int i = 0; i < verticesValue.length; i++) vertices[i + start] = verticesValue[i];
-              } else {
-                for (int i = 0; i < verticesValue.length; i++) vertices[i + start] = verticesValue[i] * scale;
+              vertices = new Float32List(vertexCount);
+              for (int i = 0; i < verticesValue.length; i++) {
+                vertices[i + start] = verticesValue[i];
               }
               if (attachment is MeshAttachment) {
                 var meshAttachment = attachment;
-                List<num> meshVertices = meshAttachment.vertices;
+                var meshVertices = meshAttachment.vertices;
                 for (int i = 0; i < vertexCount; i++) {
                   vertices[i] += meshVertices[i];
                 }
@@ -479,13 +474,17 @@ class SkeletonJson {
 
       for (Map drawOrderMap in drawOrderValues) {
 
-        List<int> drawOrder = null;
+        Int16List drawOrder = null;
 
         if (drawOrderMap.containsKey("offsets")) {
-          drawOrder = new List<int>.filled(slotCount, -1);
+
+          drawOrder = new Int16List(slotCount);
+          for(int i = 0; i < drawOrder.length; i++) {
+            drawOrder[i] = -1;
+          }
 
           List offsets = drawOrderMap["offsets"];
-          List<int> unchanged = new List<int>(slotCount - offsets.length);
+          Int16List unchanged = new Int16List(slotCount - offsets.length);
           int originalIndex = 0;
           int unchangedIndex = 0;
 
@@ -566,17 +565,22 @@ class SkeletonJson {
     return int.parse(substring, radix: 16) / 255;
   }
 
-  List<num> _getFloatArray(Map map, String name, num scale) {
-    List<num> values = map[name];
+  Float32List _getFloat32List(Map map, String name, num scale) {
+    List values = map[name];
+    Float32List result = new Float32List(values.length);
     for (int i = 0; i < values.length; i++) {
-      values[i] *= scale;
+      result[i] = values[i].toDouble() * scale;
     }
-    return values;
+    return result;
   }
 
-  List<int> _getIntArray(Map map, String name) {
-    List<int> values = map[name];
-    return values;
+  Int16List _getInt16List(Map map, String name) {
+    List values = map[name];
+    Int16List result = new Int16List(values.length);
+    for (int i = 0; i < values.length; i++) {
+      result[i] = values[i].toInt();
+    }
+    return result;
   }
 
 }

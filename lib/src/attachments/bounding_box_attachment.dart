@@ -32,11 +32,11 @@ part of stagexl_spine;
 
 class BoundingBoxAttachment extends Attachment {
 
-  final List<num> vertices = new List<num>();
+  Float32List vertices = new Float32List(0);
 
   BoundingBoxAttachment(String name) : super(name);
 
-  void computeWorldVertices(num x, num y, Bone bone, List<num> worldVertices) {
+  void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
 
     Matrix matrix = bone.worldMatrix;
 

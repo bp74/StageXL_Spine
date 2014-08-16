@@ -32,12 +32,12 @@ part of stagexl_spine;
 
 class AttachmentTimeline implements Timeline {
 
-  final List<num> frames; // time, ...
+  final Float32List frames; // time, ...
   final List<String> attachmentNames;
   int slotIndex = 0;
 
   AttachmentTimeline(int frameCount)
-      : frames = new List<num>.filled(frameCount, 0),
+      : frames = new Float32List(frameCount),
         attachmentNames = new List<String>.filled(frameCount, null);
 
   int get frameCount => frames.length;
@@ -45,7 +45,7 @@ class AttachmentTimeline implements Timeline {
   /// Sets the time and value of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, String attachmentName) {
-    frames[frameIndex] = time;
+    frames[frameIndex] = time.toDouble();
     attachmentNames[frameIndex] = attachmentName;
   }
 

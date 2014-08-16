@@ -43,7 +43,7 @@ class Slot {
 
   Attachment _attachment = null;
   num _attachmentTime = 0;
-  List<num> attachmentVertices = new List<num>();
+  Float32List attachmentVertices = new Float32List(0);
 
   Slot(this.data, this.skeleton, this.bone) {
     if (data == null) throw new ArgumentError("data cannot be null.");
@@ -57,7 +57,7 @@ class Slot {
   void set attachment(Attachment attachment) {
     _attachment = attachment;
     _attachmentTime = skeleton.time;
-    attachmentVertices.length = 0;
+    attachmentVertices = new Float32List(0);
   }
 
   /// Returns the time since the attachment was set.
@@ -73,7 +73,8 @@ class Slot {
     g = data.g;
     b = data.b;
     a = data.a;
-    attachment = data.attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
+    attachment = data.attachmentName == null
+        ? null : skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
   }
 
   String toString() => data.name;

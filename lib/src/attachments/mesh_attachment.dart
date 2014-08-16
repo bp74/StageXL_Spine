@@ -32,10 +32,11 @@ part of stagexl_spine;
 
 class MeshAttachment extends Attachment {
 
-  List<num> vertices = null;
-  List<num> uvs = null;
-  List<num> regionUVs = null;
-  List<int> triangles = null;
+  Float32List vertices = null;
+  Float32List uvs = null;
+  Float32List regionUVs = null;
+  Int16List triangles = null;
+
   int hullLength = 0;
   num r = 1.0;
   num g = 1.0;
@@ -59,7 +60,7 @@ class MeshAttachment extends Attachment {
   num regionOriginalHeight = 0.0;
 
   // Nonessential.
-  List<int> edges = null;
+  Int16List edges = null;
   num width = 0.0;
   num height = 0.0;
 
@@ -71,7 +72,7 @@ class MeshAttachment extends Attachment {
     num height = regionV2 - regionV;
 
     if (uvs == null || uvs.length != regionUVs.length) {
-      uvs = new List<num>.filled(regionUVs.length, 0);
+      uvs = new Float32List(regionUVs.length);
     }
 
     if (regionRotate) {
@@ -87,7 +88,7 @@ class MeshAttachment extends Attachment {
     }
   }
 
-  void computeWorldVertices(num x, num y, Slot slot, List<num> worldVertices) {
+  void computeWorldVertices(num x, num y, Slot slot, Float32List worldVertices) {
 
     Matrix matrix = slot.bone.worldMatrix;
 
