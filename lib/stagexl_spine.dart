@@ -36,14 +36,6 @@ part 'src/animation/track_entry.dart';
 part 'src/animation/track_state.dart';
 part 'src/animation/translate_timeline.dart';
 
-part 'src/atlas/atlas.dart';
-part 'src/atlas/atlas_page.dart';
-part 'src/atlas/atlas_region.dart';
-part 'src/atlas/texture_format.dart';
-part 'src/atlas/texture_filter.dart';
-part 'src/atlas/texture_loader.dart';
-part 'src/atlas/texture_wrap.dart';
-
 part 'src/attachments/attachment.dart';
 part 'src/attachments/attachment_loader.dart';
 part 'src/attachments/attachment_type.dart';

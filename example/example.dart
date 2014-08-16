@@ -19,23 +19,26 @@ void main() {
 
   BitmapData.defaultLoadOptions.webp = true;
 
-  switch(3) {
+  switch(2) {
 
     case 1: // powerup
       resourceManager.addTextFile("powerup", "spine/powerup.json");
-      resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
+      resourceManager.addTextureAtlas("powerup", "atlas1/powerup.atlas", TextureAtlasFormat.LIBGDX);
+      //resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
       resourceManager.load().then((rm) => startPowerup());
       break;
 
     case 2: // spineboy
       resourceManager.addTextFile("spineboy", "spine/spineboy.json");
-      resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy.json", TextureAtlasFormat.JSONARRAY);
+      resourceManager.addTextureAtlas("spineboy", "atlas1/spineboy.atlas", TextureAtlasFormat.LIBGDX);
+      //resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy.json", TextureAtlasFormat.JSONARRAY);
       resourceManager.load().then((rm) => startSpineboy());
       break;
 
     case 3: // goblins
       resourceManager.addTextFile("goblins-ffd", "spine/goblins-ffd.json");
-      resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
+      resourceManager.addTextureAtlas("goblins-ffd", "atlas1/goblins-ffd.atlas", TextureAtlasFormat.LIBGDX);
+      //resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
       resourceManager.load().then((rm) => startGoblins());
       break;
   }
