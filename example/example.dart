@@ -17,6 +17,8 @@ void main() {
   renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  BitmapData.defaultLoadOptions.webp = true;
+
   switch(2) {
 
     case 1: // powerup
@@ -153,8 +155,8 @@ void startGoblins() {
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 240;
-  skeletonAnimation.y = 450;
-  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 1.0;
+  skeletonAnimation.y = 560;
+  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 1.5;
 
   skeletonAnimation.skeleton.skinName = "goblin";
   //skeletonAnimation.skeleton.skinName = "goblingirl";
