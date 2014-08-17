@@ -38,7 +38,6 @@ class RegionAttachment extends Attachment {
   final Float32List uvs = new Float32List(8);
 
   String path = null;
-
   num x = 0.0;
   num y = 0.0;
   num scaleX = 1.0;
@@ -46,7 +45,6 @@ class RegionAttachment extends Attachment {
   num rotation = 0.0;
   num width = 0.0;
   num height = 0.0;
-
   num r = 1.0;
   num g = 1.0;
   num b = 1.0;
