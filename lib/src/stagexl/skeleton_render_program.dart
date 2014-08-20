@@ -110,29 +110,27 @@ class _SpineRenderProgram extends RenderProgram {
 
   //-----------------------------------------------------------------------------------------------
 
-  void renderMesh(Int16List indexList, Float32List xyList, Float32List uvList, num r, num g, num b, num a) {
+  void renderMesh(int indexCount, Int16List indexList,
+                  int vertexCount, Float32List xyList, Float32List uvList,
+                  num r, num g, num b, num a) {
 
-    int indexCount = _indexCount;
-    int indexOffset = indexCount;
-    int indexLength = indexList.length;
-    bool indexFlush  = indexOffset + indexLength >= _indexList.length;
+    int indexOffset = _indexCount;
+    bool indexFlush = indexOffset + indexCount >= _indexList.length;
 
-    int vertexCount = _vertexCount;
-    int vertexOffset = vertexCount * 8;
-    int vertexLength = uvList.length >> 1;
-    bool vertexFlush = vertexOffset + vertexLength * 8 >= _vertexList.length;
+    int vertexOffset = _vertexCount * 8;
+    bool vertexFlush = vertexOffset + vertexCount * 8 >= _vertexList.length;
 
     if (indexFlush || vertexFlush) {
       this.flush();
-      indexCount = indexOffset = 0;
-      vertexCount = vertexOffset = 0;
+      indexOffset = 0;
+      vertexOffset = 0;
     }
 
-    for(int i = 0; i < indexLength; i++) {
-      _indexList[indexOffset + i] = vertexCount + indexList[i];
+    for(int i = 0; i < indexCount; i++) {
+      _indexList[indexOffset + i] = _vertexCount + indexList[i];
     }
 
-    for(int i = 0, j = 0; i < vertexLength; i++, j+=2) {
+    for(int i = 0, j = 0; i < vertexCount; i++, j+=2) {
       if (vertexOffset >= _vertexList.length - 8) continue; // dart2js_hint
       _vertexList[vertexOffset + 0] = xyList[j + 0];
       _vertexList[vertexOffset + 1] = xyList[j + 1];
@@ -145,8 +143,8 @@ class _SpineRenderProgram extends RenderProgram {
       vertexOffset += 8;
     }
 
-    _indexCount = indexCount + indexLength;
-    _vertexCount = vertexCount + vertexLength;
+    _indexCount += indexCount;
+    _vertexCount += vertexCount;
   }
 
   //-----------------------------------------------------------------------------------------------

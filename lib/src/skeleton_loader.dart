@@ -197,7 +197,7 @@ class SkeletonLoader {
         mesh.path = path;
         mesh.vertices = _getFloat32List(map, "vertices", scale);
         mesh.triangles = _getInt16List(map, "triangles");
-        mesh.regionUVs = _getFloat32List(map, "uvs", 1);
+        mesh.regionUVs = _getFloat32List(map, "uvs", 1.0);
         mesh.updateUVs();
 
         if (map.containsKey("color")) {

@@ -33,7 +33,6 @@ class SkeletonDisplayObject extends DisplayObject {
     var blendMode = renderState.globalBlendMode;
 
     RenderContextWebGL renderContextWebGL = renderContext;
-    RenderTexture renderTexture = null;
 
     num skeletonX = skeleton.x;
     num skeletonY = skeleton.y;
@@ -57,6 +56,9 @@ class SkeletonDisplayObject extends DisplayObject {
       Slot slot = drawOrder[i];
       Bone bone = slot.bone;
       Attachment attachment = slot.attachment;
+      RenderTexture renderTexture = null;
+      int vertexCount = 0;
+      int indexCount = 0;
 
       num attachmentR = 0.0;
       num attachmentG = 0.0;
@@ -72,6 +74,8 @@ class SkeletonDisplayObject extends DisplayObject {
         regionAttachment.computeWorldVertices(skeletonX, skeletonY, bone, xyList);
         uvList = regionAttachment.uvs;
         indexList = _indexList;
+        vertexCount = 4;
+        indexCount = 6;
 
         attachmentR = regionAttachment.r;
         attachmentG = regionAttachment.g;
@@ -83,13 +87,16 @@ class SkeletonDisplayObject extends DisplayObject {
 
         MeshAttachment meshAttachment = attachment;
 
-        if (xyList.length < meshAttachment.vertices.length) {
-          xyList = _xyList = new Float32List(meshAttachment.vertices.length);
+        uvList = meshAttachment.uvs;
+        indexList = meshAttachment.triangles;
+        vertexCount = uvList.length >> 1;
+        indexCount = indexList.length;
+
+        if (xyList.length < uvList.length) {
+          xyList = _xyList = new Float32List(uvList.length);
         }
 
         meshAttachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-        uvList = meshAttachment.uvs;
-        indexList = meshAttachment.triangles;
 
         attachmentR = meshAttachment.r;
         attachmentG = meshAttachment.g;
@@ -101,13 +108,16 @@ class SkeletonDisplayObject extends DisplayObject {
 
         SkinnedMeshAttachment skinnedMesh = attachment;
 
-        if (xyList.length < skinnedMesh.uvs.length) {
-          xyList = _xyList = new Float32List(skinnedMesh.uvs.length);
+        uvList = skinnedMesh.uvs;
+        indexList = skinnedMesh.triangles;
+        vertexCount = uvList.length >> 1;
+        indexCount = indexList.length;
+
+        if (xyList.length < uvList.length) {
+          xyList = _xyList = new Float32List(uvList.length);
         }
 
         skinnedMesh.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-        uvList = skinnedMesh.uvs;
-        indexList = skinnedMesh.triangles;
 
         attachmentR = skinnedMesh.r;
         attachmentG = skinnedMesh.g;
@@ -127,7 +137,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
         renderContextWebGL.activateRenderTexture(renderTexture);
         renderContextWebGL.activateBlendMode(slot.data.additiveBlending ? BlendMode.ADD : blendMode);
-        renderProgram.renderMesh(indexList, xyList, uvList, rr, gg, bb, aa);
+        renderProgram.renderMesh(indexCount, indexList, vertexCount, xyList, uvList, rr, gg, bb, aa);
       }
     }
   }
