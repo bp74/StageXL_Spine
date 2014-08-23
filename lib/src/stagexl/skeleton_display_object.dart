@@ -11,6 +11,18 @@ class SkeletonDisplayObject extends DisplayObject {
 
   //-----------------------------------------------------------------------------------------------
 
+  Rectangle<num> getBoundsTransformed(Matrix matrix, [Rectangle<num> returnRectangle]) {
+    // Currently bounds are not supported.
+    // We sould offer add an opt-in flag.
+    return super.getBoundsTransformed(matrix, returnRectangle);
+  }
+
+  DisplayObject hitTestInput(num localX, num localY) {
+    // Currently hitTests are not supported.
+    // We sould offer add an opt-in flag.
+    return null;
+  }
+
   void render(RenderState renderState) {
     var renderContext = renderState.renderContext;
     if (renderContext is RenderContextWebGL) {
