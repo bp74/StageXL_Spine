@@ -32,9 +32,9 @@ part of stagexl_spine;
 
 class SkeletonBounds {
 
-  final List<Polygon> _polygonPool = new List<Polygon>();
   final List<BoundingBoxAttachment> boundingBoxes = new List<BoundingBoxAttachment>();
-  final List<Polygon> polygons = new List<Polygon>();
+  final List<Float32List> verticesList = new List<Float32List>();
+  final List<ByteBuffer> _byteBuffers = new List<ByteBuffer>();
 
   num minX = 0.0;
   num minY = 0.0;
@@ -51,23 +51,38 @@ class SkeletonBounds {
     num x = skeleton.x;
     num y = skeleton.y;
 
-    _polygonPool.addAll(polygons);
+    for(int i = 0; i < verticesList.length; i++) {
+      _byteBuffers.add(verticesList[i].buffer);
+    }
 
     boundingBoxes.clear();
-    polygons.clear();
+    verticesList.clear();
 
     for (int i = 0; i < slotCount; i++) {
+
       Slot slot = slots[i];
+
       BoundingBoxAttachment boundingBox = slot.attachment as BoundingBoxAttachment;
       if (boundingBox == null) continue;
 
+      int verticesLength = boundingBox.vertices.length;
+      int byteBufferLength = verticesLength << 2;
+      Float32List vertices = null;
+
+      for(int i = 0; i < _byteBuffers.length; i++) {
+        var byteBuffer = _byteBuffers[i];
+        if (byteBuffer.lengthInBytes >= byteBufferLength) {
+          vertices = byteBuffer.asFloat32List(0, verticesLength);
+          _byteBuffers.removeAt(i);
+          break;
+        }
+      }
+
+      if (vertices == null) vertices = new Float32List(verticesLength);
+      boundingBox.computeWorldVertices(x, y, slot.bone, vertices);
+
       boundingBoxes.add(boundingBox);
-
-      Polygon polygon = _polygonPool.length > 0 ? _polygonPool.removeLast() : new Polygon();
-      polygons.add(polygon);
-
-      polygon.vertices.length = boundingBox.vertices.length;
-      boundingBox.computeWorldVertices(x, y, slot.bone, polygon.vertices);
+      verticesList.add(vertices);
     }
 
     if (updateAabb) aabbCompute();
@@ -80,16 +95,15 @@ class SkeletonBounds {
     num maxX = double.NEGATIVE_INFINITY;
     num maxY = double.NEGATIVE_INFINITY;
 
-    for (int i = 0; i < polygons.length; i++) {
-      Polygon polygon = polygons[i];
-      List<num> vertices = polygon.vertices;
-      for (int ii = 0; ii < vertices.length; ii += 2) {
-        num x = vertices[ii];
-        num y = vertices[ii + 1];
-        minX = math.min(minX, x);
-        minY = math.min(minY, y);
-        maxX = math.max(maxX, x);
-        maxY = math.max(maxY, y);
+    for (int i = 0; i < verticesList.length; i++) {
+      Float32List polygon = verticesList[i];
+      for (int ii = 0; ii < polygon.length - 1; ii += 2) {
+        num x = polygon[ii + 0];
+        num y = polygon[ii + 1];
+        if (minX > x) minX = x;
+        if (maxX < x) maxX = x;
+        if (minY > y) minY = y;
+        if (maxY < y) maxY = y;
       }
     }
 
@@ -110,17 +124,23 @@ class SkeletonBounds {
   ///
   bool aabbIntersectsSegment(num x1, num y1, num x2, num y2) {
 
-    if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) || (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY)) return false;
+    if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) ||
+        (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY)) return false;
 
     num m = (y2 - y1) / (x2 - x1);
+
     num y = m * (minX - x1) + y1;
     if (y > minY && y < maxY) return true;
+
     y = m * (maxX - x1) + y1;
     if (y > minY && y < maxY) return true;
+
     num x = (minY - y1) / m + x1;
     if (x > minX && x < maxX) return true;
+
     x = (maxY - y1) / m + x1;
     if (x > minX && x < maxX) return true;
+
     return false;
   }
 
@@ -137,11 +157,12 @@ class SkeletonBounds {
   ///
   BoundingBoxAttachment containsPoint(num x, num y) {
 
-    for (int i = 0; i < polygons.length; i++) {
-      if (polygons[i].containsPoint(x, y)) {
-        return boundingBoxes[i];
-      }
+    for (int i = 0; i < verticesList.length; i++) {
+      BoundingBoxAttachment boundingBox = boundingBoxes[i];
+      Float32List vertices = verticesList[i];
+      if (_containsPoint(vertices, x, y)) return boundingBox;
     }
+
     return null;
   }
 
@@ -151,17 +172,80 @@ class SkeletonBounds {
   ///
   BoundingBoxAttachment intersectsSegment(num x1, num y1, num x2, num y2) {
 
-    for (int i = 0; i < polygons.length; i++) {
-      if (polygons[i].intersectsSegment(x1, y1, x2, y2)) {
-        return boundingBoxes[i];
-      }
+    for (int i = 0; i < verticesList.length; i++) {
+      BoundingBoxAttachment boundingBox = boundingBoxes[i];
+      Float32List vertices = verticesList[i];
+      if (_intersectsSegment(vertices, x1, y1, x2, y2)) return boundingBox;
     }
+
     return null;
   }
 
-  Polygon getPolygon(BoundingBoxAttachment attachment) {
+  Float32List getVertices(BoundingBoxAttachment attachment) {
     int index = boundingBoxes.indexOf(attachment);
-    return index == -1 ? null : polygons[index];
+    return index == -1 ? null : verticesList[index];
   }
+
+  //-----------------------------------------------------------------------------------------------
+
+  bool _containsPoint(Float32List vertices, num x, num y) {
+
+    bool inside = false;
+    int prevIndex = vertices.length - 2;
+
+    for (int i = 0; i < vertices.length - 1; i += 2) {
+
+      num vertexX = vertices[i + 0];
+      num vertexY = vertices[i + 1];
+      num prevX = vertices[prevIndex + 0];
+      num prevY = vertices[prevIndex + 1];
+
+      if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
+        if (vertexX + (y - vertexY) / (prevY - vertexY) * (prevX - vertexX) < x) {
+          inside = !inside;
+        }
+      }
+
+      prevIndex = i;
+    }
+
+    return inside;
+  }
+
+  bool _intersectsSegment(Float32List vertices, num x1, num y1, num x2, num y2) {
+
+    num width12 = x1 - x2;
+    num height12 = y1 - y2;
+    num det1 = x1 * y2 - y1 * x2;
+
+    num x3 = vertices[vertices.length - 2];
+    num y3 = vertices[vertices.length - 1];
+
+    for (int i = 0; i < vertices.length - 1; i += 2) {
+
+      num x4 = vertices[i + 0];
+      num y4 = vertices[i + 1];
+
+      num det2 = x3 * y4 - y3 * x4;
+      num width34 = x3 - x4;
+      num height34 = y3 - y4;
+      num det3 = width12 * height34 - height12 * width34;
+
+      num x = (det1 * width34 - width12 * det2) / det3;
+      if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) &&
+          ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
+
+        num y = (det1 * height34 - height12 * det2) / det3;
+        if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) &&
+            ((y >= y1 && y <= y2) || (y >= y2 && y <= y1))) return true;
+      }
+
+      x3 = x4;
+      y3 = y4;
+    }
+
+    return false;
+  }
+
 
 }

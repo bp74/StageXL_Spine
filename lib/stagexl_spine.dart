@@ -11,7 +11,6 @@ part 'src/bone.dart';
 part 'src/bone_data.dart';
 part 'src/event.dart';
 part 'src/event_data.dart';
-part 'src/polygon.dart';
 part 'src/skeleton.dart';
 part 'src/skeleton_bounds.dart';
 part 'src/skeleton_data.dart';
