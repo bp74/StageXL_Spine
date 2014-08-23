@@ -65,12 +65,12 @@ class SkinnedMeshAttachment extends Attachment {
     var v2 = uvList[5];
 
     if (renderTextureQuad.rotation == 0 || renderTextureQuad.rotation == 2) {
-      for (int i = 0; i < regionUVs.length; i += 2) {
+      for (int i = 0; i < regionUVs.length - 1; i += 2) {
         uvs[i + 0] = u1 + regionUVs[i + 0] * (u2 - u1);
         uvs[i + 1] = v1 + regionUVs[i + 1] * (v2 - v1);
       }
     } else {
-      for (int i = 0; i < regionUVs.length; i += 2) {
+      for (int i = 0; i < regionUVs.length - 1; i += 2) {
         uvs[i + 0] = u1 + regionUVs[i + 1] * (u2 - u1);
         uvs[i + 1] = v1 + regionUVs[i + 0] * (v2 - v1);
       }

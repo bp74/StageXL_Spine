@@ -62,7 +62,18 @@ class SkeletonLoader {
     SkeletonData skeletonData = new SkeletonData();
     skeletonData.name = name;
 
-    // Bones.
+    // Skeletion
+
+    Map skeletonMap = root["skeleton"];
+
+    if (skeletonMap != null) {
+      skeletonData.version = _getString(skeletonMap, "spine", "");
+      skeletonData.hash = _getString(skeletonMap, "hash", "");
+      skeletonData.width = _getDouble(skeletonMap, "width", 0.0);
+      skeletonData.height = _getDouble(skeletonMap, "height", 0.0);
+    }
+
+    // Bones
 
     BoneData boneData;
 
@@ -71,48 +82,44 @@ class SkeletonLoader {
       BoneData parent = null;
 
       if (boneMap.containsKey("parent")) {
-        String parentName = boneMap["parent"];
+        String parentName = _getString(boneMap, "parent", null);
         parent = skeletonData.findBone(parentName);
         if (parent == null) throw new StateError("Parent bone not found: $parentName");
       }
 
-      boneData = new BoneData(boneMap["name"], parent);
-      boneData.length = (boneMap.containsKey("length") ? boneMap["length"] : 0) * scale;
-      boneData.x = (boneMap.containsKey("x") ? boneMap["x"] : 0) * scale;
-      boneData.y = (boneMap.containsKey("y") ? boneMap["y"] : 0) * scale;
-      boneData.rotation = (boneMap.containsKey("rotation") ? boneMap["rotation"] : 0);
-      boneData.scaleX = boneMap.containsKey("scaleX") ? boneMap["scaleX"] : 1;
-      boneData.scaleY = boneMap.containsKey("scaleY") ? boneMap["scaleY"] : 1;
-      boneData.inheritScale = boneMap.containsKey("inheritScale") ? boneMap["inheritScale"] : true;
-      boneData.inheritRotation = boneMap.containsKey("inheritRotation") ? boneMap["inheritRotation"] : true;
+      boneData = new BoneData(_getString(boneMap, "name", null), parent);
+      boneData.length = _getDouble(boneMap, "length", 0.0) * scale;
+      boneData.x = _getDouble(boneMap, "x", 0.0) * scale;
+      boneData.y = _getDouble(boneMap, "y", 0.0) * scale;
+      boneData.rotation = _getDouble(boneMap, "rotation", 0.0);
+      boneData.scaleX = _getDouble(boneMap, "scaleX", 1.0);
+      boneData.scaleY = _getDouble(boneMap, "scaleY", 1.0);
+      boneData.inheritScale = _getBool(boneMap, "inheritScale", true);
+      boneData.inheritRotation = _getBool(boneMap, "inheritRotation", true);
       skeletonData.addBone(boneData);
     }
 
-    // Slots.
+    // Slots
 
     for (Map slotMap in root["slots"]) {
 
-      String boneName = slotMap["bone"];
-
+      String boneName = _getString(slotMap, "bone", null);
       boneData = skeletonData.findBone(boneName);
       if (boneData == null) throw new StateError("Slot bone not found: $boneName");
-      SlotData slotData = new SlotData(slotMap["name"], boneData);
 
-      if (slotMap.containsKey("color")) {
-        String color = slotMap["color"];
-        slotData.r = _toColor(color, 0);
-        slotData.g = _toColor(color, 1);
-        slotData.b = _toColor(color, 2);
-        slotData.a = _toColor(color, 3);
-      }
-
-      slotData.attachmentName = slotMap["attachment"];
-      slotData.additiveBlending = slotMap.containsKey("additive") ? slotMap["additive"] : false;
+      SlotData slotData = new SlotData(_getString(slotMap, "name", null), boneData);
+      String slotDataColor = _getString(slotMap, "color", "FFFFFFFF");
+      slotData.r = _toColor(slotDataColor, 0);
+      slotData.g = _toColor(slotDataColor, 1);
+      slotData.b = _toColor(slotDataColor, 2);
+      slotData.a = _toColor(slotDataColor, 3);
+      slotData.attachmentName = _getString(slotMap, "attachment", null);
+      slotData.additiveBlending = _getBool(slotMap, "additive", false);
 
       skeletonData.addSlot(slotData);
     }
 
-    // Skins.
+    // Skins
 
     Map skins = root["skins"];
 
@@ -131,20 +138,22 @@ class SkeletonLoader {
       if (skin.name == "default") skeletonData.defaultSkin = skin;
     }
 
-    // Events.
+    // Events
+
     if (root.containsKey("events")) {
       Map events = root["events"];
       for (String eventName in events.keys) {
         Map eventMap = events[eventName];
         EventData eventData = new EventData(eventName);
-        eventData.intValue = eventMap.containsKey("int") ? eventMap["int"] : 0;
-        eventData.floatValue = eventMap.containsKey("float") ? eventMap["float"] : 0.0;
-        eventData.stringValue = eventMap.containsKey("string") ? eventMap["string"] : null;
+        eventData.intValue = _getInt(eventMap, "int", 0);
+        eventData.floatValue = _getDouble(eventMap, "float", 0.0);
+        eventData.stringValue = _getString(eventMap, "string", "");
         skeletonData.addEvent(eventData);
       }
     }
 
-    // Animations.
+    // Animations
+
     Map animations = root["animations"];
     for (String animationName in animations.keys) {
       readAnimation(animationName, animations[animationName], skeletonData);
@@ -153,13 +162,15 @@ class SkeletonLoader {
     return skeletonData;
   }
 
+  //-----------------------------------------------------------------------------------------------
+
   Attachment readAttachment(Skin skin, String name, Map map) {
 
-    name = map.containsKey("name") ? map["name"] : name;
+    name = _getString(map, "name", name);
 
-    String typeName = map.containsKey("type") ? map["type"] : "region";
+    String typeName = _getString(map, "type", "region");
     AttachmentType type = AttachmentType.get(typeName);
-    String path = map.containsKey("path") ? map["path"] : name;
+    String path = _getString(map, "path", name);
     num scale = this.scale;
 
     switch (type) {
@@ -169,49 +180,46 @@ class SkeletonLoader {
         RegionAttachment region = attachmentLoader.newRegionAttachment(skin, name, path);
         if (region == null) return null;
 
+        String regionColor = _getString(map, "color", "FFFFFFFF");
+
         region.path = path;
-        region.x = (map.containsKey("x") ? map["x"] : 0) * scale;
-        region.y = (map.containsKey("y") ? map["y"] : 0) * scale;
-        region.scaleX = map.containsKey("scaleX") ? map["scaleX"] : 1;
-        region.scaleY = map.containsKey("scaleY") ? map["scaleY"] : 1;
-        region.rotation = map.containsKey("rotation") ? map["rotation"] : 0;
-        region.width = (map.containsKey("width") ? map["width"] : 0) * scale;
-        region.height = (map.containsKey("height") ? map["height"] : 0) * scale;
-
-        if (map.containsKey("color")) {
-          String color = map["color"];
-          region.r = _toColor(color, 0);
-          region.g = _toColor(color, 1);
-          region.b = _toColor(color, 2);
-          region.a = _toColor(color, 3);
-        }
-
+        region.x = _getDouble(map, "x", 0.0) * scale;
+        region.y = _getDouble(map, "y", 0.0) * scale;
+        region.scaleX = _getDouble(map, "scaleX", 1.0);
+        region.scaleY = _getDouble(map, "scaleY", 1.0);
+        region.rotation = _getDouble(map, "rotation", 0.0);
+        region.width = _getDouble(map, "width", 0.0) * scale;
+        region.height = _getDouble(map, "height", 0.0) * scale;
+        region.r = _toColor(regionColor, 0);
+        region.g = _toColor(regionColor, 1);
+        region.b = _toColor(regionColor, 2);
+        region.a = _toColor(regionColor, 3);
         region.updateUVs();
         region.updateOffset();
+
         return region;
 
       case AttachmentType.mesh:
 
         MeshAttachment mesh = attachmentLoader.newMeshAttachment(skin, name, path);
         if (mesh == null) return null;
+
+        String meshColor = _getString(map, "color", "FFFFFFFF");
+
         mesh.path = path;
         mesh.vertices = _getFloat32List(map, "vertices", scale);
         mesh.triangles = _getInt16List(map, "triangles");
         mesh.regionUVs = _getFloat32List(map, "uvs", 1.0);
+        mesh.r = _toColor(meshColor, 0);
+        mesh.g = _toColor(meshColor, 1);
+        mesh.b = _toColor(meshColor, 2);
+        mesh.a = _toColor(meshColor, 3);
+        mesh.hullLength = _getInt(map, "hull", 0) * 2;
+        mesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
+        mesh.width = _getDouble(map, "width", 0.0) * scale;
+        mesh.height = _getDouble(map, "height", 0.0) * scale;
         mesh.updateUVs();
 
-        if (map.containsKey("color")) {
-          String color = map["color"];
-          mesh.r = _toColor(color, 0);
-          mesh.g = _toColor(color, 1);
-          mesh.b = _toColor(color, 2);
-          mesh.a = _toColor(color, 3);
-        }
-
-        mesh.hullLength = (map.containsKey("hull") ? map["hull"] : 0) * 2;
-        if (map.containsKey("edges")) mesh.edges = _getInt16List(map, "edges");
-        mesh.width = (map.containsKey("width") ? map["width"] : 0) * scale;
-        mesh.height = (map.containsKey("height") ? map["height"] : 0) * scale;
         return mesh;
 
       case AttachmentType.skinnedmesh:
@@ -220,8 +228,8 @@ class SkeletonLoader {
         if (skinnedMesh == null) return null;
         skinnedMesh.path = path;
 
-        Float32List uvs = _getFloat32List(map, "uvs", 1);
-        Float32List vertices = _getFloat32List(map, "vertices", 1);
+        String skinnedMeshColor = _getString(map, "color", "FFFFFFFF");
+        Float32List vertices = _getFloat32List(map, "vertices", 1.0);
         List<double> weights = new List<double>();
         List<int> bones = new List<int>();
 
@@ -240,21 +248,17 @@ class SkeletonLoader {
         skinnedMesh.bones = new Int16List.fromList(bones);
         skinnedMesh.weights = new Float32List.fromList(weights);
         skinnedMesh.triangles = _getInt16List(map, "triangles");
-        skinnedMesh.regionUVs = uvs;
+        skinnedMesh.regionUVs = _getFloat32List(map, "uvs", 1.0);;
+        skinnedMesh.r = _toColor(skinnedMeshColor, 0);
+        skinnedMesh.g = _toColor(skinnedMeshColor, 1);
+        skinnedMesh.b = _toColor(skinnedMeshColor, 2);
+        skinnedMesh.a = _toColor(skinnedMeshColor, 3);
+        skinnedMesh.hullLength = _getInt(map, "hull", 0) * 2;
+        skinnedMesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
+        skinnedMesh.width = _getDouble(map, "width", 0.0) * scale;
+        skinnedMesh.height = _getDouble(map, "height", 0.0) * scale;
         skinnedMesh.updateUVs();
 
-        if (map.containsKey("color")) {
-          String color = map["color"];
-          skinnedMesh.r = _toColor(color, 0);
-          skinnedMesh.g = _toColor(color, 1);
-          skinnedMesh.b = _toColor(color, 2);
-          skinnedMesh.a = _toColor(color, 3);
-        }
-
-        skinnedMesh.hullLength = (map.containsKey("hull") ? map["hull"] : 0) * 2;
-        if (map.containsKey("edges")) skinnedMesh.edges = _getInt16List(map, "edges");
-        skinnedMesh.width = (map.containsKey("width") ? map["width"] : 0) * scale;
-        skinnedMesh.height = (map.containsKey("height") ? map["height"] : 0) * scale;
         return skinnedMesh;
 
       case AttachmentType.boundingbox:
@@ -266,6 +270,8 @@ class SkeletonLoader {
 
     return null;
   }
+
+  //-----------------------------------------------------------------------------------------------
 
   void readAnimation(String name, Map map, SkeletonData skeletonData) {
 
@@ -293,12 +299,13 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            String color = valueMap["color"];
+            num time = _getDouble(valueMap, "time", 0.0);
+            String color = _getString(valueMap, "color", "FFFFFFFF");
             num r = _toColor(color, 0);
             num g = _toColor(color, 1);
             num b = _toColor(color, 2);
             num a = _toColor(color, 3);
-            colorTimeline.setFrame(frameIndex, valueMap["time"], r, g, b, a);
+            colorTimeline.setFrame(frameIndex, time, r, g, b, a);
             _readCurve(colorTimeline, frameIndex, valueMap);
             frameIndex++;
           }
@@ -313,7 +320,9 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            attachmentTimeline.setFrame(frameIndex++, valueMap["time"], valueMap["name"]);
+            num time = _getDouble(valueMap, "time", 0.0);
+            String name = _getString(valueMap, "name", null);
+            attachmentTimeline.setFrame(frameIndex++, time, name);
           }
 
           timelines.add(attachmentTimeline);
@@ -374,9 +383,10 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            num x = (valueMap.containsKey("x") ? valueMap["x"] : 0) * timelineScale;
-            num y = (valueMap.containsKey("y") ? valueMap["y"] : 0) * timelineScale;
-            timeline.setFrame(frameIndex, valueMap["time"], x, y);
+            num x = _getDouble(valueMap, "x", 0.0) * timelineScale;
+            num y = _getDouble(valueMap, "y", 0.0) * timelineScale;
+            num time = _getDouble(valueMap, "time", 0.0);
+            timeline.setFrame(frameIndex, time, x, y);
             _readCurve(timeline, frameIndex, valueMap);
             frameIndex++;
           }
@@ -440,7 +450,7 @@ class SkeletonLoader {
               }
             } else {
               Float32List verticesValue = _getFloat32List(valueMap, "vertices", scale);
-              int start = valueMap.containsKey("offset") ? valueMap["offset"] : 0;
+              int start = _getInt(valueMap, "offset", 0);
               vertices = new Float32List(vertexCount);
               for (int i = 0; i < verticesValue.length; i++) {
                 vertices[i + start] = verticesValue[i];
@@ -476,6 +486,7 @@ class SkeletonLoader {
 
       for (Map drawOrderMap in drawOrderValues) {
 
+        num time = _getDouble(drawOrderMap, "time", 0.0);
         Int16List drawOrder = null;
 
         if (drawOrderMap.containsKey("offsets")) {
@@ -485,14 +496,15 @@ class SkeletonLoader {
             drawOrder[i] = -1;
           }
 
-          List offsets = drawOrderMap["offsets"];
-          Int16List unchanged = new Int16List(slotCount - offsets.length);
+          List offsetMaps = drawOrderMap["offsets"];
+          Int16List unchanged = new Int16List(slotCount - offsetMaps.length);
           int originalIndex = 0;
           int unchangedIndex = 0;
 
-          for (Map offsetMap in offsets) {
-            int slotIndex = skeletonData.findSlotIndex(offsetMap["slot"]);
-            if (slotIndex == -1) throw new StateError("Slot not found: ${offsetMap["slot"]}");
+          for (Map offsetMap in offsetMaps) {
+            String slotName = _getString(offsetMap, "slot", null);
+            int slotIndex = skeletonData.findSlotIndex(slotName);
+            if (slotIndex == -1) throw new StateError("Slot not found: $slotName");
             // Collect unchanged items.
             while (originalIndex != slotIndex) {
               unchanged[unchangedIndex++] = originalIndex++;
@@ -512,7 +524,7 @@ class SkeletonLoader {
           }
         }
 
-        drawOrderTimeline.setFrame(frameIndex++, drawOrderMap["time"], drawOrder);
+        drawOrderTimeline.setFrame(frameIndex++, time, drawOrder);
       }
 
       timelines.add(drawOrderTimeline);
@@ -533,9 +545,9 @@ class SkeletonLoader {
         if (eventData == null) throw new StateError("Event not found: ${eventMap["name"]}");
 
         Event event = new Event(eventData);
-        event.intValue = eventMap.containsKey("int") ? eventMap["int"] : eventData.intValue;
-        event.floatValue = eventMap.containsKey("float") ? eventMap["float"] : eventData.floatValue;
-        event.stringValue = eventMap.containsKey("string") ? eventMap["string"] : eventData.stringValue;
+        event.intValue = _getInt(eventMap, "int", eventData.intValue);
+        event.floatValue = _getDouble(eventMap, "float", eventData.floatValue);
+        event.stringValue = _getString(eventMap, "string", eventData.stringValue);
         eventTimeline.setFrame(frameIndex++, eventMap["time"], event);
       }
 
@@ -550,9 +562,10 @@ class SkeletonLoader {
   //-----------------------------------------------------------------------------------------------
 
   void _readCurve(CurveTimeline timeline, int frameIndex, Map valueMap) {
-    if (valueMap.containsKey("curve") == false) return;
     var curve = valueMap["curve"];
-    if (curve == "stepped") {
+    if (curve == null) {
+      return;
+    } else if (curve == "stepped") {
       timeline.setStepped(frameIndex);
     } else if (curve is List) {
       timeline.setCurve(frameIndex, curve[0], curve[1], curve[2], curve[3]);
@@ -583,6 +596,44 @@ class SkeletonLoader {
       result[i] = values[i].toInt();
     }
     return result;
+  }
+
+  String _getString(Map map, String name, String defaultValue) {
+    var value = map[name];
+    return value is String ? value : defaultValue;
+  }
+
+  double _getDouble(Map map, String name, double defaultValue) {
+    var value = map[name];
+    if (value is num) {
+      return value.toDouble();
+    } else if (defaultValue is num) {
+      return defaultValue.toDouble();
+    } else {
+      return 0.0;
+    }
+  }
+
+  int _getInt(Map map, String name, int defaultValue) {
+    var value = map[name];
+    if (value is int) {
+      return value;
+    } else if (defaultValue is int) {
+      return defaultValue;
+    } else {
+      return 0;
+    }
+  }
+
+  bool _getBool(Map map, String name, bool defaultValue) {
+    var value = map[name];
+    if (value is bool) {
+      return value;
+    } else if (defaultValue is bool) {
+      return defaultValue;
+    } else {
+      return false;
+    }
   }
 
 }

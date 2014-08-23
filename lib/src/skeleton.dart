@@ -70,7 +70,9 @@ class Skeleton {
   /// Updates the world transform for each bone.
   ///
   void updateWorldTransform() {
-    for (Bone bone in this.bones) {
+    for(int i = 0; i < this.bones.length; i++) {
+      var bone = this.bones[i];
+      if (bone is! Bone) continue; // dart2js_hint
       bone.updateWorldTransform(flipX, flipY);
     }
   }

@@ -10,7 +10,7 @@ void main() {
 
   var canvas = html.querySelector('#stage');
 
-  stage = new Stage(canvas, webGL: true, width:480, height: 600, color: Color.DarkSlateGray);
+  stage = new Stage(canvas, webGL: true, width:500, height: 300, color: Color.DarkSlateGray);
   stage.scaleMode = StageScaleMode.SHOW_ALL;
   stage.align = StageAlign.NONE;
 
@@ -38,9 +38,9 @@ void startPowerup() {
   var animationStateData = new AnimationStateData(skeletonData);
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
-  skeletonAnimation.x = 240;
-  skeletonAnimation.y = 430;
-  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.8;
+  skeletonAnimation.x = 250;
+  skeletonAnimation.y = 280;
+  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
 
   skeletonAnimation.state.setAnimationByName(0, "animation", true);
 

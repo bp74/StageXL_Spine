@@ -65,12 +65,12 @@ class MeshAttachment extends Attachment {
     var v2 = uvList[5];
 
     if (renderTextureQuad.rotation == 0 || renderTextureQuad.rotation == 2) {
-      for (int i = 0; i < regionUVs.length; i += 2) {
+      for (int i = 0; i < regionUVs.length - 1; i += 2) {
         uvs[i + 0] = u1 + regionUVs[i + 0] * (u2 - u1);
         uvs[i + 1] = v1 + regionUVs[i + 1] * (v2 - v1);
       }
     } else {
-      for (int i = 0; i < regionUVs.length; i += 2) {
+      for (int i = 0; i < regionUVs.length - 1; i += 2) {
         uvs[i + 0] = u1 + regionUVs[i + 1] * (u2 - u1);
         uvs[i + 1] = v1 + regionUVs[i + 0] * (v2 - v1);
       }
@@ -92,7 +92,7 @@ class MeshAttachment extends Attachment {
       this.vertices = slot.attachmentVertices;
     }
 
-    for (int i = 0; i < this.vertices.length; i += 2) {
+    for (int i = 0; i < this.vertices.length - 1; i += 2) {
       num vx = this.vertices[i + 0];
       num vy = this.vertices[i + 1];
       worldVertices[i + 0] = vx * a + vy * c + tx;

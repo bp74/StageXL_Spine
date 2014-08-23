@@ -95,6 +95,8 @@ class CurveTimeline implements Timeline {
     if (dfx == _LINEAR) return percent;
     if (dfx == _STEPPED) return 0;
 
+    if (curveIndex > _curves.length - 6) throw new RangeError("");
+
     num dfy = _curves[curveIndex + 1];
     num ddfx = _curves[curveIndex + 2];
     num ddfy = _curves[curveIndex + 3];

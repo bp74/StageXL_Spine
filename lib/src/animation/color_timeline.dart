@@ -32,7 +32,7 @@ part of stagexl_spine;
 
 class ColorTimeline extends CurveTimeline {
 
-  static const int _PREV_FRAME_TIME = -5;
+  static const int _FRAME_TIME = 0;
   static const int _FRAME_R = 1;
   static const int _FRAME_G = 2;
   static const int _FRAME_B = 3;
@@ -60,30 +60,40 @@ class ColorTimeline extends CurveTimeline {
 
     num r, g, b, a;
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
+      return; // Time is before first frame.
+    }
 
-    if (time >= frames[frames.length - 5]) {
+    // The following code contains dart2js_hints
+
+    int lastFrameIndex = frames.length - 5;
+    if (lastFrameIndex < 0) throw new RangeError("");
+
+    if (time >= frames[lastFrameIndex]) {
 
       // Time is after last frame.
 
-      r = frames[frames.length - 4];
-      g = frames[frames.length - 3];
-      b = frames[frames.length - 2];
-      a = frames[frames.length - 1];
+      r = frames[lastFrameIndex + _FRAME_R];
+      g = frames[lastFrameIndex + _FRAME_G];
+      b = frames[lastFrameIndex + _FRAME_B];
+      a = frames[lastFrameIndex + _FRAME_A];
 
     } else {
 
       // Interpolate between the previous frame and the current frame.
 
       int frameIndex = Animation.binarySearch(frames, time, 5);
+      if (frameIndex > frames.length - 5) throw new RangeError("");
+      if (frameIndex < 5) throw new RangeError("");
 
-      num prevFrameR = frames[frameIndex - 4];
-      num prevFrameG = frames[frameIndex - 3];
-      num prevFrameB = frames[frameIndex - 2];
-      num prevFrameA = frames[frameIndex - 1];
-      num frameTime = frames[frameIndex];
+      num prevFrameTime = frames[frameIndex - 5];
+      num prevFrameR    = frames[frameIndex - 4];
+      num prevFrameG    = frames[frameIndex - 3];
+      num prevFrameB    = frames[frameIndex - 2];
+      num prevFrameA    = frames[frameIndex - 1];
+      num frameTime     = frames[frameIndex - 0];
 
-      num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
+      num percent = 1 - (time - frameTime) / (prevFrameTime - frameTime);
       percent = getCurvePercent(frameIndex ~/ 5 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
 
       r = prevFrameR + (frames[frameIndex + _FRAME_R] - prevFrameR) * percent;
