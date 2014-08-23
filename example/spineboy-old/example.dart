@@ -42,6 +42,7 @@ void startSpineboyOld() {
   skeletonAnimation.x = 240;
   skeletonAnimation.y = 480;
   skeletonAnimation.state.setAnimationByName(0, "jump", true);
+  skeletonAnimation.timeScale = 0.10;
 
   var skeletonAnimationContainer = new Sprite();
   skeletonAnimationContainer.addChild(skeletonAnimation);
@@ -54,14 +55,15 @@ void startSpineboyOld() {
 
   SkeletonBounds skeletonBounds = new SkeletonBounds();
   Shape shape = new Shape();
-  stage.addChild(shape);
+  shape.x = 240;
+  shape.y = 480;
+  shape.addTo(stage);
 
   stage.onEnterFrame.listen((e) {
 
     skeletonBounds.update(skeletonAnimation.skeleton, false);
     shape.graphics.clear();
-    shape.x = 240;
-    shape.y = 480;
+
 
     for(Float32List vertices in skeletonBounds.verticesList) {
       shape.graphics.beginPath();
@@ -73,5 +75,6 @@ void startSpineboyOld() {
       shape.graphics.lineTo(vertices[0], vertices[1]);
       shape.graphics.strokeColor(Color.White, 1.0);
     }
+
   });
 }
