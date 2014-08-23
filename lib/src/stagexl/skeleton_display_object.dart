@@ -39,12 +39,12 @@ class SkeletonDisplayObject extends DisplayObject {
 
   void _renderWebGL(RenderState renderState) {
 
-    var renderProgram = _SpineRenderProgram.instance;
     var renderContext = renderState.renderContext;
     var matrix = renderState.globalMatrix;
     var blendMode = renderState.globalBlendMode;
 
     RenderContextWebGL renderContextWebGL = renderContext;
+    RenderProgramMesh renderProgramMesh = renderContextWebGL.renderProgramMesh;
 
     num skeletonX = skeleton.x;
     num skeletonY = skeleton.y;
@@ -53,7 +53,9 @@ class SkeletonDisplayObject extends DisplayObject {
     num skeletonB = skeleton.b;
     num skeletonA = skeleton.a;
 
-    renderProgram.configure(renderContextWebGL, matrix);
+    renderContextWebGL.flush();
+    renderContextWebGL.activateRenderProgram(renderProgramMesh);
+    renderProgramMesh.configure(matrix);
 
     Float32List xyList = _xyList;
     Float32List uvList = new Float32List(0);
@@ -149,7 +151,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
         renderContextWebGL.activateRenderTexture(renderTexture);
         renderContextWebGL.activateBlendMode(slot.data.additiveBlending ? BlendMode.ADD : blendMode);
-        renderProgram.renderMesh(indexCount, indexList, vertexCount, xyList, uvList, rr, gg, bb, aa);
+        renderProgramMesh.renderMesh(indexCount, indexList, vertexCount, xyList, uvList, rr, gg, bb, aa);
       }
     }
   }

@@ -44,5 +44,4 @@ part 'src/attachments/skinned_mesh_attachment.dart';
 
 part 'src/stagexl/skeleton_animation.dart';
 part 'src/stagexl/skeleton_display_object.dart';
-part 'src/stagexl/skeleton_render_program.dart';
 part 'src/stagexl/texture_atlas_attachment_loader.dart';
