@@ -38,15 +38,15 @@ class AnimationState {
 
   num timeScale = 1.0;
 
-  static StreamController<TrackState> _onTrackStart = new StreamController<TrackState>();
-  static StreamController<TrackState> _onTrackEnd = new StreamController<TrackState>();
-  static StreamController<TrackState> _onTrackComplete = new StreamController<TrackState>();
-  static StreamController<TrackState> _onTrackEvent = new StreamController<TrackState>();
+  static StreamController<TrackEntryStartArgs> _onTrackStart = new StreamController<TrackEntryStartArgs>();
+  static StreamController<TrackEntryEndArgs> _onTrackEnd = new StreamController<TrackEntryEndArgs>();
+  static StreamController<TrackEntryCompleteArgs> _onTrackComplete = new StreamController<TrackEntryCompleteArgs>();
+  static StreamController<TrackEntryEventArgs> _onTrackEvent = new StreamController<TrackEntryEventArgs>();
 
-  final Stream<TrackState> onTrackStart = _onTrackStart.stream.asBroadcastStream();
-  final Stream<TrackState> onTrackEnd = _onTrackEnd.stream.asBroadcastStream();
-  final Stream<TrackState> onTrackComplete = _onTrackComplete.stream.asBroadcastStream();
-  final Stream<TrackState> onTrackEvent = _onTrackEvent.stream.asBroadcastStream();
+  final Stream<TrackEntryStartArgs> onTrackStart = _onTrackStart.stream.asBroadcastStream();
+  final Stream<TrackEntryEndArgs> onTrackEnd = _onTrackEnd.stream.asBroadcastStream();
+  final Stream<TrackEntryCompleteArgs> onTrackComplete = _onTrackComplete.stream.asBroadcastStream();
+  final Stream<TrackEntryEventArgs> onTrackEvent = _onTrackEvent.stream.asBroadcastStream();
 
   //-----------------------------------------------------------------------------------------------
 
@@ -126,17 +126,17 @@ class AnimationState {
       }
 
       for (Event event in _events) {
-        TrackState trackState = new TrackState.onEvent(i, event);
-        if (current.onEvent != null) current.onEvent(trackState);
-        _onTrackEvent.add(trackState);
+        TrackEntryEventArgs args = new TrackEntryEventArgs(i, event);
+        if (current.onEvent != null) current.onEvent(args);
+        _onTrackEvent.add(args);
       }
 
       // Check if completed the animation or a loop iteration.
 
       if (loop ? (lastTime % endTime > time % endTime) : (lastTime < endTime && time >= endTime)) {
-        TrackState trackState = new TrackState.onComplete(i, time ~/ endTime);
-        if (current.onComplete != null) current.onComplete(trackState);
-        _onTrackComplete.add(trackState);
+        TrackEntryCompleteArgs args = new TrackEntryCompleteArgs(i, time ~/ endTime);
+        if (current.onComplete != null) current.onComplete(args);
+        _onTrackComplete.add(args);
       }
 
       current.lastTime = current.time;
@@ -157,9 +157,9 @@ class AnimationState {
     TrackEntry current = _tracks[trackIndex];
     if (current == null) return;
 
-    TrackState trackState = new TrackState.onEnd(trackIndex);
-    if (current.onEnd != null) current.onEnd(trackState);
-    _onTrackEnd.add(trackState);
+    TrackEntryEndArgs args = new TrackEntryEndArgs(trackIndex);
+    if (current.onEnd != null) current.onEnd(args);
+    _onTrackEnd.add(args);
 
     _tracks[trackIndex] = null;
   }
@@ -246,33 +246,33 @@ class AnimationState {
     return null;
   }
 
-  void _setCurrent(int index, TrackEntry entry) {
+  void _setCurrent(int trackIndex, TrackEntry trackEntry) {
 
-    TrackEntry current = _expandToIndex(index);
+    TrackEntry current = _expandToIndex(trackIndex);
     if (current != null) {
 
       TrackEntry previous = current._previous;
       current._previous = null;
 
-      TrackState trackState = new TrackState.onEnd(index);
-      if (current.onEnd != null) current.onEnd(trackState);
-      _onTrackEnd.add(trackState);
+      TrackEntryEndArgs args = new TrackEntryEndArgs(trackIndex);
+      if (current.onEnd != null) current.onEnd(args);
+      _onTrackEnd.add(args);
 
-      entry._mixDuration = this.data.getMix(current.animation, entry.animation);
-      if (entry._mixDuration > 0) {
-        entry._mixTime = 0;
+      trackEntry._mixDuration = this.data.getMix(current.animation, trackEntry.animation);
+      if (trackEntry._mixDuration > 0) {
+        trackEntry._mixTime = 0;
         // If a mix is in progress, mix from the closest animation.
         if (previous != null && current._mixTime / current._mixDuration < 0.5) {
-          entry._previous = previous;
+          trackEntry._previous = previous;
           previous = current;
-        } else entry._previous = current;
+        } else trackEntry._previous = current;
       }
     }
 
-    _tracks[index] = entry;
+    _tracks[trackIndex] = trackEntry;
 
-    TrackState trackState = new TrackState.onStart(index);
-    if (entry.onStart != null) entry.onStart(trackState);
-    _onTrackStart.add(trackState);
+    TrackEntryStartArgs args = new TrackEntryStartArgs(trackIndex);
+    if (trackEntry.onStart != null) trackEntry.onStart(args);
+    _onTrackStart.add(args);
   }
 }

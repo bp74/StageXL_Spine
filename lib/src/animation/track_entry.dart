@@ -30,6 +30,33 @@
 
 part of stagexl_spine;
 
+typedef void TrackEntryAction<T extends TrackEntryActionArgs>(T trackEntryActionArgs);
+
+abstract class TrackEntryActionArgs {
+  final int trackIndex;
+  TrackEntryActionArgs(this.trackIndex);
+}
+
+class TrackEntryStartArgs extends TrackEntryActionArgs {
+  TrackEntryStartArgs(int trackIndex) : super(trackIndex);
+}
+
+class TrackEntryEndArgs extends TrackEntryActionArgs {
+  TrackEntryEndArgs(int trackIndex) : super(trackIndex);
+}
+
+class TrackEntryCompleteArgs extends TrackEntryActionArgs {
+  final int count;
+  TrackEntryCompleteArgs(int trackIndex, this.count) : super(trackIndex);
+}
+
+class TrackEntryEventArgs extends TrackEntryActionArgs {
+  final Event event;
+  TrackEntryEventArgs(int trackIndex, this.event) : super(trackIndex);
+}
+
+//-------------------------------------------------------------------------------------------------
+
 class TrackEntry {
 
   TrackEntry next = null;
@@ -48,10 +75,10 @@ class TrackEntry {
   num _mixDuration = 0.0;
   num _mix = 1.0;
 
-  TrackStateAction onStart = null;
-  TrackStateAction onEnd = null;
-  TrackStateAction onComplete = null;
-  TrackStateAction onEvent = null;
+  TrackEntryAction<TrackEntryStartArgs> onStart = null;
+  TrackEntryAction<TrackEntryEndArgs> onEnd = null;
+  TrackEntryAction<TrackEntryCompleteArgs> onComplete = null;
+  TrackEntryAction<TrackEntryEventArgs> onEvent = null;
 
   String toString() => animation == null ? "<none>" : animation.name;
 }

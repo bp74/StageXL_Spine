@@ -32,7 +32,6 @@ part 'src/animation/rotate_timeline.dart';
 part 'src/animation/scale_timeline.dart';
 part 'src/animation/timeline.dart';
 part 'src/animation/track_entry.dart';
-part 'src/animation/track_state.dart';
 part 'src/animation/translate_timeline.dart';
 
 part 'src/attachments/attachment.dart';
