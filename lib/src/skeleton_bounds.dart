@@ -47,7 +47,6 @@ class SkeletonBounds {
   void update(Skeleton skeleton, bool updateAabb) {
 
     List<Slot> slots = skeleton.slots;
-    int slotCount = slots.length;
     num x = skeleton.x;
     num y = skeleton.y;
 
@@ -58,31 +57,33 @@ class SkeletonBounds {
     boundingBoxes.clear();
     verticesList.clear();
 
-    for (int i = 0; i < slotCount; i++) {
+    for (int i = 0; i < slots.length; i++) {
 
       Slot slot = slots[i];
+      Attachment attachment = slot.attachment;
 
-      BoundingBoxAttachment boundingBox = slot.attachment as BoundingBoxAttachment;
-      if (boundingBox == null) continue;
+      if (attachment is BoundingBoxAttachment) {
 
-      int verticesLength = boundingBox.vertices.length;
-      int byteBufferLength = verticesLength << 2;
-      Float32List vertices = null;
+        BoundingBoxAttachment boundingBox = attachment;
+        Float32List vertices = null;
+        int verticesLength = boundingBox.vertices.length;
+        int byteBufferLength = verticesLength << 2;
 
-      for(int i = 0; i < _byteBuffers.length; i++) {
-        var byteBuffer = _byteBuffers[i];
-        if (byteBuffer.lengthInBytes >= byteBufferLength) {
-          vertices = byteBuffer.asFloat32List(0, verticesLength);
-          _byteBuffers.removeAt(i);
-          break;
+        for(int i = 0; i < _byteBuffers.length; i++) {
+          var byteBuffer = _byteBuffers[i];
+          if (byteBuffer.lengthInBytes >= byteBufferLength) {
+            vertices = byteBuffer.asFloat32List(0, verticesLength);
+            _byteBuffers.removeAt(i);
+            break;
+          }
         }
+
+        if (vertices == null) vertices = new Float32List(verticesLength);
+        boundingBox.computeWorldVertices(x, y, slot.bone, vertices);
+
+        boundingBoxes.add(boundingBox);
+        verticesList.add(vertices);
       }
-
-      if (vertices == null) vertices = new Float32List(verticesLength);
-      boundingBox.computeWorldVertices(x, y, slot.bone, vertices);
-
-      boundingBoxes.add(boundingBox);
-      verticesList.add(vertices);
     }
 
     if (updateAabb) aabbCompute();
