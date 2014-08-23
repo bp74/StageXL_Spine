@@ -17,9 +17,11 @@ void main() {
   renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  BitmapData.defaultLoadOptions.webp = true;
+
   resourceManager.addTextFile("spineboy", "spine/spineboy.json");
-  resourceManager.addTextureAtlas("spineboy", "atlas1/spineboy.atlas", TextureAtlasFormat.LIBGDX);
-  //resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy.json", TextureAtlasFormat.JSONARRAY);
+  //resourceManager.addTextureAtlas("spineboy", "atlas1/spineboy.atlas", TextureAtlasFormat.LIBGDX);
+  resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy.json", TextureAtlasFormat.JSONARRAY);
   resourceManager.load().then((rm) => startSpineboy());
 }
 

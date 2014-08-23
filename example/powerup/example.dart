@@ -20,8 +20,8 @@ void main() {
   BitmapData.defaultLoadOptions.webp = true;
 
   resourceManager.addTextFile("powerup", "spine/powerup.json");
-  resourceManager.addTextureAtlas("powerup", "atlas1/powerup.atlas", TextureAtlasFormat.LIBGDX);
-  //resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
+  //resourceManager.addTextureAtlas("powerup", "atlas1/powerup.atlas", TextureAtlasFormat.LIBGDX);
+  resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
   resourceManager.load().then((rm) => startPowerup());
 }
 

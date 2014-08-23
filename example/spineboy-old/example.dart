@@ -21,8 +21,8 @@ void main() {
   BitmapData.defaultLoadOptions.webp = true;
 
   resourceManager.addTextFile("spineboy-old", "spine/spineboy-old.json");
-  resourceManager.addTextureAtlas("spineboy-old", "atlas1/spineboy-old.atlas", TextureAtlasFormat.LIBGDX);
-  //resourceManager.addTextureAtlas("spineboy-old", "atlas2/spineboy-old.json", TextureAtlasFormat.JSONARRAY);
+  //resourceManager.addTextureAtlas("spineboy-old", "atlas1/spineboy-old.atlas", TextureAtlasFormat.LIBGDX);
+  resourceManager.addTextureAtlas("spineboy-old", "atlas2/spineboy-old.json", TextureAtlasFormat.JSONARRAY);
   resourceManager.load().then((rm) => startSpineboyOld());
 }
 

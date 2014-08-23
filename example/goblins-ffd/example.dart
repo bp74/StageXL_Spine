@@ -20,8 +20,8 @@ void main() {
   BitmapData.defaultLoadOptions.webp = true;
 
   resourceManager.addTextFile("goblins-ffd", "spine/goblins-ffd.json");
-  resourceManager.addTextureAtlas("goblins-ffd", "atlas1/goblins-ffd.atlas", TextureAtlasFormat.LIBGDX);
-  //resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
+  //resourceManager.addTextureAtlas("goblins-ffd", "atlas1/goblins-ffd.atlas", TextureAtlasFormat.LIBGDX);
+  resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
   resourceManager.load().then((rm) => startGoblins());
 }
 
