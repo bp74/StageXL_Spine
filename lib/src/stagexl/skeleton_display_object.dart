@@ -40,7 +40,7 @@ class SkeletonDisplayObject extends DisplayObject {
   void _renderWebGL(RenderState renderState) {
 
     var renderContext = renderState.renderContext;
-    var matrix = renderState.globalMatrix;
+    var globalMatrix = renderState.globalMatrix;
     var blendMode = renderState.globalBlendMode;
 
     RenderContextWebGL renderContextWebGL = renderContext;
@@ -55,7 +55,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
     renderContextWebGL.flush();
     renderContextWebGL.activateRenderProgram(renderProgramMesh);
-    renderProgramMesh.configure(matrix);
+    renderProgramMesh.globalMatrix = globalMatrix;
 
     Float32List xyList = _xyList;
     Float32List uvList = new Float32List(0);

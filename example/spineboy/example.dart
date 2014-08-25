@@ -10,7 +10,7 @@ void main() {
 
   var canvas = html.querySelector('#stage');
 
-  stage = new Stage(canvas, webGL: false, width:480, height: 600, color: Color.DarkSlateGray);
+  stage = new Stage(canvas, webGL: true, width:480, height: 600, color: Color.DarkSlateGray);
   stage.scaleMode = StageScaleMode.SHOW_ALL;
   stage.align = StageAlign.NONE;
 
