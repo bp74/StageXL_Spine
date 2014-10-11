@@ -3,6 +3,15 @@ StageXL_Spine
 
 The Spine runtime for the StageXL library.
 
+[![Build Status](https://drone.io/github.com/bp74/StageXL_Spine/status.png)](https://drone.io/github.com/bp74/StageXL_Spine/latest)
+
+Examples:
+
+Raptor <http://www.stagexl.org/show/spine/raptor/example.html>
+SpineBoy yhttp://www.stagexl.org/show/spine/spineboy/example.html>
+Goblins <http://www.stagexl.org/show/spine/goblins-ffd/example.html>
+PowerUp <http://www.stagexl.org/show/spine/powerup/example.html>
+
 ---
 
 Based on the spine-as3 runtime (2014-07-31)  
