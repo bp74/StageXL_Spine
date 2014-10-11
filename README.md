@@ -5,14 +5,14 @@ The Spine runtime for the StageXL library.
 
 [![Build Status](https://drone.io/github.com/bp74/StageXL_Spine/status.png)](https://drone.io/github.com/bp74/StageXL_Spine/latest)
 
-Examples:
+##Examples
 
-Raptor <http://www.stagexl.org/show/spine/raptor/example.html>
-SpineBoy yhttp://www.stagexl.org/show/spine/spineboy/example.html>
-Goblins <http://www.stagexl.org/show/spine/goblins-ffd/example.html>
-PowerUp <http://www.stagexl.org/show/spine/powerup/example.html>
+* Raptor <br/><http://www.stagexl.org/show/spine/raptor/example.html>
+* SpineBoy <br/><http://www.stagexl.org/show/spine/spineboy/example.html>
+* Goblins <br/><http://www.stagexl.org/show/spine/goblins-ffd/example.html>
+* PowerUp <br/><http://www.stagexl.org/show/spine/powerup/example.html>
 
----
+##License
 
 Based on the spine-as3 runtime (2014-07-31)  
 <https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
