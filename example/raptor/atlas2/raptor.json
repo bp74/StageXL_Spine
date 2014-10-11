@@ -1,0 +1,363 @@
+{"frames": [
+
+{
+	"filename": "back_arm.png",
+	"frame": {"x":232,"y":481,"w":46,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":46,"h":29},
+	"sourceSize": {"w":46,"h":29},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "back_bracer.png",
+	"frame": {"x":323,"y":481,"w":39,"h":28},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":28},
+	"sourceSize": {"w":39,"h":28},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "back_hand.png",
+	"frame": {"x":895,"y":314,"w":36,"h":34},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":34},
+	"sourceSize": {"w":36,"h":34},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "back_knee.png",
+	"frame": {"x":837,"y":400,"w":49,"h":67},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":67},
+	"sourceSize": {"w":49,"h":67},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "back_thigh.png",
+	"frame": {"x":364,"y":481,"w":39,"h":24},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":39,"h":24},
+	"sourceSize": {"w":39,"h":24},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "eyes_closed.png",
+	"frame": {"x":885,"y":451,"w":47,"h":45},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":47,"h":45},
+	"sourceSize": {"w":47,"h":45},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "eyes_open.png",
+	"frame": {"x":932,"y":412,"w":47,"h":45},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":47,"h":45},
+	"sourceSize": {"w":47,"h":45},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "eyes_surprised.png",
+	"frame": {"x":932,"y":461,"w":47,"h":45},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":47,"h":45},
+	"sourceSize": {"w":47,"h":45},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "front_arm.png",
+	"frame": {"x":539,"y":479,"w":48,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":48,"h":30},
+	"sourceSize": {"w":48,"h":30},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "front_bracer.png",
+	"frame": {"x":280,"y":481,"w":41,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":29},
+	"sourceSize": {"w":41,"h":29},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "front_hand.png",
+	"frame": {"x":754,"y":163,"w":41,"h":38},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":41,"h":38},
+	"sourceSize": {"w":41,"h":38},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "front_open_hand.png",
+	"frame": {"x":979,"y":412,"w":43,"h":44},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":44},
+	"sourceSize": {"w":43,"h":44},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "front_thigh.png",
+	"frame": {"x":173,"y":481,"w":57,"h":29},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":29},
+	"sourceSize": {"w":57,"h":29},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "gun.png",
+	"frame": {"x":935,"y":224,"w":107,"h":103},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":103},
+	"sourceSize": {"w":107,"h":103},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "gun_nohand.png",
+	"frame": {"x":940,"y":117,"w":105,"h":102},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":102},
+	"sourceSize": {"w":105,"h":102},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "head.png",
+	"frame": {"x":797,"y":163,"w":136,"h":149},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":149},
+	"sourceSize": {"w":136,"h":149},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "lower_leg.png",
+	"frame": {"x":762,"y":412,"w":73,"h":98},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":73,"h":98},
+	"sourceSize": {"w":73,"h":98},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "mouth_grind.png",
+	"frame": {"x":589,"y":479,"w":47,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":47,"h":30},
+	"sourceSize": {"w":47,"h":30},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "mouth_oooo.png",
+	"frame": {"x":432,"y":479,"w":105,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":105,"h":30},
+	"sourceSize": {"w":105,"h":30},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "mouth_smile.png",
+	"frame": {"x":638,"y":479,"w":47,"h":30},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":47,"h":30},
+	"sourceSize": {"w":47,"h":30},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "neck.png",
+	"frame": {"x":405,"y":481,"w":18,"h":21},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":18,"h":21},
+	"sourceSize": {"w":18,"h":21},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_arm_back.png",
+	"frame": {"x":702,"y":204,"w":82,"h":86},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":82,"h":86},
+	"sourceSize": {"w":82,"h":86},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_body.png",
+	"frame": {"x":2,"y":2,"w":610,"h":285},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":610,"h":285},
+	"sourceSize": {"w":610,"h":285},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_front_arm.png",
+	"frame": {"x":933,"y":329,"w":81,"h":102},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":102},
+	"sourceSize": {"w":81,"h":102},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_front_leg.png",
+	"frame": {"x":173,"y":289,"w":190,"h":257},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":190,"h":257},
+	"sourceSize": {"w":191,"h":257},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_hindleg_back.png",
+	"frame": {"x":2,"y":289,"w":169,"h":214},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":169,"h":214},
+	"sourceSize": {"w":169,"h":215},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_horn.png",
+	"frame": {"x":762,"y":2,"w":182,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":80},
+	"sourceSize": {"w":182,"h":80},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_horn_back.png",
+	"frame": {"x":762,"y":84,"w":176,"h":77},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":176,"h":77},
+	"sourceSize": {"w":176,"h":77},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_jaw.png",
+	"frame": {"x":614,"y":2,"w":153,"h":143},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":153,"h":143},
+	"sourceSize": {"w":153,"h":143},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_saddle_noshadow.png",
+	"frame": {"x":432,"y":289,"w":163,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":163,"h":188},
+	"sourceSize": {"w":163,"h":188},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_saddle_strap_front.png",
+	"frame": {"x":946,"y":2,"w":57,"h":95},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":95},
+	"sourceSize": {"w":57,"h":95},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_saddle_strap_rear.png",
+	"frame": {"x":614,"y":224,"w":54,"h":74},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":74},
+	"sourceSize": {"w":54,"h":74},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_saddle_w_shadow.png",
+	"frame": {"x":597,"y":289,"w":163,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":163,"h":188},
+	"sourceSize": {"w":163,"h":188},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor_tongue.png",
+	"frame": {"x":614,"y":157,"w":86,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":64},
+	"sourceSize": {"w":86,"h":64},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "stirrup_back.png",
+	"frame": {"x":895,"y":350,"w":44,"h":35},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":44,"h":35},
+	"sourceSize": {"w":44,"h":35},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "stirrup_front.png",
+	"frame": {"x":702,"y":157,"w":45,"h":50},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":45,"h":50},
+	"sourceSize": {"w":45,"h":50},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "stirrup_strap.png",
+	"frame": {"x":837,"y":451,"w":49,"h":46},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":49,"h":46},
+	"sourceSize": {"w":49,"h":46},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "torso.png",
+	"frame": {"x":946,"y":61,"w":54,"h":91},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":54,"h":91},
+	"sourceSize": {"w":54,"h":91},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "visor.png",
+	"frame": {"x":762,"y":314,"w":131,"h":84},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":131,"h":84},
+	"sourceSize": {"w":131,"h":84},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "raptor.png",
+	"format": "RGBA8888",
+	"size": {"w":1044,"h":512},
+	"scale": "0.5",
+	"smartupdate": "$TexturePacker:SmartUpdate:18275dfc307f4dfda16daf08a55fd7fe:061578ff0c2529a08de7519bbc213166:34bacc0ea0460df40fd0e4d63e616ae5$"
+}
+}

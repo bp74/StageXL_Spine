@@ -44,15 +44,11 @@ class SkeletonData {
   List<Skin> skins = new List<Skin>();
   List<EventData> events = new List<EventData>();
   List<Animation> animations = new List<Animation>();
-
+  List<IkConstraintData> ikConstraints = new List<IkConstraintData>();
+  
   Skin defaultSkin = null;
 
   // --- Bones.
-
-  void addBone(BoneData bone) {
-    if (bone == null) throw new ArgumentError("bone cannot be null.");
-    bones.add(bone);
-  }
 
   BoneData findBone(String boneName) {
     if (boneName == null) throw new ArgumentError("boneName cannot be null.");
@@ -69,11 +65,6 @@ class SkeletonData {
 
   // --- Slots.
 
-  void addSlot(SlotData slot) {
-    if (slot == null) throw new ArgumentError("slot cannot be null.");
-    slots.add(slot);
-  }
-
   SlotData findSlot(String slotName) {
     if (slotName == null) throw new ArgumentError("slotName cannot be null.");
     return slots.firstWhere((s) => s.name == slotName, orElse: () => null);
@@ -89,22 +80,12 @@ class SkeletonData {
 
   // --- Skins.
 
-  void addSkin(Skin skin) {
-    if (skin == null) throw new ArgumentError("skin cannot be null.");
-    skins.add(skin);
-  }
-
   Skin findSkin(String skinName) {
     if (skinName == null) throw new ArgumentError("skinName cannot be null.");
     return skins.firstWhere((s) => s.name == skinName, orElse: () => null);
   }
 
   // --- Events.
-
-  void addEvent(EventData eventData) {
-    if (eventData == null) throw new ArgumentError("eventData cannot be null.");
-    events.add(eventData);
-  }
 
   EventData findEvent(String eventName) {
     if (eventName == null) throw new ArgumentError("eventName cannot be null.");
@@ -113,16 +94,18 @@ class SkeletonData {
 
   // --- Animations.
 
-  void addAnimation(Animation animation) {
-    if (animation == null) throw new ArgumentError("animation cannot be null.");
-    animations.add(animation);
-  }
-
   Animation findAnimation(String animationName) {
     if (animationName == null) throw new ArgumentError("animationName cannot be null.");
     return animations.firstWhere((a) => a.name == animationName, orElse: () => null);
   }
 
+  // --- IK constraints.
+
+  IkConstraintData findIkConstraint (String ikConstraintName) {
+    if (ikConstraintName == null) throw new ArgumentError("ikConstraintName cannot be null.");
+    return ikConstraints.firstWhere((i) => i.name == ikConstraintName, orElse: () => null);
+  }
+  
   // ---
 
   String toString() => name != null ? name : super.toString();

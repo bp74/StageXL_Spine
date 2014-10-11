@@ -33,7 +33,6 @@ part of stagexl_spine;
 class Slot {
 
   final SlotData data;
-  final Skeleton skeleton;
   final Bone bone;
 
   num r = 1.0;
@@ -45,36 +44,37 @@ class Slot {
   num _attachmentTime = 0;
   Float32List attachmentVertices = new Float32List(0);
 
-  Slot(this.data, this.skeleton, this.bone) {
+  Slot(this.data, this.bone) {
     if (data == null) throw new ArgumentError("data cannot be null.");
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
     if (bone == null) throw new ArgumentError("bone cannot be null.");
     setToSetupPose();
   }
 
+  Skeleton get skeleton => bone.skeleton;
+  
   Attachment get attachment => _attachment;
 
   void set attachment(Attachment attachment) {
     _attachment = attachment;
-    _attachmentTime = skeleton.time;
     attachmentVertices = new Float32List(0);
   }
 
   /// Returns the time since the attachment was set.
-  num get attachmentTime => skeleton.time - _attachmentTime;
+  num get attachmentTime => bone.skeleton.time - _attachmentTime;
 
   void set attachmentTime(num time) {
-    _attachmentTime = skeleton.time - time;
+    _attachmentTime = bone.skeleton.time - time;
   }
 
   void setToSetupPose() {
-    int slotIndex = skeleton.data.slots.indexOf(data);
+    int slotIndex = bone.skeleton.data.slots.indexOf(data);
     r = data.r;
     g = data.g;
     b = data.b;
     a = data.a;
     attachment = data.attachmentName == null
-        ? null : skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
+        ? null 
+        : bone.skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
   }
 
   String toString() => data.name;

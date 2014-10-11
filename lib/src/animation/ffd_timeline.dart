@@ -67,7 +67,7 @@ class FfdTimeline extends CurveTimeline {
 
     if (attachmentVertices.length != vertexCount) {
       attachmentVertices = slot.attachmentVertices = new Float32List(vertexCount);
-      alpha = 1;
+      alpha = 1; // Don't mix from uninitialized slot vertices.
     }
 
     if (time >= frames[frames.length - 1]) { // Time is after last frame.
@@ -89,7 +89,7 @@ class FfdTimeline extends CurveTimeline {
 
     // Interpolate between the previous frame and the current frame.
 
-    int frameIndex = Animation.binarySearch(frames, time, 1);
+    int frameIndex = Animation.binarySearch1(frames, time);
     num frameTime = frames[frameIndex];
     num percent = 1 - (time - frameTime) / (frames[frameIndex - 1] - frameTime);
     percent = getCurvePercent(frameIndex - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));

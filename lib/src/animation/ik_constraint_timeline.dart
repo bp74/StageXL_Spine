@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
- *
+ * 
  * Copyright (c) 2013, Esoteric Software
  * All rights reserved.
- *
+ * 
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to install, execute and perform the Spine Runtimes
  * Software (the "Software") solely for internal use. Without the written
@@ -15,7 +15,7 @@
  * trademark, patent or other intellectual property or proprietary rights
  * notices on or in the Software, including any copy thereof. Redistributions
  * in binary or source form must include this license and terms.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -30,61 +30,51 @@
 
 part of stagexl_spine;
 
-class EventTimeline implements Timeline {
+class IkConstraintTimeline extends CurveTimeline {
+  
+  static const int _PREV_FRAME_TIME = -3;
+  static const int _PREV_FRAME_MIX = -2;
+  static const int _PREV_FRAME_BEND_DIRECTION = -1;
+  static const int _FRAME_MIX = 1;
 
-  final Float32List frames; // time, ...
-  final List<Event> events;
+  final Float32List frames;  // time, mix, bendDirection, ...
+  int ikConstraintIndex;
+  
+  IkConstraintTimeline(int frameCount) : super(frameCount),
+    frames = new Float32List(frameCount * 3);
 
-  EventTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        events = new List<Event>(frameCount);
-
-  int get frameCount => frames.length;
-
-  /// Sets the time and value of the specified keyframe.
-  ///
-  void setFrame(int frameIndex, num time, Event event) {
-    frames[frameIndex] = time.toDouble();
-    events[frameIndex] = event;
+  /// Sets the time, mix and bend direction of the specified keyframe.
+  /// 
+  void setFrame (int frameIndex, num time, num mix, int bendDirection) {
+    frameIndex *= 3;
+    frames[frameIndex + 0] = time;
+    frames[frameIndex + 1] = mix;
+    frames[frameIndex + 2] = bendDirection.toDouble();
   }
 
-  /// Fires events for frames > lastTime and <= time.
-  ///
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+    
+    if (time < frames[0]) return; // Time is before first frame.
 
-    if (firedEvents == null) return;
+    IkConstraint ikConstraint = skeleton.ikConstraints[ikConstraintIndex];
 
-    if (lastTime > time) {
-      // Fire events after last time for looped animations.
-      apply(skeleton, lastTime, double.INFINITY, firedEvents, alpha);
-      lastTime = -1;
-    } else if (lastTime >= frames[frameCount - 1]) {
-      // Last time is after last frame.
+    if (time >= frames[frames.length - 3]) { 
+      // Time is after last frame.
+      ikConstraint.mix += (frames[frames.length - 2] - ikConstraint.mix) * alpha;
+      ikConstraint.bendDirection = frames[frames.length - 1].round();
       return;
     }
 
-    if (time < frames[0]) return; // Time is before first frame.
+    // Interpolate between the previous frame and the current frame.
+    
+    int frameIndex = Animation.binarySearch(frames, time, 3);
+    num prevFrameMix = frames[frameIndex + _PREV_FRAME_MIX];
+    num frameTime = frames[frameIndex];
+    num percent = 1.0 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
+    percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0.0 ? 0.0 : (percent > 1.0 ? 1.0 : percent));
 
-    int frameIndex;
-
-    if (lastTime < frames[0]) {
-
-      frameIndex = 0;
-
-    } else {
-
-      frameIndex = Animation.binarySearch1(frames, lastTime);
-      num frame = frames[frameIndex];
-
-      while (frameIndex > 0) { // Fire multiple events with the same frame.
-        if (frames[frameIndex - 1] != frame) break;
-        frameIndex--;
-      }
-    }
-
-    while(frameIndex < frameCount && time >= frames[frameIndex]) {
-      firedEvents.add(events[frameIndex]);
-      frameIndex++;
-    }
+    num mix = prevFrameMix + (frames[frameIndex + _FRAME_MIX] - prevFrameMix) * percent;
+    ikConstraint.mix += (mix - ikConstraint.mix) * alpha;
+    ikConstraint.bendDirection = frames[frameIndex + _PREV_FRAME_BEND_DIRECTION].round();
   }
 }

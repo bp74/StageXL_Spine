@@ -36,6 +36,8 @@ class Skeleton {
   final List<Bone> bones = new List<Bone>();
   final List<Slot> slots = new List<Slot>();
   final List<Slot> drawOrder = new List<Slot>();
+  final List<IkConstraint> ikConstraints = new List<IkConstraint>();
+  final List<List<Bone>> _boneCache = new List<List<Bone>>();
 
   Skin _skin = null;
 
@@ -56,24 +58,93 @@ class Skeleton {
     for (BoneData boneData in data.bones) {
       Bone parent = boneData.parent == null
           ? null : this.bones[this.data.bones.indexOf(boneData.parent)];
-      this.bones.add(new Bone(boneData, parent));
+      this.bones.add(new Bone(boneData, this, parent));
     }
 
     for (SlotData slotData in data.slots) {
       Bone bone = this.bones[data.bones.indexOf(slotData.boneData)];
-      Slot slot = new Slot(slotData, this, bone);
+      Slot slot = new Slot(slotData, bone);
       this.slots.add(slot);
       this.drawOrder.add(slot);
     }
+    
+    for (IkConstraintData ikConstraintData in data.ikConstraints) {
+      IkConstraint ikConstraint = new IkConstraint(ikConstraintData, this);
+      ikConstraints.add(ikConstraint);
+    }
+    
+    updateCache();
   }
+  
+  /// Caches information about bones and IK constraints. Must be called if 
+  /// bones or IK constraints are added or removed.
+  /// 
+  void updateCache() {
+    
+    int ikConstraintsCount = ikConstraints.length;
+    int arrayCount = ikConstraintsCount + 1;
+    
+    if (_boneCache.length > arrayCount) {
+      _boneCache.length = arrayCount;
+    }
+    
+    for (List<Bone> cachedBones in _boneCache) {
+      cachedBones.clear();
+    }
+    
+    while (_boneCache.length < arrayCount){
+      _boneCache.add(new List<Bone>());
+    }
+    
+    List<Bone> nonIkBones = _boneCache[0];
 
-  /// Updates the world transform for each bone.
+    outer:
+    for (Bone bone in bones) {
+      Bone current = bone;
+      do {
+        int ii = 0;
+        for (IkConstraint ikConstraint in ikConstraints) {
+          Bone parent = ikConstraint.bones[0];
+          Bone child = ikConstraint.bones[ikConstraint.bones.length - 1];
+          while (true) {
+            if (current == child) {
+              _boneCache[ii + 0].add(bone);
+              _boneCache[ii + 1].add(bone);
+              continue outer;
+            }
+            if (child == parent) break;
+            child = child.parent;
+          }
+          ii++;
+        }
+        current = current.parent;
+      } while (current != null);
+      nonIkBones.add(bone);
+    }
+  }  
+
+  /// Updates the world transform for each bone and applies IK constraints.
   ///
   void updateWorldTransform() {
+    
     for(int i = 0; i < this.bones.length; i++) {
       var bone = this.bones[i];
       if (bone is! Bone) continue; // dart2js_hint
-      bone.updateWorldTransform(flipX, flipY);
+      bone.rotationIK = bone.rotation;
+    }
+    
+    for(int i = 0 ; i < _boneCache.length; i++) {
+
+      var boneCache = _boneCache[i];
+      for(int i = 0; i < boneCache.length; i++) {
+        var bone = boneCache[i];
+        if (bone is! Bone) continue; // dart2js_hint
+        bone.updateWorldTransform();
+      }
+      
+      if (i < ikConstraints.length) {
+        ikConstraints[i].apply();
+      }
     }
   }
 
@@ -85,8 +156,12 @@ class Skeleton {
   }
 
   void setBonesToSetupPose() {
-    for (Bone bone in this.bones) {
+    for (Bone bone in bones) {
       bone.setToSetupPose();
+    }
+    for (IkConstraint ikConstraint in ikConstraints) {
+      ikConstraint.bendDirection = ikConstraint.data.bendDirection;
+      ikConstraint.mix = ikConstraint.data.mix;
     }
   }
 
@@ -134,6 +209,8 @@ class Skeleton {
     this.skin = skin;
   }
 
+  String get skinName => skin == null ? null : skin.name;
+  
   /// Sets the skin used to look up attachments not found in the
   /// [SkeletonData.defaultSkin] default skin}. Attachments from the new skin
   /// are attached if the corresponding attachment from the old
@@ -201,6 +278,13 @@ class Skeleton {
     throw new ArgumentError("Slot not found: $slotName");
   }
 
+  IkConstraint findIkConstraint (String ikConstraintName) {
+    if (ikConstraintName == null) {
+      throw new ArgumentError("ikConstraintName cannot be null.");
+    }
+    return this.ikConstraints.firstWhere((i) => i.data.name == ikConstraintName, orElse: () => null);
+  }
+  
   void update(num delta) {
     time += delta;
   }

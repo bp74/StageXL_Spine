@@ -96,9 +96,35 @@ class SkeletonLoader {
       boneData.scaleY = _getDouble(boneMap, "scaleY", 1.0);
       boneData.inheritScale = _getBool(boneMap, "inheritScale", true);
       boneData.inheritRotation = _getBool(boneMap, "inheritRotation", true);
-      skeletonData.addBone(boneData);
+      skeletonData.bones.add(boneData);
     }
 
+    // IK constraints.
+    
+    List ikMaps = root["ik"];
+    if (ikMaps == null) ikMaps = const [];
+    
+    for (Map ikMap in ikMaps) {
+      
+      IkConstraintData ikConstraintData = new IkConstraintData(_getString(ikMap, "name", null));
+
+      for (String boneName in ikMap["bones"]) {
+        BoneData bone = skeletonData.findBone(boneName);
+        if (bone == null) throw new StateError("IK bone not found: " + boneName);
+        ikConstraintData.bones.add(bone);
+      }
+
+      String target = _getString(ikMap, "target", null);
+      BoneData bone = skeletonData.findBone(target);
+      if (bone == null) throw new StateError("Target bone not found: " + target);
+
+      ikConstraintData.target = bone;
+      ikConstraintData.bendDirection = _getBool(ikMap, "bendPositive", true) ? 1 : -1;
+      ikConstraintData.mix = _getDouble(ikMap, "mix", 1.0);
+
+      skeletonData.ikConstraints.add(ikConstraintData);
+    }    
+    
     // Slots
 
     for (Map slotMap in root["slots"]) {
@@ -116,7 +142,7 @@ class SkeletonLoader {
       slotData.attachmentName = _getString(slotMap, "attachment", null);
       slotData.additiveBlending = _getBool(slotMap, "additive", false);
 
-      skeletonData.addSlot(slotData);
+      skeletonData.slots.add(slotData);
     }
 
     // Skins
@@ -134,7 +160,7 @@ class SkeletonLoader {
           if (attachment != null) skin.addAttachment(slotIndex, attachmentName, attachment);
         }
       }
-      skeletonData.addSkin(skin);
+      skeletonData.skins.add(skin);
       if (skin.name == "default") skeletonData.defaultSkin = skin;
     }
 
@@ -148,7 +174,7 @@ class SkeletonLoader {
         eventData.intValue = _getInt(eventMap, "int", 0);
         eventData.floatValue = _getDouble(eventMap, "float", 0.0);
         eventData.stringValue = _getString(eventMap, "string", "");
-        skeletonData.addEvent(eventData);
+        skeletonData.events.add(eventData);
       }
     }
 
@@ -404,6 +430,29 @@ class SkeletonLoader {
 
     //-------------------------------------
 
+    Map ikMap = map["ik"];
+    if (ikMap == null) ikMap = const {};
+    
+    for (String ikConstraintName in ikMap.keys) {
+      IkConstraintData ikConstraint = skeletonData.findIkConstraint(ikConstraintName);
+      List valueMaps = ikMap[ikConstraintName];
+      IkConstraintTimeline ikTimeline = new IkConstraintTimeline(valueMaps.length);
+      ikTimeline.ikConstraintIndex = skeletonData.ikConstraints.indexOf(ikConstraint);
+      int frameIndex = 0;
+      for (Map valueMap in valueMaps) {
+        num time = _getDouble(valueMap, "time", 0.0);
+        num mix = _getDouble(valueMap, "mix", 1.0);
+        int bendDirection = _getBool(valueMap, "bendPositive", true) ? 1 : -1;
+        ikTimeline.setFrame(frameIndex, time, mix, bendDirection);
+        _readCurve(ikTimeline, frameIndex, valueMap);
+        frameIndex++;
+      }
+      timelines.add(ikTimeline);
+      duration = math.max(duration, ikTimeline.frames[ikTimeline.frameCount * 3 - 3]);
+    }
+    
+    //-------------------------------------
+
     Map ffd = map["ffd"];
     if (ffd == null) ffd = const {};
 
@@ -477,7 +526,9 @@ class SkeletonLoader {
 
     //-------------------------------------
 
-    List drawOrderValues = map["draworder"];
+    List drawOrderValues = map["drawOrder"];
+    if (drawOrderValues == null) drawOrderValues = map["draworder"];
+    
     if (drawOrderValues != null) {
 
       DrawOrderTimeline drawOrderTimeline = new DrawOrderTimeline(drawOrderValues.length);
@@ -555,7 +606,7 @@ class SkeletonLoader {
       duration = math.max(duration, eventTimeline.frames[eventTimeline.frameCount - 1]);
     }
 
-    skeletonData.addAnimation(new Animation(name, timelines, duration));
+    skeletonData.animations.add(new Animation(name, timelines, duration));
   }
 
   //-----------------------------------------------------------------------------------------------

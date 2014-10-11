@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
- *
+ * 
  * Copyright (c) 2013, Esoteric Software
  * All rights reserved.
- *
+ * 
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to install, execute and perform the Spine Runtimes
  * Software (the "Software") solely for internal use. Without the written
@@ -15,7 +15,7 @@
  * trademark, patent or other intellectual property or proprietary rights
  * notices on or in the Software, including any copy thereof. Redistributions
  * in binary or source form must include this license and terms.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -30,61 +30,18 @@
 
 part of stagexl_spine;
 
-class EventTimeline implements Timeline {
+class IkConstraintData {
+  
+  final String name;
+  final List<BoneData> bones = new List<BoneData>();
+  
+  BoneData target = null;
+  int bendDirection = 1;
+  num mix = 1.0;
 
-  final Float32List frames; // time, ...
-  final List<Event> events;
-
-  EventTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        events = new List<Event>(frameCount);
-
-  int get frameCount => frames.length;
-
-  /// Sets the time and value of the specified keyframe.
-  ///
-  void setFrame(int frameIndex, num time, Event event) {
-    frames[frameIndex] = time.toDouble();
-    events[frameIndex] = event;
+  IkConstraintData (this.name) {
+    if (name == null) throw new ArgumentError("name cannot be null.");
   }
 
-  /// Fires events for frames > lastTime and <= time.
-  ///
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
-
-    if (firedEvents == null) return;
-
-    if (lastTime > time) {
-      // Fire events after last time for looped animations.
-      apply(skeleton, lastTime, double.INFINITY, firedEvents, alpha);
-      lastTime = -1;
-    } else if (lastTime >= frames[frameCount - 1]) {
-      // Last time is after last frame.
-      return;
-    }
-
-    if (time < frames[0]) return; // Time is before first frame.
-
-    int frameIndex;
-
-    if (lastTime < frames[0]) {
-
-      frameIndex = 0;
-
-    } else {
-
-      frameIndex = Animation.binarySearch1(frames, lastTime);
-      num frame = frames[frameIndex];
-
-      while (frameIndex > 0) { // Fire multiple events with the same frame.
-        if (frames[frameIndex - 1] != frame) break;
-        frameIndex--;
-      }
-    }
-
-    while(frameIndex < frameCount && time >= frames[frameIndex]) {
-      firedEvents.add(events[frameIndex]);
-      frameIndex++;
-    }
-  }
+  String toString() => name;
 }

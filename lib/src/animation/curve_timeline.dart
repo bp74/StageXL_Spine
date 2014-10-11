@@ -35,24 +35,27 @@ part of stagexl_spine;
 class CurveTimeline implements Timeline {
 
   static const num _LINEAR = 0.0;
-  static const num _STEPPED = -1.0;
+  static const num _STEPPED = 1.0;
+  static const num _BEZIER = 2.0;
   static const int _BEZIER_SEGMENTS = 10;
+  static const int _BEZIER_SIZE = _BEZIER_SEGMENTS * 2 - 1;
+  
+  final Float32List _curves; // type, x, y, ...
 
-  final Float32List _curves; // dfx, dfy, ddfx, ddfy, dddfx, dddfy, ...
-
-  CurveTimeline(int frameCount) : _curves = new Float32List(frameCount * 6);
-
+  CurveTimeline(int frameCount) : 
+    _curves = new Float32List((frameCount - 1) * _BEZIER_SIZE);
+      
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
   }
 
-  int get frameCount => _curves.length ~/ 6;
+  int get frameCount => _curves.length ~/ _BEZIER_SIZE + 1;
 
   void setLinear(int frameIndex) {
-    _curves[frameIndex * 6] = _LINEAR;
+    _curves[frameIndex * _BEZIER_SIZE] = _LINEAR;
   }
 
   void setStepped(int frameIndex) {
-    _curves[frameIndex * 6] = _STEPPED;
+    _curves[frameIndex * _BEZIER_SIZE] = _STEPPED;
   }
 
   /// Sets the control handle positions for an interpolation bezier curve
@@ -64,60 +67,33 @@ class CurveTimeline implements Timeline {
   ///
   void setCurve(int frameIndex, num cx1, num cy1, num cx2, num cy2) {
 
-    num subdiv_step = 1 / _BEZIER_SEGMENTS;
-    num subdiv_step2 = subdiv_step * subdiv_step;
-    num subdiv_step3 = subdiv_step2 * subdiv_step;
+    num subdiv1 = 1 / _BEZIER_SEGMENTS;
+    num subdiv2 = subdiv1 * subdiv1;
+    num subdiv3 = subdiv2 * subdiv1;
+    num pre1 = 3 * subdiv1;
+    num pre2 = 3 * subdiv2;
+    num pre4 = 6 * subdiv2;
+    num pre5 = 6 * subdiv3;
+    num tmp1x = -cx1 * 2 + cx2;
+    num tmp1y = -cy1 * 2 + cy2;
+    num tmp2x = (cx1 - cx2) * 3 + 1;
+    num tmp2y = (cy1 - cy2) * 3 + 1;
+    num dfx = cx1 * pre1 + tmp1x * pre2 + tmp2x * subdiv3;
+    num dfy = cy1 * pre1 + tmp1y * pre2 + tmp2y * subdiv3;
+    num ddfx = tmp1x * pre4 + tmp2x * pre5;
+    num ddfy = tmp1y * pre4 + tmp2y * pre5;
+    num dddfx = tmp2x * pre5;
+    num dddfy = tmp2y * pre5;
 
-    num pre1 = 3 * subdiv_step;
-    num pre2 = 3 * subdiv_step2;
-    num pre4 = 6 * subdiv_step2;
-    num pre5 = 6 * subdiv_step3;
+    int i = frameIndex * _BEZIER_SIZE;
+    _curves[i++] = _BEZIER;
 
-    num tmp1x = -cx1 * 2.0 + cx2;
-    num tmp1y = -cy1 * 2.0 + cy2;
-    num tmp2x = (cx1 - cx2) * 3.0 + 1.0;
-    num tmp2y = (cy1 - cy2) * 3.0 + 1.0;
-
-    int i = frameIndex * 6;
-
-    _curves[i + 0] = cx1 * pre1 + tmp1x * pre2 + tmp2x * subdiv_step3;
-    _curves[i + 1] = cy1 * pre1 + tmp1y * pre2 + tmp2y * subdiv_step3;
-    _curves[i + 2] = tmp1x * pre4 + tmp2x * pre5;
-    _curves[i + 3] = tmp1y * pre4 + tmp2y * pre5;
-    _curves[i + 4] = tmp2x * pre5;
-    _curves[i + 5] = tmp2y * pre5;
-  }
-
-  num getCurvePercent(int frameIndex, num percent) {
-
-    int curveIndex = frameIndex * 6;
-    num dfx = _curves[curveIndex];
-    if (dfx == _LINEAR) return percent;
-    if (dfx == _STEPPED) return 0;
-
-    if (curveIndex > _curves.length - 6) throw new RangeError("");
-
-    num dfy = _curves[curveIndex + 1];
-    num ddfx = _curves[curveIndex + 2];
-    num ddfy = _curves[curveIndex + 3];
-    num dddfx = _curves[curveIndex + 4];
-    num dddfy = _curves[curveIndex + 5];
     num x = dfx;
     num y = dfy;
-
-    int i = _BEZIER_SEGMENTS - 2;
-
-    while (true) {
-
-      if (x >= percent) {
-        num prevX = x - dfx;
-        num prevY = y - dfy;
-        return prevY + (y - prevY) * (percent - prevX) / (x - prevX);
-      }
-
-      if (i == 0) break;
-
-      i--;
+    
+    for (int n = i + _BEZIER_SIZE - 1; i < n; i += 2) {
+      _curves[i + 0] = x;
+      _curves[i + 1] = y;
       dfx += ddfx;
       dfy += ddfy;
       ddfx += dddfx;
@@ -125,7 +101,27 @@ class CurveTimeline implements Timeline {
       x += dfx;
       y += dfy;
     }
+  }
+    
+  num getCurvePercent(int frameIndex, num percent) {
 
+    int i = frameIndex * _BEZIER_SIZE;
+    num type = _curves[i];
+    if (type == _LINEAR) return percent;
+    if (type == _STEPPED) return 0;
+    i++;
+    
+    num x = 0.0;
+    for (int start = i, n = i + _BEZIER_SIZE - 1; i < n; i += 2) {
+      x = _curves[i];
+      if (x >= percent) {
+        num prevX = (i == start) ? 0.0 : _curves[i - 2];
+        num prevY = (i == start) ? 0.0 : _curves[i - 1]; 
+        return prevY + (_curves[i + 1] - prevY) * (percent - prevX) / (x - prevX);
+      }
+    }
+    
+    num y = _curves[i - 1];
     return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
   }
 }
