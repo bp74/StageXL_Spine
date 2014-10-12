@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:html' as html;
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
@@ -41,11 +42,7 @@ void startDragon() {
   skeletonAnimation.x = 600;
   skeletonAnimation.y = 1000;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.8;
-  skeletonAnimation.timeScale = 0.75;
-  
   skeletonAnimation.state.setAnimationByName(0, "walk", true);
-  //skeletonNode->setAnimation(1, "empty", false);
-  //skeletonNode->addAnimation(1, "gungrab", false, 2);
   
   var skeletonAnimationContainer = new Sprite();
   skeletonAnimationContainer.addChild(skeletonAnimation);
@@ -53,4 +50,6 @@ void startDragon() {
 
   stage.addChild(skeletonAnimationContainer);
   stage.juggler.add(skeletonAnimation);
+  stage.juggler.transition(0, 1800, 3600, TransitionFunction.linear, 
+      (v) => skeletonAnimation.timeScale = 0.7 + 0.5 * math.sin(v));
 }
