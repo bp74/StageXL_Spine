@@ -39,12 +39,12 @@ class CurveTimeline implements Timeline {
   static const num _BEZIER = 2.0;
   static const int _BEZIER_SEGMENTS = 10;
   static const int _BEZIER_SIZE = _BEZIER_SEGMENTS * 2 - 1;
-  
+
   final Float32List _curves; // type, x, y, ...
 
-  CurveTimeline(int frameCount) : 
+  CurveTimeline(int frameCount) :
     _curves = new Float32List((frameCount - 1) * _BEZIER_SIZE);
-      
+
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
   }
 
@@ -90,7 +90,7 @@ class CurveTimeline implements Timeline {
 
     num x = dfx;
     num y = dfy;
-    
+
     for (int n = i + _BEZIER_SIZE - 1; i < n; i += 2) {
       _curves[i + 0] = x;
       _curves[i + 1] = y;
@@ -102,7 +102,7 @@ class CurveTimeline implements Timeline {
       y += dfy;
     }
   }
-    
+
   num getCurvePercent(int frameIndex, num percent) {
 
     int i = frameIndex * _BEZIER_SIZE;
@@ -110,17 +110,17 @@ class CurveTimeline implements Timeline {
     if (type == _LINEAR) return percent;
     if (type == _STEPPED) return 0;
     i++;
-    
+
     num x = 0.0;
     for (int start = i, n = i + _BEZIER_SIZE - 1; i < n; i += 2) {
       x = _curves[i];
       if (x >= percent) {
         num prevX = (i == start) ? 0.0 : _curves[i - 2];
-        num prevY = (i == start) ? 0.0 : _curves[i - 1]; 
+        num prevY = (i == start) ? 0.0 : _curves[i - 1];
         return prevY + (_curves[i + 1] - prevY) * (percent - prevX) / (x - prevX);
       }
     }
-    
+
     num y = _curves[i - 1];
     return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
   }

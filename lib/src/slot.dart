@@ -51,7 +51,7 @@ class Slot {
   }
 
   Skeleton get skeleton => bone.skeleton;
-  
+
   Attachment get attachment => _attachment;
 
   void set attachment(Attachment attachment) {
@@ -73,7 +73,7 @@ class Slot {
     b = data.b;
     a = data.a;
     attachment = data.attachmentName == null
-        ? null 
+        ? null
         : bone.skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
   }
 

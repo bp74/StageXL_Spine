@@ -45,7 +45,7 @@ class SkeletonData {
   List<EventData> events = new List<EventData>();
   List<Animation> animations = new List<Animation>();
   List<IkConstraintData> ikConstraints = new List<IkConstraintData>();
-  
+
   Skin defaultSkin = null;
 
   // --- Bones.
@@ -105,7 +105,7 @@ class SkeletonData {
     if (ikConstraintName == null) throw new ArgumentError("ikConstraintName cannot be null.");
     return ikConstraints.firstWhere((i) => i.name == ikConstraintName, orElse: () => null);
   }
-  
+
   // ---
 
   String toString() => name != null ? name : super.toString();

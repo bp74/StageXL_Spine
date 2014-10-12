@@ -63,7 +63,7 @@ class Bone {
     if (this.parent != null) {
 
       Matrix parentMatrix = parent.worldMatrix;
-      
+
       _worldX = x * parentMatrix.a + y * parentMatrix.c + parentMatrix.tx;
       _worldY = x * parentMatrix.b + y * parentMatrix.d + parentMatrix.ty;
       _worldScaleX = data.inheritScale ? parent._worldScaleX * scaleX : scaleX;
@@ -90,7 +90,7 @@ class Bone {
 
     if (skeleton.flipX) { a = -a; c = -c; }
     if (skeleton.flipY) { b = -b; d = -d; }
-    
+
     this.worldMatrix.setTo(a, b, c, d, _worldX, _worldY);
   }
 
@@ -110,36 +110,36 @@ class Bone {
   num get worldRotation => _worldRotation;
 
   void worldToLocal (Float32List world) {
-    
+
     num dx = world[0] - _worldX;
     num dy = world[1] - _worldY;
     num a = this.worldMatrix.a;
     num b = this.worldMatrix.b;
     num c = this.worldMatrix.c;
     num d = this.worldMatrix.d;
-    
+
     if (skeleton.flipX == skeleton.flipY) {
       a = -a;
       d = -d;
     }
-    
+
     num invDet = 1.0 / (a * d - c * b);
     world[0] = (dx * a * invDet - dy * c * invDet);
     world[1] = (dy * d * invDet - dx * b * invDet);
   }
 
   void localToWorld (Float32List local) {
-    
+
     num localX = local[0];
     num localY = local[1];
     num a = this.worldMatrix.a;
     num b = this.worldMatrix.b;
     num c = this.worldMatrix.c;
     num d = this.worldMatrix.d;
-    
+
     local[0] = localX * a + localY * c + _worldX;
     local[1] = localX * b + localY * d + _worldY;
   }
-  
+
   String toString() => this.data.name;
 }

@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
- * 
+ *
  * Copyright (c) 2013, Esoteric Software
  * All rights reserved.
- * 
+ *
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to install, execute and perform the Spine Runtimes
  * Software (the "Software") solely for internal use. Without the written
@@ -15,7 +15,7 @@
  * trademark, patent or other intellectual property or proprietary rights
  * notices on or in the Software, including any copy thereof. Redistributions
  * in binary or source form must include this license and terms.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -31,20 +31,20 @@
 part of stagexl_spine;
 
 class IkConstraintTimeline extends CurveTimeline {
-  
+
   static const int _PREV_FRAME_TIME = -3;
   static const int _PREV_FRAME_MIX = -2;
   static const int _PREV_FRAME_BEND_DIRECTION = -1;
   static const int _FRAME_MIX = 1;
 
   final Float32List frames;  // time, mix, bendDirection, ...
-  int ikConstraintIndex;
-  
+  int ikConstraintIndex = 0;
+
   IkConstraintTimeline(int frameCount) : super(frameCount),
     frames = new Float32List(frameCount * 3);
 
   /// Sets the time, mix and bend direction of the specified keyframe.
-  /// 
+  ///
   void setFrame (int frameIndex, num time, num mix, int bendDirection) {
     frameIndex *= 3;
     frames[frameIndex + 0] = time;
@@ -53,12 +53,12 @@ class IkConstraintTimeline extends CurveTimeline {
   }
 
   void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
-    
+
     if (time < frames[0]) return; // Time is before first frame.
 
     IkConstraint ikConstraint = skeleton.ikConstraints[ikConstraintIndex];
 
-    if (time >= frames[frames.length - 3]) { 
+    if (time >= frames[frames.length - 3]) {
       // Time is after last frame.
       ikConstraint.mix += (frames[frames.length - 2] - ikConstraint.mix) * alpha;
       ikConstraint.bendDirection = frames[frames.length - 1].round();
@@ -66,7 +66,7 @@ class IkConstraintTimeline extends CurveTimeline {
     }
 
     // Interpolate between the previous frame and the current frame.
-    
+
     int frameIndex = Animation.binarySearch(frames, time, 3);
     num prevFrameMix = frames[frameIndex + _PREV_FRAME_MIX];
     num frameTime = frames[frameIndex];

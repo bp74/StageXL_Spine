@@ -50,7 +50,7 @@ class AttachmentTimeline implements Timeline {
   }
 
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
-    
+
     if (time < this.frames[0]) {
       if (lastTime > time) apply(skeleton, lastTime, double.MAX_FINITE, null, 0);
       return;
@@ -58,14 +58,14 @@ class AttachmentTimeline implements Timeline {
       lastTime = -1;
     }
 
-    int frameIndex = time >= this.frames[this.frames.length - 1] 
-      ? this.frames.length - 1 
+    int frameIndex = time >= this.frames[this.frames.length - 1]
+      ? this.frames.length - 1
       : Animation.binarySearch1(this.frames, time) - 1;
-    
+
     if (this.frames[frameIndex] < lastTime) return;
-        
+
     String attachmentName = attachmentNames[frameIndex];
-    skeleton.slots[slotIndex].attachment = (attachmentName != null) 
+    skeleton.slots[slotIndex].attachment = (attachmentName != null)
         ? skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName)
         : null;
   }

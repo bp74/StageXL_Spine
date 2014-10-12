@@ -100,12 +100,12 @@ class SkeletonLoader {
     }
 
     // IK constraints.
-    
+
     List ikMaps = root["ik"];
     if (ikMaps == null) ikMaps = const [];
-    
+
     for (Map ikMap in ikMaps) {
-      
+
       IkConstraintData ikConstraintData = new IkConstraintData(_getString(ikMap, "name", null));
 
       for (String boneName in ikMap["bones"]) {
@@ -123,8 +123,8 @@ class SkeletonLoader {
       ikConstraintData.mix = _getDouble(ikMap, "mix", 1.0);
 
       skeletonData.ikConstraints.add(ikConstraintData);
-    }    
-    
+    }
+
     // Slots
 
     for (Map slotMap in root["slots"]) {
@@ -432,7 +432,7 @@ class SkeletonLoader {
 
     Map ikMap = map["ik"];
     if (ikMap == null) ikMap = const {};
-    
+
     for (String ikConstraintName in ikMap.keys) {
       IkConstraintData ikConstraint = skeletonData.findIkConstraint(ikConstraintName);
       List valueMaps = ikMap[ikConstraintName];
@@ -450,7 +450,7 @@ class SkeletonLoader {
       timelines.add(ikTimeline);
       duration = math.max(duration, ikTimeline.frames[ikTimeline.frameCount * 3 - 3]);
     }
-    
+
     //-------------------------------------
 
     Map ffd = map["ffd"];
@@ -528,7 +528,7 @@ class SkeletonLoader {
 
     List drawOrderValues = map["drawOrder"];
     if (drawOrderValues == null) drawOrderValues = map["draworder"];
-    
+
     if (drawOrderValues != null) {
 
       DrawOrderTimeline drawOrderTimeline = new DrawOrderTimeline(drawOrderValues.length);

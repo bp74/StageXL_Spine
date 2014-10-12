@@ -67,35 +67,35 @@ class Skeleton {
       this.slots.add(slot);
       this.drawOrder.add(slot);
     }
-    
+
     for (IkConstraintData ikConstraintData in data.ikConstraints) {
       IkConstraint ikConstraint = new IkConstraint(ikConstraintData, this);
       ikConstraints.add(ikConstraint);
     }
-    
+
     updateCache();
   }
-  
-  /// Caches information about bones and IK constraints. Must be called if 
+
+  /// Caches information about bones and IK constraints. Must be called if
   /// bones or IK constraints are added or removed.
-  /// 
+  ///
   void updateCache() {
-    
+
     int ikConstraintsCount = ikConstraints.length;
     int arrayCount = ikConstraintsCount + 1;
-    
+
     if (_boneCache.length > arrayCount) {
       _boneCache.length = arrayCount;
     }
-    
+
     for (List<Bone> cachedBones in _boneCache) {
       cachedBones.clear();
     }
-    
+
     while (_boneCache.length < arrayCount){
       _boneCache.add(new List<Bone>());
     }
-    
+
     List<Bone> nonIkBones = _boneCache[0];
 
     outer:
@@ -121,18 +121,18 @@ class Skeleton {
       } while (current != null);
       nonIkBones.add(bone);
     }
-  }  
+  }
 
   /// Updates the world transform for each bone and applies IK constraints.
   ///
   void updateWorldTransform() {
-    
+
     for(int i = 0; i < this.bones.length; i++) {
       var bone = this.bones[i];
       if (bone is! Bone) continue; // dart2js_hint
       bone.rotationIK = bone.rotation;
     }
-    
+
     for(int i = 0 ; i < _boneCache.length; i++) {
 
       var boneCache = _boneCache[i];
@@ -141,7 +141,7 @@ class Skeleton {
         if (bone is! Bone) continue; // dart2js_hint
         bone.updateWorldTransform();
       }
-      
+
       if (i < ikConstraints.length) {
         ikConstraints[i].apply();
       }
@@ -210,7 +210,7 @@ class Skeleton {
   }
 
   String get skinName => skin == null ? null : skin.name;
-  
+
   /// Sets the skin used to look up attachments not found in the
   /// [SkeletonData.defaultSkin] default skin}. Attachments from the new skin
   /// are attached if the corresponding attachment from the old
@@ -284,7 +284,7 @@ class Skeleton {
     }
     return this.ikConstraints.firstWhere((i) => i.data.name == ikConstraintName, orElse: () => null);
   }
-  
+
   void update(num delta) {
     time += delta;
   }
