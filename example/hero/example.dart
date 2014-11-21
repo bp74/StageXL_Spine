@@ -10,7 +10,7 @@ void main() {
 
   var canvas = html.querySelector('#stage');
 
-  stage = new Stage(canvas, webGL: true, width:300, height: 350, color: Color.DarkSlateGray);
+  stage = new Stage(canvas, webGL: true, width:400, height: 500, color: Color.DarkSlateGray);
   stage.scaleMode = StageScaleMode.SHOW_ALL;
   stage.align = StageAlign.NONE;
 
@@ -31,9 +31,9 @@ void startHero() {
 
   var textField = new TextField();
   textField.defaultTextFormat = new TextFormat("Arial", 24, Color.White, align: TextFormatAlign.CENTER);
-  textField.width = 300;
+  textField.width = 400;
   textField.x = 0;
-  textField.y = 310;
+  textField.y = 450;
   textField.text = "tap to change animation";
   textField.addTo(stage);
 
@@ -51,9 +51,8 @@ void startHero() {
   animationStateData.setMixByName("Crouch", "Idle", 0.2);
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
-  skeletonAnimation.x = 130;
-  skeletonAnimation.y = 270;
-  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
+  skeletonAnimation.x = 180;
+  skeletonAnimation.y = 400;
 
   skeletonAnimation.state.onTrackStart.listen((t) {
     print("${t.trackIndex} start: ${skeletonAnimation.state.getCurrent(t.trackIndex)}");

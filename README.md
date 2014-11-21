@@ -11,6 +11,7 @@ The Spine runtime for the StageXL library.
 * SpineBoy <br/><http://www.stagexl.org/show/spine/spineboy/example.html>
 * Goblins <br/><http://www.stagexl.org/show/spine/goblins-ffd/example.html>
 * PowerUp <br/><http://www.stagexl.org/show/spine/powerup/example.html>
+* Hero <br/><http://www.stagexl.org/show/spine/hero/example.html>
 
 ##License
 
