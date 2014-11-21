@@ -43,13 +43,14 @@ class RotateTimeline extends CurveTimeline {
         frames = new Float32List(frameCount * 2);
 
   /// Sets the time and angle of the specified keyframe.
-  ///
+
   void setFrame(int frameIndex, num time, num angle) {
     frameIndex = frameIndex << 1;
     frames[frameIndex + 0] = time.toDouble();
     frames[frameIndex + 1] = angle.toDouble();
   }
 
+  @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
     if (time < frames[0]) return; // Time is before first frame.

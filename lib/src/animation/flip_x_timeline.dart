@@ -30,44 +30,43 @@
 
 part of stagexl_spine;
 
-class AttachmentTimeline implements Timeline {
+class FlipXTimeline implements Timeline {
 
-  final Float32List frames; // time, ...
-  final List<String> attachmentNames;
-  int slotIndex = 0;
+  final Float32List frames; // time, flip, ...
+  int boneIndex = 0;
 
-  AttachmentTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        attachmentNames = new List<String>.filled(frameCount, null);
+  FlipXTimeline (int frameCount): frames = new Float32List(frameCount * 2);
 
-  int get frameCount => frames.length;
+  int get frameCount => frames.length ~/ 2;
 
-  /// Sets the time and value of the specified keyframe.
-  ///
-  void setFrame(int frameIndex, num time, String attachmentName) {
-    frames[frameIndex] = time.toDouble();
-    attachmentNames[frameIndex] = attachmentName;
+  /// Sets the time and angle of the specified keyframe.
+
+  void setFrame (int frameIndex, num time, bool flip) {
+    frameIndex *= 2;
+    frames[frameIndex + 0] = time;
+    frames[frameIndex + 1] = flip ? 1.0 : 0.0;
   }
 
-  @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < this.frames[0]) {
+    if (time < frames[0]) {
       if (lastTime > time) apply(skeleton, lastTime, double.MAX_FINITE, null, 0);
       return;
-    } else if (lastTime > time) {
+    } else if (lastTime > time) //
       lastTime = -1;
-    }
 
-    int frameIndex = time >= this.frames[this.frames.length - 1]
-      ? this.frames.length - 1
-      : Animation.binarySearch1(this.frames, time) - 1;
+    int frameIndex = (
+        time >= frames[frames.length - 2]
+            ? frames.length
+            : Animation.binarySearch(frames, time, 2)) - 2;
 
-    if (this.frames[frameIndex] < lastTime) return;
+    if (frames[frameIndex] < lastTime) return;
 
-    String attachmentName = attachmentNames[frameIndex];
-    skeleton.slots[slotIndex].attachment = (attachmentName != null)
-        ? skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName)
-        : null;
+    setFlip(skeleton.bones[boneIndex], frames[frameIndex + 1] != 0.0);
   }
+
+  void setFlip (Bone bone, bool flip) {
+    bone.flipX = flip;
+  }
+
 }

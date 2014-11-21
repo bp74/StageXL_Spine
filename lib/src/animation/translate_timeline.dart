@@ -44,6 +44,7 @@ class TranslateTimeline extends CurveTimeline {
         frames = new Float32List(frameCount * 3);
 
   /// Sets the time and value of the specified keyframe.
+
   void setFrame(int frameIndex, num time, num x, num y) {
     frameIndex *= 3;
     frames[frameIndex + 0] = time.toDouble();
@@ -51,6 +52,7 @@ class TranslateTimeline extends CurveTimeline {
     frames[frameIndex + 2] = y.toDouble();
   }
 
+  @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
     if (time < frames[0]) return; // Time is before first frame.

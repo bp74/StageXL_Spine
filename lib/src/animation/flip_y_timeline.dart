@@ -30,44 +30,12 @@
 
 part of stagexl_spine;
 
-class AttachmentTimeline implements Timeline {
+class FlipYTimeline extends FlipXTimeline {
 
-  final Float32List frames; // time, ...
-  final List<String> attachmentNames;
-  int slotIndex = 0;
-
-  AttachmentTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        attachmentNames = new List<String>.filled(frameCount, null);
-
-  int get frameCount => frames.length;
-
-  /// Sets the time and value of the specified keyframe.
-  ///
-  void setFrame(int frameIndex, num time, String attachmentName) {
-    frames[frameIndex] = time.toDouble();
-    attachmentNames[frameIndex] = attachmentName;
-  }
+  FlipYTimeline(int frameCount) : super(frameCount);
 
   @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
-
-    if (time < this.frames[0]) {
-      if (lastTime > time) apply(skeleton, lastTime, double.MAX_FINITE, null, 0);
-      return;
-    } else if (lastTime > time) {
-      lastTime = -1;
-    }
-
-    int frameIndex = time >= this.frames[this.frames.length - 1]
-      ? this.frames.length - 1
-      : Animation.binarySearch1(this.frames, time) - 1;
-
-    if (this.frames[frameIndex] < lastTime) return;
-
-    String attachmentName = attachmentNames[frameIndex];
-    skeleton.slots[slotIndex].attachment = (attachmentName != null)
-        ? skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName)
-        : null;
+  void setFlip(Bone bone, bool flip) {
+    bone.flipY = flip;
   }
 }

@@ -29,6 +29,8 @@ part 'src/animation/curve_timeline.dart';
 part 'src/animation/draw_order_timeline.dart';
 part 'src/animation/event_timeline.dart';
 part 'src/animation/ffd_timeline.dart';
+part 'src/animation/flip_x_timeline.dart';
+part 'src/animation/flip_y_timeline.dart';
 part 'src/animation/ik_constraint_timeline.dart';
 part 'src/animation/rotate_timeline.dart';
 part 'src/animation/scale_timeline.dart';

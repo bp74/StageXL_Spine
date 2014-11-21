@@ -43,6 +43,8 @@ class BoneData {
   num scaleY = 1.0;
   bool inheritScale = true;
   bool inheritRotation = true;
+  bool flipX = false;
+  bool flipY = false;
 
   BoneData(this.name, this.parent) {
     if (name == null) throw new ArgumentError("name cannot be null.");

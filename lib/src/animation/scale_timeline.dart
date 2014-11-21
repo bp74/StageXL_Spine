@@ -34,6 +34,7 @@ class ScaleTimeline extends TranslateTimeline {
 
   ScaleTimeline(int frameCount) : super(frameCount);
 
+  @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
     if (time < frames[0]) return; // Time is before first frame.

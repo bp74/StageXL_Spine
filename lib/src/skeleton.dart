@@ -211,12 +211,12 @@ class Skeleton {
 
   String get skinName => skin == null ? null : skin.name;
 
-  /// Sets the skin used to look up attachments not found in the
-  /// [SkeletonData.defaultSkin] default skin}. Attachments from the new skin
-  /// are attached if the corresponding attachment from the old
-  /// skin was attached. If there was no old skin, each slot's
-  /// setup mode attachment is attached from the new skin.
-  ///
+  /// Sets the skin used to look up attachments before looking in
+  /// the [SkeletonData.defaultSkin] default skin. Attachments from
+  /// the new skin are attached if the corresponding attachment from the
+  /// old skin was attached. If there was no old skin, each slot's setup
+  /// mode attachment is attached from the new skin.
+
   void set skin(Skin newSkin) {
     if (newSkin != null) {
       if (_skin != null) {

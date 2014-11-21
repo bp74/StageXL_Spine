@@ -105,7 +105,7 @@ class Animation {
     int low = 0;
     int high = values.length - 2;
     if (high == 0) return 1;
-
+    
     int current = high >> 1;
     while (true) {
       if (values[current + 1] <= target) {
@@ -119,7 +119,7 @@ class Animation {
 
     return 0; // Can't happen.
   }
-
+  
   static int linearSearch(Float32List values, num target, int step) {
     for (int i = 0; i <= values.length - step; i += step) {
       if (values[i] > target) return i;

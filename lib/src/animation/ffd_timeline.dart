@@ -55,11 +55,7 @@ class FfdTimeline extends CurveTimeline {
     if (slot.attachment != attachment) return;
 
     Float32List frames = this.frames;
-
-    if (time < frames[0]) {
-      slot.attachmentVertices = new Float32List(0);
-      return; // Time is before first frame.
-    }
+    if (time < frames[0]) return; // Time is before first frame.
 
     Float32List attachmentVertices = slot.attachmentVertices;
     List<Float32List> frameVertices = this.frameVertices;

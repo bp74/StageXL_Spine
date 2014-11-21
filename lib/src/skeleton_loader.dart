@@ -32,12 +32,6 @@ part of stagexl_spine;
 
 class SkeletonLoader {
 
-  static const String TIMELINE_SCALE = "scale";
-  static const String TIMELINE_ROTATE = "rotate";
-  static const String TIMELINE_TRANSLATE = "translate";
-  static const String TIMELINE_ATTACHMENT = "attachment";
-  static const String TIMELINE_COLOR = "color";
-
   final AttachmentLoader attachmentLoader;
   final num scale;
 
@@ -96,6 +90,8 @@ class SkeletonLoader {
       boneData.scaleY = _getDouble(boneMap, "scaleY", 1.0);
       boneData.inheritScale = _getBool(boneMap, "inheritScale", true);
       boneData.inheritRotation = _getBool(boneMap, "inheritRotation", true);
+      boneData.flipX = _getBool(boneMap, "flipX", false);
+      boneData.flipY = _getBool(boneMap, "flipY", false);
       skeletonData.bones.add(boneData);
     }
 
@@ -318,7 +314,7 @@ class SkeletonLoader {
 
         List values = slotMap[timelineName];
 
-        if (timelineName == TIMELINE_COLOR) {
+        if (timelineName == "color") {
 
           ColorTimeline colorTimeline = new ColorTimeline(values.length);
           colorTimeline.slotIndex = slotIndex;
@@ -339,7 +335,7 @@ class SkeletonLoader {
           timelines.add(colorTimeline);
           duration = math.max(duration, colorTimeline.frames[colorTimeline.frameCount * 5 - 5]);
 
-        } else if (timelineName == TIMELINE_ATTACHMENT) {
+        } else if (timelineName == "attachment") {
 
           AttachmentTimeline attachmentTimeline = new AttachmentTimeline(values.length);
           attachmentTimeline.slotIndex = slotIndex;
@@ -378,7 +374,7 @@ class SkeletonLoader {
 
         List values = boneMap[timelineName];
 
-        if (timelineName == TIMELINE_ROTATE) {
+        if (timelineName == "rotate") {
 
           RotateTimeline rotateTimeline = new RotateTimeline(values.length);
           rotateTimeline.boneIndex = boneIndex;
@@ -393,12 +389,12 @@ class SkeletonLoader {
           timelines.add(rotateTimeline);
           duration = math.max(duration, rotateTimeline.frames[rotateTimeline.frameCount * 2 - 2]);
 
-        } else if (timelineName == TIMELINE_TRANSLATE || timelineName == TIMELINE_SCALE) {
+        } else if (timelineName == "translate" || timelineName == "scale") {
 
           TranslateTimeline timeline;
           num timelineScale = 1;
 
-          if (timelineName == TIMELINE_SCALE) {
+          if (timelineName == "scale") {
             timeline = new ScaleTimeline(values.length);
           } else {
             timeline = new TranslateTimeline(values.length);
@@ -419,6 +415,25 @@ class SkeletonLoader {
 
           timelines.add(timeline);
           duration = math.max(duration, timeline.frames[timeline.frameCount * 3 - 3]);
+
+        } else if (timelineName == "flipX" || timelineName == "flipY") {
+
+          FlipXTimeline flipTimeline = timelineName == "flipX"
+              ? new FlipXTimeline(values.length)
+              : new FlipYTimeline(values.length);
+
+          flipTimeline.boneIndex = boneIndex;
+
+          int frameIndex = 0;
+          for (Map valueMap in values) {
+            num time = _getDouble(valueMap, "time", 0.0);
+            bool flip = _getBool(valueMap, timelineName == "flipX" ? "x" : "y", false);
+            flipTimeline.setFrame(frameIndex, time, flip);
+            frameIndex++;
+          }
+
+          timelines.add(flipTimeline);
+          duration = math.max(duration, flipTimeline.frames[flipTimeline.frameCount * 3 - 3]);
 
         } else {
 

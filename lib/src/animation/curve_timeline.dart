@@ -45,6 +45,7 @@ class CurveTimeline implements Timeline {
   CurveTimeline(int frameCount) :
     _curves = new Float32List((frameCount - 1) * _BEZIER_SIZE);
 
+  @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
   }
 

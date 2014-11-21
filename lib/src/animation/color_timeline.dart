@@ -56,6 +56,7 @@ class ColorTimeline extends CurveTimeline {
     frames[frameIndex + 4] = a.toDouble();
   }
 
+  @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
     num r, g, b, a;

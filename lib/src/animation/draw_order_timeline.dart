@@ -42,12 +42,13 @@ class DrawOrderTimeline implements Timeline {
   int get frameCount => frames.length;
 
   /// Sets the time and value of the specified keyframe.
-  ///
+
   void setFrame(int frameIndex, num time, Int16List drawOrder) {
     frames[frameIndex] = time.toDouble();
     drawOrders[frameIndex] = drawOrder;
   }
 
+  @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
     if (time < frames[0]) return; // Time is before first frame.

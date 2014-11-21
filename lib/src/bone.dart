@@ -43,12 +43,16 @@ class Bone {
   num scaleY = 0.0;
   num rotation = 0.0;
   num rotationIK = 0.0;
+  bool flipX = false;
+  bool flipY = false;
 
   num _worldX = 0.0;
   num _worldY = 0.0;
   num _worldScaleX = 0.0;
   num _worldScaleY = 0.0;
   num _worldRotation = 0.0;
+  bool _worldFlipX = false;
+  bool _worldFlipY = false;
 
   Bone(this.data, this.skeleton, this.parent) {
     if (data == null) throw new ArgumentError("data cannot be null.");
@@ -69,14 +73,21 @@ class Bone {
       _worldScaleX = data.inheritScale ? parent._worldScaleX * scaleX : scaleX;
       _worldScaleY = data.inheritScale ? parent._worldScaleY * scaleY : scaleY;
       _worldRotation = data.inheritRotation ? parent._worldRotation + rotationIK : rotationIK;
+      _worldFlipX = parent._worldFlipX != flipX;
+      _worldFlipY = parent._worldFlipY != flipY;
 
     } else {
 
-      _worldX = skeleton.flipX ? -x : x;
-      _worldY = skeleton.flipY ? y : -y;
+      var skeletonFlipX = skeleton.flipX;
+      var skeletonFlipY = skeleton.flipY;
+
+      _worldX = skeletonFlipX ? -x : x;
+      _worldY = skeletonFlipY ? y : -y;
       _worldScaleX = scaleX;
       _worldScaleY = scaleY;
       _worldRotation = rotationIK;
+      _worldFlipX = skeletonFlipX != flipX;
+      _worldFlipY = skeletonFlipY != flipY;
     }
 
     num radians = _worldRotation * math.PI / 180.0;
@@ -88,8 +99,8 @@ class Bone {
     num c = -sin * _worldScaleY;
     num d = -cos * _worldScaleY;
 
-    if (skeleton.flipX) { a = -a; c = -c; }
-    if (skeleton.flipY) { b = -b; d = -d; }
+    if (_worldFlipX) { a = -a; c = -c; }
+    if (_worldFlipY) { b = -b; d = -d; }
 
     this.worldMatrix.setTo(a, b, c, d, _worldX, _worldY);
   }
@@ -101,6 +112,8 @@ class Bone {
     scaleY = this.data.scaleY;
     rotation = this.data.rotation;
     rotationIK = this.data.rotation;
+    flipX = this.data.flipX;
+    flipY = this.data.flipY;
   }
 
   num get worldX => _worldX;
@@ -108,6 +121,8 @@ class Bone {
   num get worldScaleX => _worldScaleX;
   num get worldScaleY => _worldScaleY;
   num get worldRotation => _worldRotation;
+  bool get worldFlipX => _worldFlipX;
+  bool get worldFlipY => _worldFlipY;
 
   void worldToLocal (Float32List world) {
 
@@ -118,7 +133,7 @@ class Bone {
     num c = this.worldMatrix.c;
     num d = this.worldMatrix.d;
 
-    if (skeleton.flipX == skeleton.flipY) {
+    if (_worldFlipX == _worldFlipY) {
       a = -a;
       d = -d;
     }
