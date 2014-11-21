@@ -433,7 +433,7 @@ class SkeletonLoader {
           }
 
           timelines.add(flipTimeline);
-          duration = math.max(duration, flipTimeline.frames[flipTimeline.frameCount * 3 - 3]);
+          duration = math.max(duration, flipTimeline.frames[flipTimeline.frameCount * 2 - 2]);
 
         } else {
 
