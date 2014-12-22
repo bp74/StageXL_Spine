@@ -75,8 +75,6 @@ class SkeletonDisplayObject extends DisplayObject {
       num attachmentB = 0.0;
       num attachmentA = 0.0;
 
-      //---------------------------------------------------
-
       if (attachment is RegionAttachment) {
 
         uvList = attachment.uvs;
@@ -122,8 +120,6 @@ class SkeletonDisplayObject extends DisplayObject {
         attachmentA = attachment.a;
         renderTexture = attachment.bitmapData.renderTexture;
       }
-
-      //---------------------------------------------------
 
       if (renderTexture != null) {
 
@@ -171,19 +167,10 @@ class SkeletonDisplayObject extends DisplayObject {
       Slot slot = drawOrder[i];
       Bone bone = slot.bone;
       Attachment attachment = slot.attachment;
-      RenderTextureQuad renderTextureQuad = null;
-      RenderTexture renderTexture = null;
       BlendMode blendMode = globalBlendMode;
       int vertexCount = 0;
       int indexCount = 0;
       num alpha = 0.0;
-
-      num attachmentR = 0.0;
-      num attachmentG = 0.0;
-      num attachmentB = 0.0;
-      num attachmentA = 0.0;
-
-      //---------------------------------------------------
 
       if (attachment is RegionAttachment) {
 

@@ -61,7 +61,7 @@ class ColorTimeline extends CurveTimeline {
 
     num r, g, b, a;
 
-    if (time < frames[0]) {
+    if (time < frames[0 + _FRAME_TIME]) {
       return; // Time is before first frame.
     }
 
