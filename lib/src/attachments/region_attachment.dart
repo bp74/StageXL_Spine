@@ -68,10 +68,9 @@ class RegionAttachment extends Attachment {
 
   void updateOffset() {
 
-    RenderTextureQuad renderTextureQuad = bitmapData.renderTextureQuad;
-    int offsetX = renderTextureQuad.offsetX;
-    int offsetY = bitmapData.height - renderTextureQuad.textureHeight - renderTextureQuad.offsetY;
-
+    RenderTextureQuad rtq = bitmapData.renderTextureQuad;
+    int offsetX = rtq.offsetX;
+    int offsetY = bitmapData.height - rtq.textureHeight - rtq.offsetY;
     num pivotX = width / 2;
     num pivotY = height / 2;
     num regionScaleX = scaleX * width / bitmapData.width;
@@ -80,12 +79,20 @@ class RegionAttachment extends Attachment {
     num cos = math.cos(radians);
     num sin = math.sin(radians);
 
+    matrix.identity();
+    matrix.scale(width / bitmapData.width, height / bitmapData.height);
+    matrix.translate(-pivotX, -pivotY);
+    matrix.scale(scaleX, scaleY);
+    matrix.scale(1.0, -1.0);
+    matrix.rotate(radians);
+    matrix.translate(x, y);
+
     //--------------------------------------------
 
     num localX = offsetX * regionScaleX - scaleX * pivotX;
     num localY = offsetY * regionScaleY - scaleY * pivotY;
-    num localX2 = localX + renderTextureQuad.textureWidth * regionScaleX;
-    num localY2 = localY + renderTextureQuad.textureHeight * regionScaleY;
+    num localX2 = localX + rtq.textureWidth * regionScaleX;
+    num localY2 = localY + rtq.textureHeight * regionScaleY;
     num localXCos = localX * cos + x;
     num localXSin = localX * sin;
     num localYCos = localY * cos + y;
@@ -103,17 +110,6 @@ class RegionAttachment extends Attachment {
     offset[5] = localY2Cos + localX2Sin;
     offset[6] = localX2Cos - localYSin;
     offset[7] = localYCos + localX2Sin;
-
-    //--------------------------------------------
-
-    num a  =   regionScaleX * cos;
-    num b  =   regionScaleX * sin;
-    num c  =   regionScaleY * sin;
-    num d  = - regionScaleY * cos;
-    num tx = x - pivotX * a - pivotY * c;
-    num ty = y - pivotX * b - pivotY * d;
-
-    this.matrix.setTo(a, b, c, d, tx, ty);
   }
 
   void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
