@@ -3,6 +3,11 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.3.1
+  * Added FFD support for Canvas2D renderer.
+  * Fixed RegionAttachment transformation matrix.
+  * Use StageXL 0.10.3
+
 #### Pub version 0.3.0
   * Support for FlipX and FlipY timelines.
 
