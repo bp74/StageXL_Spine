@@ -80,8 +80,9 @@ class IkConstraint {
   static void apply1(Bone bone, num targetX, num targetY, num alpha) {
     num parentRotation = (!bone.data.inheritRotation || bone.parent == null) ? 0 : bone.parent.worldRotation;
     num rotation = bone.rotation;
-    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * _radDeg - parentRotation;
-    bone.rotationIK = rotation + (rotationIK - rotation) * alpha;
+    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * _radDeg;
+    if (bone.worldFlipX != bone.worldFlipY) rotationIK = 0.0 - rotationIK;
+    bone.rotationIK = rotation + (rotationIK - parentRotation - rotation) * alpha;
   }
 
   /// Adjusts the parent and child bone rotations so the tip of the

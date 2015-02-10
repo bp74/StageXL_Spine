@@ -15,7 +15,7 @@ The Spine runtime for the StageXL library.
 
 ##License
 
-Based on the spine-as3 runtime (2014-11-21)  
+Based on the spine-as3 runtime (2015-01-30)  
 <https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
   
 Spine Runtimes Software License   
