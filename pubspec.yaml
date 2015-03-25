@@ -1,13 +1,13 @@
 name: stagexl_spine
-version: 0.3.1
+version: 0.3.2
 author: Bernhard Pichler <support@stagexl.org>
 description: The Spine runtime for the StageXL library.
 homepage: http://www.stagexl.org
 environment:
-  sdk: '>=0.1.6 <2.0.0'
+  sdk: '>=1.9.0 <2.0.0'
 dependencies:
   browser: any
-  stagexl: '>=0.10.3 <0.11.0'
+  stagexl: '>=0.11.0 <0.12.0'
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives"]
