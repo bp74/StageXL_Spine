@@ -111,7 +111,7 @@ class Bone {
     scaleX = this.data.scaleX;
     scaleY = this.data.scaleY;
     rotation = this.data.rotation;
-    rotationIK = this.data.rotation;
+    rotationIK = this.rotation;
     flipX = this.data.flipX;
     flipY = this.data.flipY;
   }

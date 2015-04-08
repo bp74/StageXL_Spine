@@ -51,11 +51,12 @@ class Slot {
   }
 
   Skeleton get skeleton => bone.skeleton;
-  
+
   Attachment get attachment => _attachment;
 
   void set attachment(Attachment attachment) {
     _attachment = attachment;
+    _attachmentTime = bone.skeleton.time;
     attachmentVertices = new Float32List(0);
   }
 
@@ -73,7 +74,7 @@ class Slot {
     b = data.b;
     a = data.a;
     attachment = data.attachmentName == null
-        ? null 
+        ? null
         : bone.skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
   }
 
