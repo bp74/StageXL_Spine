@@ -136,7 +136,13 @@ class SkeletonLoader {
       slotData.b = _toColor(slotDataColor, 2);
       slotData.a = _toColor(slotDataColor, 3);
       slotData.attachmentName = _getString(slotMap, "attachment", null);
-      slotData.additiveBlending = _getBool(slotMap, "additive", false);
+
+      switch(_getString(slotMap, "blend", "normal")) {
+        case "normal": slotData.blendMode = BlendMode.NORMAL; break;
+        case "additive": slotData.blendMode = BlendMode.ADD; break;
+        case "multiply": slotData.blendMode = BlendMode.MULTIPLY; break;
+        case "screen": slotData.blendMode = BlendMode.SCREEN; break;
+      }
 
       skeletonData.slots.add(slotData);
     }

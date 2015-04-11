@@ -41,7 +41,7 @@ class SlotData {
   num a = 1.0;
 
   String attachmentName = null;
-  bool additiveBlending = false;
+  BlendMode blendMode = BlendMode.NORMAL;
 
   SlotData(this.name, this.boneData) {
     if (name == null) throw new ArgumentError("name cannot be null.");

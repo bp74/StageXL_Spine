@@ -128,10 +128,8 @@ class SkeletonDisplayObject extends DisplayObject {
         num bb = attachmentB * skeletonB * slot.b;
         num aa = attachmentA * skeletonA * slot.a;
 
-        BlendMode blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
-
         renderContextWebGL.activateRenderTexture(renderTexture);
-        renderContextWebGL.activateBlendMode(blendMode);
+        renderContextWebGL.activateBlendMode(slot.data.blendMode);
 
         renderProgramMesh.renderMesh(
             renderState,
@@ -174,7 +172,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
       if (attachment is RegionAttachment) {
 
-        blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
+        blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
 
         tmpMatrix.copyFrom(attachment.matrix);
@@ -187,7 +185,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
       } else if (attachment is MeshAttachment) {
 
-        blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
+        blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
 
         uvList = attachment.uvs;
@@ -205,7 +203,7 @@ class SkeletonDisplayObject extends DisplayObject {
 
       } else if (attachment is SkinnedMeshAttachment) {
 
-        blendMode = slot.data.additiveBlending ? BlendMode.ADD : globalBlendMode;
+        blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
 
         uvList = attachment.uvs;
