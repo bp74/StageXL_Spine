@@ -7,11 +7,12 @@ The Spine runtime for the StageXL library.
 
 ##Examples
 
-* Raptor <br/><http://www.stagexl.org/show/spine/raptor/example.html>
-* SpineBoy <br/><http://www.stagexl.org/show/spine/spineboy/example.html>
-* Goblins <br/><http://www.stagexl.org/show/spine/goblins-ffd/example.html>
-* PowerUp <br/><http://www.stagexl.org/show/spine/powerup/example.html>
-* Hero <br/><http://www.stagexl.org/show/spine/hero/example.html>
+Raptor (<http://www.stagexl.org/show/spine/raptor/example.html>)    
+SpineBoy (<http://www.stagexl.org/show/spine/spineboy/example.html>)      
+SpineBoy Mesh (<http://www.stagexl.org/show/spine/spineboy-mesh/example.html>)      
+Goblins (<http://www.stagexl.org/show/spine/goblins-ffd/example.html>)      
+PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)      
+Hero (<http://www.stagexl.org/show/spine/hero/example.html>)    
 
 ##License
 
