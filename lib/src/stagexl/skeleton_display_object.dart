@@ -45,7 +45,6 @@ class SkeletonDisplayObject extends DisplayObject {
     RenderContext renderContext = renderState.renderContext;
     RenderContextWebGL renderContextWebGL = renderContext;
     RenderProgramMesh renderProgramMesh = renderContextWebGL.renderProgramMesh;
-    BlendMode globalBlendMode = renderState.globalBlendMode;
 
     Float32List xyList = _xyList;
     Float32List uvList = new Float32List(0);
