@@ -68,11 +68,14 @@ void startSpineboy() {
       "${t.event.data.name}: ${t.event.intValue}, ${t.event.floatValue}, ${t.event.stringValue}");
   });
 
-  var animations = ["idle", "walk", "run", "walk"];
+  var animations = ["idle", "idle", "walk", "run", "walk"];
   var animationIndex = 0;
   stage.onMouseClick.listen((me) {
     animationIndex = (animationIndex + 1) % animations.length;
     skeletonAnimation.state.setAnimationByName(0, animations[animationIndex], true);
+    if (animationIndex == 1) {
+      skeletonAnimation.state.setAnimationByName(1, "shoot", false);
+    }
   });
 
   // death, hit, idle, jump, run, shoot, test, walk,
