@@ -78,11 +78,12 @@ class IkConstraint {
   /// coordinate system.
   ///
   static void apply1(Bone bone, num targetX, num targetY, num alpha) {
-    num parentRotation = (!bone.data.inheritRotation || bone.parent == null) ? 0 : bone.parent.worldRotation;
+    Bone parent = bone.data.inheritRotation ? bone.parent : null;
+    num parentRotation = parent != null ? parent.worldRotation : 0.0;
     num rotation = bone.rotation;
     num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * _radDeg;
-    if (bone.worldFlipX == bone.worldFlipY) rotationIK = 0.0 - rotationIK;
-    bone.rotationIK = rotation + (rotationIK - parentRotation - rotation) * alpha;
+    if (bone.worldFlipX != bone.worldFlipY) rotationIK = 0.0 - rotationIK;
+    bone.rotationIK = rotation - (parentRotation + rotation + rotationIK) * alpha;
   }
 
   /// Adjusts the parent and child bone rotations so the tip of the
