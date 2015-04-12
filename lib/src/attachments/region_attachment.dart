@@ -68,9 +68,6 @@ class RegionAttachment extends Attachment {
 
   void updateOffset() {
 
-    RenderTextureQuad rtq = bitmapData.renderTextureQuad;
-    int offsetX = rtq.offsetX;
-    int offsetY = bitmapData.height - rtq.textureHeight - rtq.offsetY;
     num pivotX = width / 2;
     num pivotY = height / 2;
     num regionScaleX = scaleX * width / bitmapData.width;
@@ -89,10 +86,12 @@ class RegionAttachment extends Attachment {
 
     //--------------------------------------------
 
-    num localX = offsetX * regionScaleX - scaleX * pivotX;
-    num localY = offsetY * regionScaleY - scaleY * pivotY;
-    num localX2 = localX + rtq.textureWidth * regionScaleX;
-    num localY2 = localY + rtq.textureHeight * regionScaleY;
+    Float32List pqList = bitmapData.renderTextureQuad.pqList;
+
+    num localX = pqList[0] * regionScaleX - scaleX * pivotX;
+    num localY = pqList[1] * regionScaleY - scaleY * pivotY;
+    num localX2 = localX + pqList[8] * regionScaleX;
+    num localY2 = localY + pqList[9] * regionScaleY;
     num localXCos = localX * cos + x;
     num localXSin = localX * sin;
     num localYCos = localY * cos + y;
