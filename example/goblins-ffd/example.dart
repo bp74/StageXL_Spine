@@ -34,7 +34,6 @@ void startGoblins() {
   var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
   var skeletonLoader = new SkeletonLoader(attachmentLoader);
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);
-
   var animationStateData = new AnimationStateData(skeletonData);
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
@@ -42,9 +41,16 @@ void startGoblins() {
   skeletonAnimation.y = 560;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 1.5;
 
+  // set skin of skeleton
   skeletonAnimation.skeleton.skinName = "goblin";
   //skeletonAnimation.skeleton.skinName = "goblingirl";
 
+  // set attachments of slots
+  //skeletonAnimation.skeleton.setAttachment("left hand item", "dagger");
+  //skeletonAnimation.skeleton.setAttachment("right hand item", null);
+  //skeletonAnimation.skeleton.setAttachment("right hand item 2", null);
+
+  // start walk animation
   skeletonAnimation.state.setAnimationByName(0, "walk", true);
 
   stage.addChild(skeletonAnimation);
