@@ -14,14 +14,14 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width:500, height: 300);
+  var stage = new Stage(canvas, width: 500, height: 300);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
   // load "powerup" skeleton resources
 
   var resourceManager = new ResourceManager();
- resourceManager.addTextFile("powerup", "spine/powerup.json");
+  resourceManager.addTextFile("powerup", "spine/powerup.json");
   //resourceManager.addTextureAtlas("powerup", "atlas1/powerup.atlas", TextureAtlasFormat.LIBGDX);
   resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
   await resourceManager.load();

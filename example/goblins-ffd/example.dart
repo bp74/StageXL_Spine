@@ -14,7 +14,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width:480, height: 600);
+  var stage = new Stage(canvas, width: 480, height: 600);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -58,6 +58,3 @@ Future main() async {
   //skeletonAnimation.skeleton.setAttachment("right hand item 2", null);
 
 }
-
-
-

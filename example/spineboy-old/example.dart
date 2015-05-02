@@ -15,7 +15,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width:480, height: 600);
+  var stage = new Stage(canvas, width: 480, height: 600);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -59,7 +59,7 @@ Future main() async {
     shape.graphics.clear();
     for (Float32List vertices in skeletonBounds.verticesList) {
       shape.graphics.beginPath();
-      for(int i = 0; i < vertices.length - 1; i += 2) {
+      for (int i = 0; i < vertices.length - 1; i += 2) {
         num x = vertices[i + 0];
         num y = vertices[i + 1];
         shape.graphics.lineTo(x, y);
@@ -68,5 +68,4 @@ Future main() async {
       shape.graphics.strokeColor(Color.White, 1.0);
     }
   });
-
 }

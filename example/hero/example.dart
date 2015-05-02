@@ -3,7 +3,7 @@ import 'dart:html' as html;
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
-Future  main() async {
+Future main() async {
 
   // configure StageXL default options
 
@@ -14,7 +14,7 @@ Future  main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width:400, height: 500);
+  var stage = new Stage(canvas, width: 400, height: 500);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -94,7 +94,6 @@ Future  main() async {
     var trackEntry = skeletonAnimation.state.getCurrent(t.trackIndex);
     var event = t.event;
     print("${t.trackIndex} event: ${trackEntry}, "
-      "${event.data.name}: ${event.intValue}, ${event.floatValue}, ${event.stringValue}");
+        "${event.data.name}: ${event.intValue}, ${event.floatValue}, ${event.stringValue}");
   });
-
 }

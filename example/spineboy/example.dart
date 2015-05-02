@@ -14,7 +14,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width:480, height: 600);
+  var stage = new Stage(canvas, width: 480, height: 600);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -98,7 +98,7 @@ Future main() async {
     var trackEntry = skeletonAnimation.state.getCurrent(t.trackIndex);
     var event = t.event;
     print("${t.trackIndex} event: ${trackEntry}, "
-    "${event.data.name}: ${event.intValue}, ${event.floatValue}, ${event.stringValue}");
+        "${event.data.name}: ${event.intValue}, ${event.floatValue}, ${event.stringValue}");
   });
 
   // Test other animations defined in this Spine animation

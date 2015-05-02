@@ -15,7 +15,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width:1300, height: 1100);
+  var stage = new Stage(canvas, width: 1300, height: 1100);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -46,7 +46,6 @@ Future main() async {
 
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);
-  stage.juggler.transition(0, 1800, 3600, TransitionFunction.linear, 
+  stage.juggler.transition(0, 1800, 3600, TransitionFunction.linear,
       (v) => skeletonAnimation.timeScale = 0.7 + 0.5 * math.sin(v));
-
 }
