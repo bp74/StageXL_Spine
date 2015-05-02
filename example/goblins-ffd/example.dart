@@ -1,33 +1,31 @@
+import 'dart:async';
 import 'dart:html' as html;
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
-Stage stage;
-RenderLoop renderLoop;
-ResourceManager resourceManager = new ResourceManager();
+Future main() async {
 
-void main() {
+  // configure StageXL default options
 
-  var canvas = html.querySelector('#stage');
+  StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
+  StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
+  StageXL.bitmapDataLoadOptions.webp = true;
 
-  stage = new Stage(canvas, webGL: true, width:480, height: 600, color: Color.DarkSlateGray);
-  stage.scaleMode = StageScaleMode.SHOW_ALL;
-  stage.align = StageAlign.NONE;
+  // init Stage and RenderLoop
 
-  renderLoop = new RenderLoop();
+  var stage = new Stage(html.querySelector('#stage'), width:480, height: 600);
+  var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  BitmapData.defaultLoadOptions.webp = true;
+  // load "goblins-ffd" skeleton resources
 
+  var resourceManager = new ResourceManager();
   resourceManager.addTextFile("goblins-ffd", "spine/goblins-ffd.json");
   //resourceManager.addTextureAtlas("goblins-ffd", "atlas1/goblins-ffd.atlas", TextureAtlasFormat.LIBGDX);
   resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
-  resourceManager.load().then((rm) => startGoblins());
-}
+  await resourceManager.load();
 
-//-----------------------------------------------------------------------------
-
-void startGoblins() {
+  // load Spine skeleton
 
   var spineJson = resourceManager.getTextFile("goblins-ffd");
   var textureAtlas = resourceManager.getTextureAtlas("goblins-ffd");
@@ -36,25 +34,28 @@ void startGoblins() {
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);
   var animationStateData = new AnimationStateData(skeletonData);
 
+  // create the display object showing the skeleton animation
+
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 240;
   skeletonAnimation.y = 560;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 1.5;
-
-  // set skin of skeleton
+  skeletonAnimation.state.setAnimationByName(0, "walk", true);
   skeletonAnimation.skeleton.skinName = "goblin";
+  stage.addChild(skeletonAnimation);
+  stage.juggler.add(skeletonAnimation);
+
+  // feature: change the skin used for the skeleton
+
+  //skeletonAnimation.skeleton.skinName = "goblin";
   //skeletonAnimation.skeleton.skinName = "goblingirl";
 
-  // set attachments of slots
+  // feature: change the attachments assigned to slots
+
   //skeletonAnimation.skeleton.setAttachment("left hand item", "dagger");
   //skeletonAnimation.skeleton.setAttachment("right hand item", null);
   //skeletonAnimation.skeleton.setAttachment("right hand item 2", null);
 
-  // start walk animation
-  skeletonAnimation.state.setAnimationByName(0, "walk", true);
-
-  stage.addChild(skeletonAnimation);
-  stage.juggler.add(skeletonAnimation);
 }
 
 
