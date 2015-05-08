@@ -38,15 +38,15 @@ class AnimationState {
 
   num timeScale = 1.0;
 
-  static StreamController<TrackEntryStartArgs> _onTrackStart = new StreamController<TrackEntryStartArgs>();
-  static StreamController<TrackEntryEndArgs> _onTrackEnd = new StreamController<TrackEntryEndArgs>();
-  static StreamController<TrackEntryCompleteArgs> _onTrackComplete = new StreamController<TrackEntryCompleteArgs>();
-  static StreamController<TrackEntryEventArgs> _onTrackEvent = new StreamController<TrackEntryEventArgs>();
+  final _onTrackStart = new StreamController<TrackEntryStartArgs>.broadcast();
+  final _onTrackEnd = new StreamController<TrackEntryEndArgs>.broadcast();
+  final _onTrackComplete = new StreamController<TrackEntryCompleteArgs>.broadcast();
+  final _onTrackEvent = new StreamController<TrackEntryEventArgs>.broadcast();
 
-  final Stream<TrackEntryStartArgs> onTrackStart = _onTrackStart.stream.asBroadcastStream();
-  final Stream<TrackEntryEndArgs> onTrackEnd = _onTrackEnd.stream.asBroadcastStream();
-  final Stream<TrackEntryCompleteArgs> onTrackComplete = _onTrackComplete.stream.asBroadcastStream();
-  final Stream<TrackEntryEventArgs> onTrackEvent = _onTrackEvent.stream.asBroadcastStream();
+  Stream<TrackEntryStartArgs> get onTrackStart => _onTrackStart.stream;
+  Stream<TrackEntryEndArgs> get onTrackEnd => _onTrackEnd.stream;
+  Stream<TrackEntryCompleteArgs> get onTrackComplete => _onTrackComplete.stream;
+  Stream<TrackEntryEventArgs> get onTrackEvent => _onTrackEvent.stream;
 
   //-----------------------------------------------------------------------------------------------
 
