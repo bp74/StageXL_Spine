@@ -86,12 +86,12 @@ class RegionAttachment extends Attachment {
 
     //--------------------------------------------
 
-    Float32List pqList = bitmapData.renderTextureQuad.pqList;
+    Float32List xyList = bitmapData.renderTextureQuad.xyList;
 
-    num localX = pqList[0] * regionScaleX - scaleX * pivotX;
-    num localY = pqList[1] * regionScaleY - scaleY * pivotY;
-    num localX2 = localX + pqList[8] * regionScaleX;
-    num localY2 = localY + pqList[9] * regionScaleY;
+    num localX = xyList[0] * regionScaleX - scaleX * pivotX;
+    num localY = xyList[1] * regionScaleY - scaleY * pivotY;
+    num localX2 = localX + xyList[8] * regionScaleX;
+    num localY2 = localY + xyList[9] * regionScaleY;
     num localXCos = localX * cos + x;
     num localXSin = localX * sin;
     num localYCos = localY * cos + y;
