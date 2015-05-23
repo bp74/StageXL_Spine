@@ -46,6 +46,7 @@ Future main() async {
 
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);
-  stage.juggler.transition(0, 1800, 3600, TransitionFunction.linear,
-      (v) => skeletonAnimation.timeScale = 0.7 + 0.5 * math.sin(v));
+  stage.juggler.onElapsedTimeChange.listen((time) {
+    skeletonAnimation.timeScale = 0.7 + 0.5 * math.sin(time / 2);
+  });
 }
