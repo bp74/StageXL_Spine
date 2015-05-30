@@ -13,6 +13,7 @@ SpineBoy Mesh (<http://www.stagexl.org/show/spine/spineboy-mesh/example.html>)
 Goblins (<http://www.stagexl.org/show/spine/goblins-ffd/example.html>)      
 PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)      
 Hero (<http://www.stagexl.org/show/spine/hero/example.html>)    
+Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)    
 
 ##License
 
