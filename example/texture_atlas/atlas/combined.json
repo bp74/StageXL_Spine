@@ -1,0 +1,57 @@
+{"frames": [
+
+{
+	"filename": "goblins-mesh.png",
+	"frame": {"x":2,"y":534,"w":457,"h":263},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":457,"h":263},
+	"sourceSize": {"w":461,"h":267},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "hero-mesh.png",
+	"frame": {"x":2,"y":267,"w":498,"h":265},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":498,"h":265},
+	"sourceSize": {"w":502,"h":269},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "raptor.png",
+	"frame": {"x":2,"y":2,"w":720,"h":263},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":720,"h":263},
+	"sourceSize": {"w":724,"h":267},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "speedy.png",
+	"frame": {"x":724,"y":2,"w":814,"h":128},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":814,"h":128},
+	"sourceSize": {"w":819,"h":132},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "spineboy-hoverboard.png",
+	"frame": {"x":502,"y":267,"w":420,"h":200},
+	"rotated": true,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":420,"h":200},
+	"sourceSize": {"w":424,"h":204},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "combined.png",
+	"format": "RGBA8888",
+	"size": {"w":854,"h":818},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:f447f4ece7d06681bbf3be620db41ded:33fd998b76fb6e51aa74e1afd261eafe:3095d46931c42493d5042f9206258520$"
+}
+}
