@@ -10,8 +10,7 @@ dependencies:
   stagexl: '>=0.12.0-dev <0.13.0'
 dependency_overrides:
   stagexl:
-    #git: https://github.com/bp74/StageXL.git
-    path: D:\GitHub\bp74\StageXL
+    git: https://github.com/bp74/StageXL.git
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives"]
