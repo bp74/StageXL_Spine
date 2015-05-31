@@ -9,7 +9,7 @@ Future main() async {
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
-  StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
+  StageXL.stageOptions.backgroundColor = Color.Azure;
   StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
@@ -41,7 +41,7 @@ Future main() async {
   var names = ["goblins-mesh", "hero-mesh", "raptor", "speedy", "spineboy-hoverboard"];
   var skeletonAnimations = new List<SkeletonAnimation>();
 
-  for(var name in names) {
+  for (var name in names) {
 
     // get spine texture atlases from combined texture atlas
 
@@ -76,7 +76,7 @@ Future main() async {
   skeletonAnimations[1] // hero-mesh
     ..state.setAnimationByName(0, "Walk", true)
     ..scaleX = 0.7 ..scaleY = 0.7
-    ..x = 260..y = 380;
+    ..x = 260..y = 390;
 
   skeletonAnimations[2] // raptor
     ..state.setAnimationByName(0, "walk", true)
@@ -86,7 +86,7 @@ Future main() async {
   skeletonAnimations[3] // speedy
     ..state.setAnimationByName(0, "run", true)
     ..scaleX = 0.65 ..scaleY = 0.65
-    ..x = 550 ..y = 380;
+    ..x = 550 ..y = 390;
 
   skeletonAnimations[4] // spineboy-hoverboard
     ..state.setAnimationByName(0, "fly", true)
