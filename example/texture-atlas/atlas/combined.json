@@ -2,7 +2,7 @@
 
 {
 	"filename": "goblins-mesh.png",
-	"frame": {"x":2,"y":534,"w":457,"h":263},
+	"frame": {"x":2,"y":727,"w":457,"h":263},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":457,"h":263},
@@ -11,8 +11,8 @@
 },
 {
 	"filename": "hero-mesh.png",
-	"frame": {"x":2,"y":267,"w":498,"h":265},
-	"rotated": false,
+	"frame": {"x":504,"y":209,"w":498,"h":265},
+	"rotated": true,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":498,"h":265},
 	"sourceSize": {"w":502,"h":269},
@@ -20,16 +20,16 @@
 },
 {
 	"filename": "raptor.png",
-	"frame": {"x":2,"y":2,"w":720,"h":263},
+	"frame": {"x":2,"y":209,"w":500,"h":516},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":720,"h":263},
-	"sourceSize": {"w":724,"h":267},
+	"spriteSourceSize": {"x":2,"y":2,"w":500,"h":516},
+	"sourceSize": {"w":504,"h":520},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "speedy.png",
-	"frame": {"x":724,"y":2,"w":814,"h":128},
+	"frame": {"x":836,"y":2,"w":814,"h":128},
 	"rotated": true,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":2,"w":814,"h":128},
@@ -38,11 +38,11 @@
 },
 {
 	"filename": "spineboy-hoverboard.png",
-	"frame": {"x":502,"y":267,"w":420,"h":200},
-	"rotated": true,
+	"frame": {"x":2,"y":2,"w":832,"h":205},
+	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":420,"h":200},
-	"sourceSize": {"w":424,"h":204},
+	"spriteSourceSize": {"x":2,"y":2,"w":832,"h":205},
+	"sourceSize": {"w":836,"h":209},
 	"pivot": {"x":0.5,"y":0.5}
 }],
 "meta": {
@@ -50,8 +50,8 @@
 	"version": "1.0",
 	"image": "combined.png",
 	"format": "RGBA8888",
-	"size": {"w":854,"h":818},
+	"size": {"w":966,"h":992},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f447f4ece7d06681bbf3be620db41ded:33fd998b76fb6e51aa74e1afd261eafe:3095d46931c42493d5042f9206258520$"
+	"smartupdate": "$TexturePacker:SmartUpdate:8a5d98904000b12bbe05890dc76e75e4:16a48985e51ea356470077b23d0ae055:3095d46931c42493d5042f9206258520$"
 }
 }

@@ -15,7 +15,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 1000, height: 400);
+  var stage = new Stage(canvas, width: 800, height: 400);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -71,33 +71,40 @@ Future main() async {
     ..state.setAnimationByName(0, "walk", true)
     ..skeleton.skinName = "goblin"
     ..scaleX = 1.0 ..scaleY = 1.0
-    ..x = 150..y = 350;
+    ..x = 150..y = 320;
 
   skeletonAnimations[1] // hero-mesh
     ..state.setAnimationByName(0, "Walk", true)
-    ..scaleX = 0.6 ..scaleY = 0.6
-    ..x = 290..y = 350;
+    ..scaleX = 0.7 ..scaleY = 0.7
+    ..x = 260..y = 380;
 
   skeletonAnimations[2] // raptor
     ..state.setAnimationByName(0, "walk", true)
     ..scaleX = 0.28 ..scaleY = 0.28
-    ..x = 480 ..y = 350;
+    ..x = 380 ..y = 320;
 
   skeletonAnimations[3] // speedy
     ..state.setAnimationByName(0, "run", true)
-    ..scaleX = 0.7 ..scaleY = 0.7
-    ..x = 710 ..y = 350;
+    ..scaleX = 0.65 ..scaleY = 0.65
+    ..x = 550 ..y = 380;
 
   skeletonAnimations[4] // spineboy-hoverboard
     ..state.setAnimationByName(0, "fly", true)
-    ..scaleX = 0.35 ..scaleY = 0.35
-    ..x = 860 ..y = 350;
+    ..scaleX = 0.32 ..scaleY = 0.32
+    ..x = 660 ..y = 320;
 
   // add the skeleton animations to the Stage and the Juggler
 
-  for(var skeletonAnimation in skeletonAnimations) {
-    stage.addChild(skeletonAnimation);
-    stage.juggler.add(skeletonAnimation);
-  }
+  stage.addChild(skeletonAnimations[0]);
+  stage.addChild(skeletonAnimations[2]);
+  stage.addChild(skeletonAnimations[4]);
+  stage.addChild(skeletonAnimations[1]);
+  stage.addChild(skeletonAnimations[3]);
+
+  stage.juggler.add(skeletonAnimations[0]);
+  stage.juggler.add(skeletonAnimations[1]);
+  stage.juggler.add(skeletonAnimations[2]);
+  stage.juggler.add(skeletonAnimations[3]);
+  stage.juggler.add(skeletonAnimations[4]);
 
 }

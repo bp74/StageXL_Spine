@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>3.8.0</string>
         <key>fileName</key>
-        <string>D:/GitHub/bp74/StageXL_Spine/example/texture_atlas/atlas/combined.tps</string>
+        <string>D:/GitHub/bp74/StageXL_Spine/example/texture-atlas/atlas/combined.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -74,7 +74,7 @@
         <key>jpgQuality</key>
         <uint>80</uint>
         <key>pngOptimizationLevel</key>
-        <uint>3</uint>
+        <uint>7</uint>
         <key>webpQualityLevel</key>
         <uint>101</uint>
         <key>textureSubPath</key>
