@@ -3,6 +3,13 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.4.0
+  * Added support for BlendModes.
+  * Added combined texture atlas example.
+  * Fixed IK rotation.
+  * Fixed AnimationState event streams.
+  * Updated to StageXL 0.12.0
+
 #### Pub version 0.3.2
   * Fixed single bone IK with flip coordinate systems
   * Updated to StageXL 0.11.0
