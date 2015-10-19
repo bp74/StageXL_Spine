@@ -32,27 +32,22 @@ part of stagexl_spine;
 
 class RegionAttachment extends Attachment {
 
+  final String path;
   final BitmapData bitmapData;
   final Matrix matrix = new Matrix.fromIdentity();
 
-  String path = null;
   Float32List vertices = null;
   Float32List uvs = null;
   Float32List regionUVs = null;
   Int16List triangles = null;
-  num x = 0.0;
-  num y = 0.0;
-  num scaleX = 1.0;
-  num scaleY = 1.0;
-  num rotation = 0.0;
-  num width = 0.0;
-  num height = 0.0;
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
 
-  RegionAttachment(String name, this.bitmapData) : super(name);
+  num rotation = 0.0;
+  num x = 0.0, y = 0.0;
+  num scaleX = 1.0, scaleY = 1.0;
+  num width = 0.0, height = 0.0;
+  num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+
+  RegionAttachment(String name, this.path, this.bitmapData) : super(name);
 
   void updateUVs() {
 

@@ -32,23 +32,19 @@ part of stagexl_spine;
 
 class MeshAttachment extends Attachment {
 
+  final String path;
   final BitmapData bitmapData;
 
-  String path = null;
   Float32List vertices = null;
   Float32List uvs = null;
   Float32List regionUVs = null;
   Int16List triangles = null;
   Int16List edges = null;
   int hullLength = 0;
-  num width = 0.0;
-  num height = 0.0;
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+  num width = 0.0, height = 0.0;
+  num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
-  MeshAttachment(String name, this.bitmapData) : super(name);
+  MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
   void updateUVs() {
 

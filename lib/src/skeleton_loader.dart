@@ -69,8 +69,6 @@ class SkeletonLoader {
 
     // Bones
 
-    BoneData boneData;
-
     for (Map boneMap in root["bones"]) {
 
       BoneData parent = null;
@@ -78,10 +76,12 @@ class SkeletonLoader {
       if (boneMap.containsKey("parent")) {
         String parentName = _getString(boneMap, "parent", null);
         parent = skeletonData.findBone(parentName);
-        if (parent == null) throw new StateError("Parent bone not found: $parentName");
+        if (parent == null) {
+          throw new StateError("Parent bone not found: $parentName");
+        }
       }
 
-      boneData = new BoneData(_getString(boneMap, "name", null), parent);
+      var boneData = new BoneData(_getString(boneMap, "name", null), parent);
       boneData.length = _getDouble(boneMap, "length", 0.0) * scale;
       boneData.x = _getDouble(boneMap, "x", 0.0) * scale;
       boneData.y = _getDouble(boneMap, "y", 0.0) * scale;
@@ -102,16 +102,16 @@ class SkeletonLoader {
 
     for (Map ikMap in ikMaps) {
 
-      IkConstraintData ikConstraintData = new IkConstraintData(_getString(ikMap, "name", null));
+      var ikConstraintData = new IkConstraintData(_getString(ikMap, "name", null));
 
-      for (String boneName in ikMap["bones"]) {
-        BoneData bone = skeletonData.findBone(boneName);
+      for (var boneName in ikMap["bones"]) {
+        var bone = skeletonData.findBone(boneName);
         if (bone == null) throw new StateError("IK bone not found: " + boneName);
         ikConstraintData.bones.add(bone);
       }
 
-      String target = _getString(ikMap, "target", null);
-      BoneData bone = skeletonData.findBone(target);
+      var target = _getString(ikMap, "target", null);
+      var bone = skeletonData.findBone(target);
       if (bone == null) throw new StateError("Target bone not found: " + target);
 
       ikConstraintData.target = bone;
@@ -125,8 +125,8 @@ class SkeletonLoader {
 
     for (Map slotMap in root["slots"]) {
 
-      String boneName = _getString(slotMap, "bone", null);
-      boneData = skeletonData.findBone(boneName);
+      var boneName = _getString(slotMap, "bone", null);
+      var boneData = skeletonData.findBone(boneName);
       if (boneData == null) throw new StateError("Slot bone not found: $boneName");
 
       SlotData slotData = new SlotData(_getString(slotMap, "name", null), boneData);
@@ -152,13 +152,13 @@ class SkeletonLoader {
     Map skins = root["skins"];
 
     for (String skinName in skins.keys) {
-      Map skinMap = skins[skinName];
-      Skin skin = new Skin(skinName);
+      var skinMap = skins[skinName];
+      var skin = new Skin(skinName);
       for (String slotName in skinMap.keys) {
-        int slotIndex = skeletonData.findSlotIndex(slotName);
-        Map slotEntry = skinMap[slotName];
+        var slotIndex = skeletonData.findSlotIndex(slotName);
+        var slotEntry = skinMap[slotName];
         for (String attachmentName in slotEntry.keys) {
-          Attachment attachment = readAttachment(skin, attachmentName, slotEntry[attachmentName]);
+          var attachment = readAttachment(skin, attachmentName, slotEntry[attachmentName]);
           if (attachment != null) skin.addAttachment(slotIndex, attachmentName, attachment);
         }
       }
@@ -172,7 +172,7 @@ class SkeletonLoader {
       Map events = root["events"];
       for (String eventName in events.keys) {
         Map eventMap = events[eventName];
-        EventData eventData = new EventData(eventName);
+        var eventData = new EventData(eventName);
         eventData.intValue = _getInt(eventMap, "int", 0);
         eventData.floatValue = _getDouble(eventMap, "float", 0.0);
         eventData.stringValue = _getString(eventMap, "string", "");
@@ -183,34 +183,33 @@ class SkeletonLoader {
     // Animations
 
     Map animations = root["animations"];
-    for (String animationName in animations.keys) {
+    for (var animationName in animations.keys) {
       readAnimation(animationName, animations[animationName], skeletonData);
     }
 
     return skeletonData;
   }
 
-  //-----------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   Attachment readAttachment(Skin skin, String name, Map map) {
 
     name = _getString(map, "name", name);
 
-    String typeName = _getString(map, "type", "region");
-    AttachmentType type = AttachmentType.get(typeName);
-    String path = _getString(map, "path", name);
-    num scale = this.scale;
+    var typeName = _getString(map, "type", "region");
+    var type = AttachmentType.get(typeName);
+    var path = _getString(map, "path", name);
+    var scale = this.scale;
 
     switch (type) {
 
       case AttachmentType.region:
 
-        RegionAttachment region = attachmentLoader.newRegionAttachment(skin, name, path);
+        var region = attachmentLoader.newRegionAttachment(skin, name, path);
         if (region == null) return null;
 
-        String regionColor = _getString(map, "color", "FFFFFFFF");
+        var regionColor = _getString(map, "color", "FFFFFFFF");
 
-        region.path = path;
         region.x = _getDouble(map, "x", 0.0) * scale;
         region.y = _getDouble(map, "y", 0.0) * scale;
         region.scaleX = _getDouble(map, "scaleX", 1.0);
@@ -228,12 +227,11 @@ class SkeletonLoader {
 
       case AttachmentType.mesh:
 
-        MeshAttachment mesh = attachmentLoader.newMeshAttachment(skin, name, path);
+        var mesh = attachmentLoader.newMeshAttachment(skin, name, path);
         if (mesh == null) return null;
 
-        String meshColor = _getString(map, "color", "FFFFFFFF");
+        var meshColor = _getString(map, "color", "FFFFFFFF");
 
-        mesh.path = path;
         mesh.vertices = _getFloat32List(map, "vertices", scale);
         mesh.triangles = _getInt16List(map, "triangles");
         mesh.regionUVs = _getFloat32List(map, "uvs", 1.0);
@@ -251,14 +249,13 @@ class SkeletonLoader {
 
       case AttachmentType.skinnedmesh:
 
-        SkinnedMeshAttachment skinnedMesh = attachmentLoader.newSkinnedMeshAttachment(skin, name, path);
+        var skinnedMesh = attachmentLoader.newSkinnedMeshAttachment(skin, name, path);
         if (skinnedMesh == null) return null;
-        skinnedMesh.path = path;
 
-        String skinnedMeshColor = _getString(map, "color", "FFFFFFFF");
-        Float32List vertices = _getFloat32List(map, "vertices", 1.0);
-        List<double> weights = new List<double>();
-        List<int> bones = new List<int>();
+        var skinnedMeshColor = _getString(map, "color", "FFFFFFFF");
+        var vertices = _getFloat32List(map, "vertices", 1.0);
+        var weights = new List<double>();
+        var bones = new List<int>();
 
         for (int i = 0; i < vertices.length; ) {
           int boneCount = vertices[i++].toInt();
@@ -290,7 +287,9 @@ class SkeletonLoader {
 
       case AttachmentType.boundingbox:
 
-        BoundingBoxAttachment box = attachmentLoader.newBoundingBoxAttachment(skin, name);
+        var box = attachmentLoader.newBoundingBoxAttachment(skin, name);
+        if (box == null) return null;
+
         box.vertices = _getFloat32List(map, "vertices", scale);
         return box;
     }
@@ -298,7 +297,7 @@ class SkeletonLoader {
     return null;
   }
 
-  //-----------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   void readAnimation(String name, Map map, SkeletonData skeletonData) {
 
@@ -629,8 +628,8 @@ class SkeletonLoader {
     skeletonData.animations.add(new Animation(name, timelines, duration));
   }
 
-  //-----------------------------------------------------------------------------------------------
-  //-----------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   void _readCurve(CurveTimeline timeline, int frameIndex, Map valueMap) {
     var curve = valueMap["curve"];

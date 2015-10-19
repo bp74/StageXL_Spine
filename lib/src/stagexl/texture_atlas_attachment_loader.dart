@@ -6,23 +6,27 @@ class TextureAtlasAttachmentLoader implements AttachmentLoader {
   final String namePrefix;
 
   TextureAtlasAttachmentLoader(this.textureAtlas, [this.namePrefix = ""]) {
-    if (textureAtlas == null) throw new ArgumentError("textureAtlas cannot be null.");
+    if (textureAtlas == null) {
+      throw new ArgumentError("textureAtlas cannot be null.");
+    }
   }
 
   RegionAttachment newRegionAttachment(Skin skin, String name, String path) {
-    return new RegionAttachment(name, textureAtlas.getBitmapData(namePrefix + path));
+    var bitmapData = textureAtlas.getBitmapData(namePrefix + path);
+    return new RegionAttachment(name, path, bitmapData);
   }
 
   MeshAttachment newMeshAttachment(Skin skin, String name, String path) {
-    return new MeshAttachment(name, textureAtlas.getBitmapData(namePrefix + path));
+    var bitmapData = textureAtlas.getBitmapData(namePrefix + path);
+    return new MeshAttachment(name, path, bitmapData);
   }
 
   SkinnedMeshAttachment newSkinnedMeshAttachment(Skin skin, String name, String path) {
-    return new SkinnedMeshAttachment(name, textureAtlas.getBitmapData(namePrefix + path));
+    var bitmapData = textureAtlas.getBitmapData(namePrefix + path);
+    return new SkinnedMeshAttachment(name, path, bitmapData);
   }
 
   BoundingBoxAttachment newBoundingBoxAttachment(Skin skin, String name) {
     return new BoundingBoxAttachment(name);
   }
-
 }
