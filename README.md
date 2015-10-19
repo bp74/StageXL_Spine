@@ -3,7 +3,7 @@ StageXL_Spine
 
 The Spine runtime for the StageXL library.
 
-[![Build Status](https://drone.io/github.com/bp74/StageXL_Spine/status.png)](https://drone.io/github.com/bp74/StageXL_Spine/latest)
+[![Build Status](https://travis-ci.org/bp74/StageXL_Spine.svg?branch=master)](https://travis-ci.org/bp74/StageXL_Spine)
 
 ##Examples
 
