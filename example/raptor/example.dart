@@ -24,7 +24,8 @@ Future main() async {
   var resourceManager = new ResourceManager();
   resourceManager.addTextFile("raptor", "spine/raptor.json");
   //resourceManager.addTextureAtlas("raptor", "atlas1/raptor.atlas", TextureAtlasFormat.LIBGDX);
-  resourceManager.addTextureAtlas("raptor", "atlas2/raptor.json", TextureAtlasFormat.JSONARRAY);
+  //resourceManager.addTextureAtlas("raptor", "atlas2/raptor.json");
+  resourceManager.addTextureAtlas("raptor", "atlas3/raptor.json");
   await resourceManager.load();
 
   // load Spine skeleton
