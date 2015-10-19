@@ -223,7 +223,6 @@ class SkeletonLoader {
         region.b = _toColor(regionColor, 2);
         region.a = _toColor(regionColor, 3);
         region.updateUVs();
-        region.updateOffset();
 
         return region;
 

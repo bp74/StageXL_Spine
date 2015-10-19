@@ -34,10 +34,12 @@ class RegionAttachment extends Attachment {
 
   final BitmapData bitmapData;
   final Matrix matrix = new Matrix.fromIdentity();
-  final Float32List offset = new Float32List(8);
-  final Float32List uvs = new Float32List(8);
 
   String path = null;
+  Float32List vertices = null;
+  Float32List uvs = null;
+  Float32List regionUVs = null;
+  Int16List triangles = null;
   num x = 0.0;
   num y = 0.0;
   num scaleX = 1.0;
@@ -54,24 +56,6 @@ class RegionAttachment extends Attachment {
 
   void updateUVs() {
 
-    var renderTextureQuad = bitmapData.renderTextureQuad;
-    var vxList = renderTextureQuad.vxListQuad;
-
-    uvs[0] = vxList[14];  // bottom-left
-    uvs[1] = vxList[15];
-    uvs[2] = vxList[02];  // top-left
-    uvs[3] = vxList[03];
-    uvs[4] = vxList[06];  // top-right
-    uvs[5] = vxList[07];
-    uvs[6] = vxList[10];  // bottom-right
-    uvs[7] = vxList[11];
-  }
-
-  void updateOffset() {
-
-    var renderTextureQuad = bitmapData.renderTextureQuad;
-    var vxList = renderTextureQuad.vxListQuad;
-
     matrix.identity();
     matrix.scale(width / bitmapData.width, height / bitmapData.height);
     matrix.translate(0.0 - width / 2, 0.0 - height / 2);
@@ -80,43 +64,37 @@ class RegionAttachment extends Attachment {
     matrix.rotate(rotation * math.PI / 180.0);
     matrix.translate(x, y);
 
-    num ma = matrix.a;
-    num mb = matrix.b;
-    num mc = matrix.c;
-    num md = matrix.d;
-    num mx = matrix.tx;
-    num my = matrix.ty;
+    var vxList = bitmapData.renderTextureQuad.vxList;
+    var ixList = bitmapData.renderTextureQuad.ixList;
 
-    offset[0] = vxList[12] * ma + vxList[13] * mc + mx;
-    offset[1] = vxList[12] * mb + vxList[13] * md + my;
-    offset[2] = vxList[00] * ma + vxList[01] * mc + mx;
-    offset[3] = vxList[00] * mb + vxList[01] * md + my;
-    offset[4] = vxList[04] * ma + vxList[05] * mc + mx;
-    offset[5] = vxList[04] * mb + vxList[05] * md + my;
-    offset[6] = vxList[08] * ma + vxList[09] * mc + mx;
-    offset[7] = vxList[08] * mb + vxList[09] * md + my;
+    triangles = ixList;
+    vertices = new Float32List(vxList.length >> 1);
+    regionUVs = new Float32List(vxList.length >> 1);
+    uvs = new Float32List(vxList.length >> 1);
+
+    for(int i = 0; i < vertices.length - 1; i += 2) {
+      num vx = vxList[i * 2 + 0];
+      num vy = vxList[i * 2 + 1];
+      vertices[i + 0] = vx * matrix.a + vy * matrix.c + matrix.tx;
+      vertices[i + 1] = vx * matrix.b + vy * matrix.d + matrix.ty;
+    }
+
+    for(int i = 0; i < regionUVs.length - 1; i += 2) {
+      regionUVs[i + 0] = uvs[i + 0] = vxList[i * 2 + 2];
+      regionUVs[i + 1] = uvs[i + 1] = vxList[i * 2 + 3];
+    }
   }
 
-  void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
+  void computeWorldVertices(num x, num y, Slot slot, Float32List worldVertices) {
 
-    Matrix matrix = bone.worldMatrix;
-    num ma = matrix.a;
-    num mb = matrix.b;
-    num mc = matrix.c;
-    num md = matrix.d;
-    num mx = matrix.tx + x;
-    num my = matrix.ty + y;
+    var wm = slot.bone.worldMatrix;
 
-    if (worldVertices.length < 8) return; // dart2js_hint
-
-    worldVertices[0] = offset[0] * ma + offset[1] * mc + mx;
-    worldVertices[1] = offset[0] * mb + offset[1] * md + my;
-    worldVertices[2] = offset[2] * ma + offset[3] * mc + mx;
-    worldVertices[3] = offset[2] * mb + offset[3] * md + my;
-    worldVertices[4] = offset[4] * ma + offset[5] * mc + mx;
-    worldVertices[5] = offset[4] * mb + offset[5] * md + my;
-    worldVertices[6] = offset[6] * ma + offset[7] * mc + mx;
-    worldVertices[7] = offset[6] * mb + offset[7] * md + my;
+    for (int i = 0; i < this.vertices.length - 1; i += 2) {
+      num vx = this.vertices[i + 0];
+      num vy = this.vertices[i + 1];
+      worldVertices[i + 0] = vx * wm.a + vy * wm.c + wm.tx + x;
+      worldVertices[i + 1] = vx * wm.b + vy * wm.d + wm.ty + y;
+    }
   }
 
 }

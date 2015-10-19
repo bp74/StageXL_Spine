@@ -48,7 +48,6 @@ class MeshAttachment extends Attachment {
   num b = 1.0;
   num a = 1.0;
 
-
   MeshAttachment(String name, this.bitmapData) : super(name);
 
   void updateUVs() {

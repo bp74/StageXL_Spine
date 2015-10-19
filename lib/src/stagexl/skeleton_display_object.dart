@@ -38,7 +38,6 @@ class SkeletonDisplayObject extends DisplayObject {
   //-----------------------------------------------------------------------------------------------
 
   static Float32List _xyList = new Float32List(4096);
-  static Int16List _indexList = new Int16List.fromList([0, 1, 2, 0, 2, 3]);
 
   void _renderWebGL(RenderState renderState) {
 
@@ -63,7 +62,6 @@ class SkeletonDisplayObject extends DisplayObject {
     for (var i = 0; i < drawOrder.length; i++) {
 
       Slot slot = drawOrder[i];
-      Bone bone = slot.bone;
       Attachment attachment = slot.attachment;
       RenderTexture renderTexture = null;
       int vertexCount = 0;
@@ -77,11 +75,11 @@ class SkeletonDisplayObject extends DisplayObject {
       if (attachment is RegionAttachment) {
 
         uvList = attachment.uvs;
-        indexList = _indexList;
-        vertexCount = 4;
-        indexCount = 6;
+        indexList = attachment.triangles;
+        vertexCount = uvList.length >> 1;
+        indexCount = indexList.length;
 
-        attachment.computeWorldVertices(skeletonX, skeletonY, bone, xyList);
+        attachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
 
         attachmentR = attachment.r;
         attachmentG = attachment.g;
