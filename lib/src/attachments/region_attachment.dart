@@ -54,93 +54,69 @@ class RegionAttachment extends Attachment {
 
   void updateUVs() {
 
-    Float32List uvList = bitmapData.renderTextureQuad.uvList;
+    var renderTextureQuad = bitmapData.renderTextureQuad;
+    var vxList = renderTextureQuad.vxListQuad;
 
-    uvs[0] = uvList[6];  // bottom-left
-    uvs[1] = uvList[7];
-    uvs[2] = uvList[0];  // top-left
-    uvs[3] = uvList[1];
-    uvs[4] = uvList[2];  // top-right
-    uvs[5] = uvList[3];
-    uvs[6] = uvList[4];  // bottom-right
-    uvs[7] = uvList[5];
+    uvs[0] = vxList[14];  // bottom-left
+    uvs[1] = vxList[15];
+    uvs[2] = vxList[02];  // top-left
+    uvs[3] = vxList[03];
+    uvs[4] = vxList[06];  // top-right
+    uvs[5] = vxList[07];
+    uvs[6] = vxList[10];  // bottom-right
+    uvs[7] = vxList[11];
   }
 
   void updateOffset() {
 
-    num pivotX = width / 2;
-    num pivotY = height / 2;
-    num regionScaleX = scaleX * width / bitmapData.width;
-    num regionScaleY = scaleY * height / bitmapData.height;
-    num radians = rotation * math.PI / 180;
-    num cos = math.cos(radians);
-    num sin = math.sin(radians);
+    var renderTextureQuad = bitmapData.renderTextureQuad;
+    var vxList = renderTextureQuad.vxListQuad;
 
     matrix.identity();
     matrix.scale(width / bitmapData.width, height / bitmapData.height);
-    matrix.translate(-pivotX, -pivotY);
+    matrix.translate(0.0 - width / 2, 0.0 - height / 2);
     matrix.scale(scaleX, scaleY);
     matrix.scale(1.0, -1.0);
-    matrix.rotate(radians);
+    matrix.rotate(rotation * math.PI / 180.0);
     matrix.translate(x, y);
 
-    //--------------------------------------------
+    num ma = matrix.a;
+    num mb = matrix.b;
+    num mc = matrix.c;
+    num md = matrix.d;
+    num mx = matrix.tx;
+    num my = matrix.ty;
 
-    Float32List xyList = bitmapData.renderTextureQuad.xyList;
-
-    num localX = xyList[0] * regionScaleX - scaleX * pivotX;
-    num localY = xyList[1] * regionScaleY - scaleY * pivotY;
-    num localX2 = localX + xyList[8] * regionScaleX;
-    num localY2 = localY + xyList[9] * regionScaleY;
-    num localXCos = localX * cos + x;
-    num localXSin = localX * sin;
-    num localYCos = localY * cos + y;
-    num localYSin = localY * sin;
-    num localX2Cos = localX2 * cos + x;
-    num localX2Sin = localX2 * sin;
-    num localY2Cos = localY2 * cos + y;
-    num localY2Sin = localY2 * sin;
-
-    offset[0] = localXCos - localYSin;
-    offset[1] = localYCos + localXSin;
-    offset[2] = localXCos - localY2Sin;
-    offset[3] = localY2Cos + localXSin;
-    offset[4] = localX2Cos - localY2Sin;
-    offset[5] = localY2Cos + localX2Sin;
-    offset[6] = localX2Cos - localYSin;
-    offset[7] = localYCos + localX2Sin;
+    offset[0] = vxList[12] * ma + vxList[13] * mc + mx;
+    offset[1] = vxList[12] * mb + vxList[13] * md + my;
+    offset[2] = vxList[00] * ma + vxList[01] * mc + mx;
+    offset[3] = vxList[00] * mb + vxList[01] * md + my;
+    offset[4] = vxList[04] * ma + vxList[05] * mc + mx;
+    offset[5] = vxList[04] * mb + vxList[05] * md + my;
+    offset[6] = vxList[08] * ma + vxList[09] * mc + mx;
+    offset[7] = vxList[08] * mb + vxList[09] * md + my;
   }
 
   void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
 
     Matrix matrix = bone.worldMatrix;
-
-    num a  = matrix.a;
-    num b  = matrix.b;
-    num c  = matrix.c;
-    num d  = matrix.d;
-    num tx = matrix.tx + x;
-    num ty = matrix.ty + y;
-
-    num x1 = offset[0];
-    num y1 = offset[1];
-    num x2 = offset[2];
-    num y2 = offset[3];
-    num x3 = offset[4];
-    num y3 = offset[5];
-    num x4 = offset[6];
-    num y4 = offset[7];
+    num ma = matrix.a;
+    num mb = matrix.b;
+    num mc = matrix.c;
+    num md = matrix.d;
+    num mx = matrix.tx + x;
+    num my = matrix.ty + y;
 
     if (worldVertices.length < 8) return; // dart2js_hint
 
-    worldVertices[0] = x1 * a + y1 * c + tx;
-    worldVertices[1] = x1 * b + y1 * d + ty;
-    worldVertices[2] = x2 * a + y2 * c + tx;
-    worldVertices[3] = x2 * b + y2 * d + ty;
-    worldVertices[4] = x3 * a + y3 * c + tx;
-    worldVertices[5] = x3 * b + y3 * d + ty;
-    worldVertices[6] = x4 * a + y4 * c + tx;
-    worldVertices[7] = x4 * b + y4 * d + ty;
+    worldVertices[0] = offset[0] * ma + offset[1] * mc + mx;
+    worldVertices[1] = offset[0] * mb + offset[1] * md + my;
+    worldVertices[2] = offset[2] * ma + offset[3] * mc + mx;
+    worldVertices[3] = offset[2] * mb + offset[3] * md + my;
+    worldVertices[4] = offset[4] * ma + offset[5] * mc + mx;
+    worldVertices[5] = offset[4] * mb + offset[5] * md + my;
+    worldVertices[6] = offset[6] * ma + offset[7] * mc + mx;
+    worldVertices[7] = offset[6] * mb + offset[7] * md + my;
   }
 
 }

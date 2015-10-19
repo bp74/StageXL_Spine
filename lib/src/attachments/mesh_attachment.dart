@@ -57,46 +57,29 @@ class MeshAttachment extends Attachment {
       uvs = new Float32List(regionUVs.length);
     }
 
-    var renderTextureQuad = bitmapData.renderTextureQuad;
-    var uvList = renderTextureQuad.uvList;
-    var u1 = uvList[0];
-    var v1 = uvList[1];
-    var u2 = uvList[4];
-    var v2 = uvList[5];
+    var sm = bitmapData.renderTextureQuad.samplerMatrix;
 
-    if (renderTextureQuad.rotation == 0 || renderTextureQuad.rotation == 2) {
-      for (int i = 0; i < regionUVs.length - 1; i += 2) {
-        uvs[i + 0] = u1 + regionUVs[i + 0] * (u2 - u1);
-        uvs[i + 1] = v1 + regionUVs[i + 1] * (v2 - v1);
-      }
-    } else {
-      for (int i = 0; i < regionUVs.length - 1; i += 2) {
-        uvs[i + 0] = u1 + regionUVs[i + 1] * (u2 - u1);
-        uvs[i + 1] = v1 + regionUVs[i + 0] * (v2 - v1);
-      }
+    for (int i = 0; i < regionUVs.length - 1; i += 2) {
+      var x = regionUVs[i + 0] * bitmapData.width;
+      var y = regionUVs[i + 1] * bitmapData.height;
+      uvs[i + 0] = sm.tx + x * sm.a + y * sm.c;
+      uvs[i + 1] = sm.ty + x * sm.b + y * sm.d;
     }
   }
 
   void computeWorldVertices(num x, num y, Slot slot, Float32List worldVertices) {
 
-    Matrix matrix = slot.bone.worldMatrix;
-
-    num a  = matrix.a;
-    num b  = matrix.b;
-    num c  = matrix.c;
-    num d  = matrix.d;
-    num tx = matrix.tx + x;
-    num ty = matrix.ty + y;
-
     if (slot.attachmentVertices.length == this.vertices.length) {
       this.vertices = slot.attachmentVertices;
     }
 
+    var wm = slot.bone.worldMatrix;
+
     for (int i = 0; i < this.vertices.length - 1; i += 2) {
       num vx = this.vertices[i + 0];
       num vy = this.vertices[i + 1];
-      worldVertices[i + 0] = vx * a + vy * c + tx;
-      worldVertices[i + 1] = vx * b + vy * d + ty;
+      worldVertices[i + 0] = vx * wm.a + vy * wm.c + wm.tx + x;
+      worldVertices[i + 1] = vx * wm.b + vy * wm.d + wm.ty + y;
     }
   }
 }

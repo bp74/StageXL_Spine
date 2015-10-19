@@ -57,23 +57,13 @@ class SkinnedMeshAttachment extends Attachment {
       uvs = new Float32List(regionUVs.length);
     }
 
-    var renderTextureQuad = bitmapData.renderTextureQuad;
-    var uvList = renderTextureQuad.uvList;
-    var u1 = uvList[0];
-    var v1 = uvList[1];
-    var u2 = uvList[4];
-    var v2 = uvList[5];
+    var sm = bitmapData.renderTextureQuad.samplerMatrix;
 
-    if (renderTextureQuad.rotation == 0 || renderTextureQuad.rotation == 2) {
-      for (int i = 0; i < regionUVs.length - 1; i += 2) {
-        uvs[i + 0] = u1 + regionUVs[i + 0] * (u2 - u1);
-        uvs[i + 1] = v1 + regionUVs[i + 1] * (v2 - v1);
-      }
-    } else {
-      for (int i = 0; i < regionUVs.length - 1; i += 2) {
-        uvs[i + 0] = u1 + regionUVs[i + 1] * (u2 - u1);
-        uvs[i + 1] = v1 + regionUVs[i + 0] * (v2 - v1);
-      }
+    for (int i = 0; i < regionUVs.length - 1; i += 2) {
+      var x = regionUVs[i + 0] * bitmapData.width;
+      var y = regionUVs[i + 1] * bitmapData.height;
+      uvs[i + 0] = sm.tx + x * sm.a + y * sm.c;
+      uvs[i + 1] = sm.ty + x * sm.b + y * sm.d;
     }
   }
 
@@ -101,9 +91,9 @@ class SkinnedMeshAttachment extends Attachment {
           vy += attachmentVertices[f + 1];
         }
 
-        Matrix matrix = skeletonBones[bones[v]].worldMatrix;
-        wx += (vx * matrix.a + vy * matrix.c + matrix.tx) * weight;
-        wy += (vx * matrix.b + vy * matrix.d + matrix.ty) * weight;
+        var wm = skeletonBones[bones[v]].worldMatrix;
+        wx += (vx * wm.a + vy * wm.c + wm.tx) * weight;
+        wy += (vx * wm.b + vy * wm.d + wm.ty) * weight;
       }
 
       worldVertices[w + 0] = wx + x;
