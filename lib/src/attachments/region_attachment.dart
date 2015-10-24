@@ -34,22 +34,23 @@ class RegionAttachment extends Attachment {
 
   final String path;
   final BitmapData bitmapData;
-  final Matrix matrix = new Matrix.fromIdentity();
-
-  Float32List vertices = null;
-  Float32List uvs = null;
-  Float32List regionUVs = null;
-  Int16List triangles = null;
 
   num rotation = 0.0;
   num x = 0.0, y = 0.0;
   num scaleX = 1.0, scaleY = 1.0;
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+  Matrix matrix = new Matrix.fromIdentity();
+
+  Int16List triangles = null;
+  Float32List vertices = null;
+  Float32List uvs = null;
 
   RegionAttachment(String name, this.path, this.bitmapData) : super(name);
 
-  void updateUVs() {
+  //---------------------------------------------------------------------------
+
+  void update() {
 
     matrix.identity();
     matrix.scale(width / bitmapData.width, height / bitmapData.height);
@@ -59,37 +60,62 @@ class RegionAttachment extends Attachment {
     matrix.rotate(rotation * math.PI / 180.0);
     matrix.translate(x, y);
 
-    var vxList = bitmapData.renderTextureQuad.vxList;
-    var ixList = bitmapData.renderTextureQuad.ixList;
+    var ixData = bitmapData.renderTextureQuad.ixList;
+    var vxData = bitmapData.renderTextureQuad.vxList;
 
-    triangles = ixList;
-    vertices = new Float32List(vxList.length >> 1);
-    regionUVs = new Float32List(vxList.length >> 1);
-    uvs = new Float32List(vxList.length >> 1);
+    var ma = matrix.a;
+    var mb = matrix.b;
+    var mc = matrix.c;
+    var md = matrix.d;
+    var mx = matrix.tx;
+    var my = matrix.ty;
 
-    for(int i = 0; i < vertices.length - 1; i += 2) {
-      num vx = vxList[i * 2 + 0];
-      num vy = vxList[i * 2 + 1];
-      vertices[i + 0] = vx * matrix.a + vy * matrix.c + matrix.tx;
-      vertices[i + 1] = vx * matrix.b + vy * matrix.d + matrix.ty;
+    this.triangles = new Int16List(ixData.length);
+    this.vertices = new Float32List(vxData.length >> 1);
+    this.uvs = new Float32List(vxData.length >> 1);
+
+    for (int i = 0; i < ixData.length; i++) {
+      this.triangles[i] = ixData[i];
     }
 
-    for(int i = 0; i < regionUVs.length - 1; i += 2) {
-      regionUVs[i + 0] = uvs[i + 0] = vxList[i * 2 + 2];
-      regionUVs[i + 1] = uvs[i + 1] = vxList[i * 2 + 3];
+    for (int i = 0; i <= vxData.length - 4; i += 4) {
+      var x = vxData[i + 0];
+      var y = vxData[i + 1];
+      var u = vxData[i + 2];
+      var v = vxData[i + 3];
+      this.vertices[(i >> 1) + 0] = x * ma + y * mc + mx;
+      this.vertices[(i >> 1) + 1] = x * mb + y * md + my;
+      this.uvs[(i >> 1) + 0] = u;
+      this.uvs[(i >> 1) + 1] = v;
     }
   }
 
-  void computeWorldVertices(num x, num y, Slot slot, Float32List worldVertices) {
+  //---------------------------------------------------------------------------
 
-    var wm = slot.bone.worldMatrix;
+  Float32List getWorldVertices(num posX, num posY, Slot slot) {
+
+    var matrix = slot.bone.worldMatrix;
+    var result = _tmpFloat32List;
+
+    var ma = matrix.a;
+    var mb = matrix.b;
+    var mc = matrix.c;
+    var md = matrix.d;
+    var mx = matrix.tx + posX;
+    var my = matrix.ty + posY;
 
     for (int i = 0; i < this.vertices.length - 1; i += 2) {
-      num vx = this.vertices[i + 0];
-      num vy = this.vertices[i + 1];
-      worldVertices[i + 0] = vx * wm.a + vy * wm.c + wm.tx + x;
-      worldVertices[i + 1] = vx * wm.b + vy * wm.d + wm.ty + y;
+      var x = vertices[i + 0];
+      var y = vertices[i + 1];
+      var u = uvs[i + 0];
+      var v = uvs[i + 1];
+      result[(i << 1) + 0] = x * ma + y * mc + mx;
+      result[(i << 1) + 1] = x * mb + y * md + my;
+      result[(i << 1) + 2] = u;
+      result[(i << 1) + 3] = v;
     }
+
+    return result;
   }
 
 }

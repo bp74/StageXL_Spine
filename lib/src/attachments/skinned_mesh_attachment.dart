@@ -37,65 +37,96 @@ class SkinnedMeshAttachment extends Attachment {
 
   Int16List bones = null;
   Float32List weights = null;
-  Float32List uvs = null;
-  Float32List regionUVs = null;
-  Int16List triangles = null;
   Int16List edges = null;
   int hullLength = 0;
-
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
+  Int16List triangles = null;
+  Float32List vertices = null;
+  Float32List uvs = null;
+
   SkinnedMeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
-  void updateUVs() {
+  //---------------------------------------------------------------------------
 
-    if (uvs == null || uvs.length != regionUVs.length) {
-      uvs = new Float32List(regionUVs.length);
+  void update(Int16List triangles, Float32List vertices, Float32List uvs, num scale) {
+
+    var weights = new List<double>();
+    var bones = new List<int>();
+
+    for (int i = 0; i < vertices.length; ) {
+      int boneCount = vertices[i++].toInt();
+      bones.add(boneCount);
+      for (int nn = i + boneCount * 4; i < nn; ) {
+        bones.add(vertices[i].toInt());
+        weights.add(vertices[i + 1] * scale);
+        weights.add(vertices[i + 2] * scale);
+        weights.add(vertices[i + 3]);
+        i += 4;
+      }
     }
 
-    var sm = bitmapData.renderTextureQuad.samplerMatrix;
+    this.bones = new Int16List.fromList(bones);
+    this.weights = new Float32List.fromList(weights);
+    this.triangles = triangles;
+    this.vertices = vertices;
+    this.uvs = uvs;
 
-    for (int i = 0; i < regionUVs.length - 1; i += 2) {
-      var x = regionUVs[i + 0] * bitmapData.width;
-      var y = regionUVs[i + 1] * bitmapData.height;
-      uvs[i + 0] = sm.tx + x * sm.a + y * sm.c;
-      uvs[i + 1] = sm.ty + x * sm.b + y * sm.d;
+    var matrix = bitmapData.renderTextureQuad.samplerMatrix;
+    var ma = matrix.a * bitmapData.width;
+    var mb = matrix.b * bitmapData.width;
+    var mc = matrix.c * bitmapData.height;
+    var md = matrix.d * bitmapData.height;
+    var mx = matrix.tx;
+    var my = matrix.ty;
+
+    for (int i = 0; i < this.uvs.length - 1; i += 2) {
+      var x = this.uvs[i + 0];
+      var y = this.uvs[i + 1];
+      this.uvs[i + 0] = x * ma + y * mc + mx;
+      this.uvs[i + 1] = x * mb + y * md + my;
     }
   }
 
-  void computeWorldVertices(num x, num y, Slot slot, Float32List worldVertices) {
+  //---------------------------------------------------------------------------
 
-    List<Bone> skeletonBones = slot.skeleton.bones;
-    Float32List attachmentVertices = slot.attachmentVertices;  // ffd
-    Float32List weights = this.weights;
-    Int16List bones = this.bones;
+  Float32List getWorldVertices(num posX, num posY, Slot slot) {
 
-    for (int w = 0, v = 0, b = 0, f = 0; v < bones.length; w += 2) {
+    var skeletonBones = slot.skeleton.bones;
+    var attachmentVertices = slot.attachmentVertices;  // ffd
+    var weights = this.weights;
+    var bones = this.bones;
+    var result = _tmpFloat32List;
 
-      num wx = 0;
-      num wy = 0;
-      int nn = bones[v++] + v;
+    for (int b = 0, w = 0, a = 0, i = 0; b < bones.length; i++) {
 
-      for ( ; v < nn; v++, b += 3, f += 2) {
+      var x = 0.0;
+      var y = 0.0;
+      var nn = bones[b++] + b;
 
-        num vx = weights[b + 0];
-        num vy = weights[b + 1];
-        num weight = weights[b + 2];
+      for ( ; b < nn; b++, w += 3, a += 2) {
+        var wm = skeletonBones[bones[b]].worldMatrix;
+        var vx = weights[w + 0];
+        var vy = weights[w + 1];
+        var weight = weights[w + 2];
 
         if (attachmentVertices.length != 0) {
-          vx += attachmentVertices[f + 0];
-          vy += attachmentVertices[f + 1];
+          vx += attachmentVertices[a + 0];
+          vy += attachmentVertices[a + 1];
         }
 
-        var wm = skeletonBones[bones[v]].worldMatrix;
-        wx += (vx * wm.a + vy * wm.c + wm.tx) * weight;
-        wy += (vx * wm.b + vy * wm.d + wm.ty) * weight;
+        x += (vx * wm.a + vy * wm.c + wm.tx) * weight;
+        y += (vx * wm.b + vy * wm.d + wm.ty) * weight;
       }
 
-      worldVertices[w + 0] = wx + x;
-      worldVertices[w + 1] = wy + y;
+      result[(i << 2) + 0] = x + posX;
+      result[(i << 2) + 1] = y + posY;
+      result[(i << 2) + 2] = uvs[(i << 1) + 0];
+      result[(i << 2) + 3] = uvs[(i << 1) + 1];
     }
+
+    return result;
   }
 
 }

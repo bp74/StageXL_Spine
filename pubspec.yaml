@@ -4,10 +4,13 @@ author: Bernhard Pichler <support@stagexl.org>
 description: The Spine runtime for the StageXL library.
 homepage: http://www.stagexl.org
 environment:
-  sdk: '>=1.9.0 <2.0.0'
+  sdk: '>=1.12.0 <2.0.0'
 dependencies:
   browser: any
   stagexl: '>=0.12.0 <0.13.0'
+dependency_overrides:
+  stagexl:
+    git: https://github.com/bp74/StageXL
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives"]

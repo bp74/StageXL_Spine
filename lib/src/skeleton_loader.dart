@@ -221,7 +221,7 @@ class SkeletonLoader {
         region.g = _toColor(regionColor, 1);
         region.b = _toColor(regionColor, 2);
         region.a = _toColor(regionColor, 3);
-        region.updateUVs();
+        region.update();
 
         return region;
 
@@ -231,10 +231,10 @@ class SkeletonLoader {
         if (mesh == null) return null;
 
         var meshColor = _getString(map, "color", "FFFFFFFF");
+        var triangles = _getInt16List(map, "triangles");
+        var vertices = _getFloat32List(map, "vertices", scale);
+        var uvs = _getFloat32List(map, "uvs", 1.0);
 
-        mesh.vertices = _getFloat32List(map, "vertices", scale);
-        mesh.triangles = _getInt16List(map, "triangles");
-        mesh.regionUVs = _getFloat32List(map, "uvs", 1.0);
         mesh.r = _toColor(meshColor, 0);
         mesh.g = _toColor(meshColor, 1);
         mesh.b = _toColor(meshColor, 2);
@@ -243,7 +243,7 @@ class SkeletonLoader {
         mesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
         mesh.width = _getDouble(map, "width", 0.0) * scale;
         mesh.height = _getDouble(map, "height", 0.0) * scale;
-        mesh.updateUVs();
+        mesh.update(triangles, vertices, uvs);
 
         return mesh;
 
@@ -253,26 +253,10 @@ class SkeletonLoader {
         if (skinnedMesh == null) return null;
 
         var skinnedMeshColor = _getString(map, "color", "FFFFFFFF");
+        var triangles = _getInt16List(map, "triangles");
         var vertices = _getFloat32List(map, "vertices", 1.0);
-        var weights = new List<double>();
-        var bones = new List<int>();
+        var uvs = _getFloat32List(map, "uvs", 1.0);
 
-        for (int i = 0; i < vertices.length; ) {
-          int boneCount = vertices[i++].toInt();
-          bones.add(boneCount);
-          for (int nn = i + boneCount * 4; i < nn; ) {
-            bones.add(vertices[i].toInt());
-            weights.add(vertices[i + 1] * scale);
-            weights.add(vertices[i + 2] * scale);
-            weights.add(vertices[i + 3]);
-            i += 4;
-          }
-        }
-
-        skinnedMesh.bones = new Int16List.fromList(bones);
-        skinnedMesh.weights = new Float32List.fromList(weights);
-        skinnedMesh.triangles = _getInt16List(map, "triangles");
-        skinnedMesh.regionUVs = _getFloat32List(map, "uvs", 1.0);;
         skinnedMesh.r = _toColor(skinnedMeshColor, 0);
         skinnedMesh.g = _toColor(skinnedMeshColor, 1);
         skinnedMesh.b = _toColor(skinnedMeshColor, 2);
@@ -281,7 +265,7 @@ class SkeletonLoader {
         skinnedMesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
         skinnedMesh.width = _getDouble(map, "width", 0.0) * scale;
         skinnedMesh.height = _getDouble(map, "height", 0.0) * scale;
-        skinnedMesh.updateUVs();
+        skinnedMesh.update(triangles, vertices, uvs, scale);
 
         return skinnedMesh;
 

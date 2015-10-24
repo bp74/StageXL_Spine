@@ -35,46 +35,70 @@ class MeshAttachment extends Attachment {
   final String path;
   final BitmapData bitmapData;
 
-  Float32List vertices = null;
-  Float32List uvs = null;
-  Float32List regionUVs = null;
-  Int16List triangles = null;
   Int16List edges = null;
   int hullLength = 0;
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
+  Int16List triangles = null;
+  Float32List vertices = null;
+  Float32List uvs = null;
+
   MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
-  void updateUVs() {
+  //---------------------------------------------------------------------------
 
-    if (uvs == null || uvs.length != regionUVs.length) {
-      uvs = new Float32List(regionUVs.length);
-    }
+  void update(Int16List triangles, Float32List vertices, Float32List uvs) {
 
-    var sm = bitmapData.renderTextureQuad.samplerMatrix;
+    this.triangles = triangles;
+    this.vertices = vertices;
+    this.uvs = uvs;
 
-    for (int i = 0; i < regionUVs.length - 1; i += 2) {
-      var x = regionUVs[i + 0] * bitmapData.width;
-      var y = regionUVs[i + 1] * bitmapData.height;
-      uvs[i + 0] = sm.tx + x * sm.a + y * sm.c;
-      uvs[i + 1] = sm.ty + x * sm.b + y * sm.d;
+    var matrix = bitmapData.renderTextureQuad.samplerMatrix;
+    var ma = matrix.a * bitmapData.width;
+    var mb = matrix.b * bitmapData.width;
+    var mc = matrix.c * bitmapData.height;
+    var md = matrix.d * bitmapData.height;
+    var mx = matrix.tx;
+    var my = matrix.ty;
+
+    for (int i = 0; i < uvs.length - 1; i += 2) {
+      var u = this.uvs[i + 0];
+      var v = this.uvs[i + 1];
+      this.uvs[i + 0] = u * ma + v * mc + mx;
+      this.uvs[i + 1] = u * mb + v * md + my;
     }
   }
 
-  void computeWorldVertices(num x, num y, Slot slot, Float32List worldVertices) {
+  //---------------------------------------------------------------------------
+
+  Float32List getWorldVertices(num posX, num posY, Slot slot) {
+
+    var matrix = slot.bone.worldMatrix;
+    var result = _tmpFloat32List;
+
+    var ma = matrix.a;
+    var mb = matrix.b;
+    var mc = matrix.c;
+    var md = matrix.d;
+    var mx = matrix.tx + posX;
+    var my = matrix.ty + posY;
 
     if (slot.attachmentVertices.length == this.vertices.length) {
       this.vertices = slot.attachmentVertices;
     }
 
-    var wm = slot.bone.worldMatrix;
-
     for (int i = 0; i < this.vertices.length - 1; i += 2) {
-      num vx = this.vertices[i + 0];
-      num vy = this.vertices[i + 1];
-      worldVertices[i + 0] = vx * wm.a + vy * wm.c + wm.tx + x;
-      worldVertices[i + 1] = vx * wm.b + vy * wm.d + wm.ty + y;
+      var x = vertices[i + 0];
+      var y = vertices[i + 1];
+      var u = uvs[i + 0];
+      var v = uvs[i + 1];
+      result[(i << 1) + 0] = x * ma + y * mc + mx;
+      result[(i << 1) + 1] = x * mb + y * md + my;
+      result[(i << 1) + 2] = u;
+      result[(i << 1) + 3] = v;
     }
+
+    return result;
   }
 }

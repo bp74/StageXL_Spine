@@ -5,11 +5,13 @@ class SkeletonDisplayObject extends DisplayObject {
   final Skeleton skeleton;
   num timeScale = 1.0;
 
-  SkeletonDisplayObject(SkeletonData skeletonData) : skeleton = new Skeleton(skeletonData) {
+  SkeletonDisplayObject(SkeletonData skeletonData)
+      : skeleton = new Skeleton(skeletonData) {
+
     skeleton.updateWorldTransform();
   }
 
-  //-----------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   @override
   Rectangle<num> get bounds {
@@ -35,19 +37,16 @@ class SkeletonDisplayObject extends DisplayObject {
     }
   }
 
-  //-----------------------------------------------------------------------------------------------
-
-  static Float32List _xyList = new Float32List(4096);
+  //---------------------------------------------------------------------------
 
   void _renderWebGL(RenderState renderState) {
 
     RenderContext renderContext = renderState.renderContext;
     RenderContextWebGL renderContextWebGL = renderContext;
-    RenderProgramMesh renderProgramMesh = renderContextWebGL.renderProgramMesh;
+    RenderProgramTinted renderProgram = renderContextWebGL.renderProgramTinted;
 
-    Float32List xyList = _xyList;
-    Float32List uvList = new Float32List(0);
-    Int16List indexList = new Int16List(0);
+    Int16List ixList = new Int16List(0);
+    Float32List vxList = new Float32List(0);
     List<Slot> drawOrder = skeleton.drawOrder;
 
     num skeletonX = skeleton.x;
@@ -57,15 +56,13 @@ class SkeletonDisplayObject extends DisplayObject {
     num skeletonB = skeleton.b;
     num skeletonA = skeleton.a;
 
-    renderContextWebGL.activateRenderProgram(renderProgramMesh);
+    renderContextWebGL.activateRenderProgram(renderProgram);
 
     for (var i = 0; i < drawOrder.length; i++) {
 
       Slot slot = drawOrder[i];
       Attachment attachment = slot.attachment;
       RenderTexture renderTexture = null;
-      int vertexCount = 0;
-      int indexCount = 0;
 
       num attachmentR = 0.0;
       num attachmentG = 0.0;
@@ -74,13 +71,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
       if (attachment is RegionAttachment) {
 
-        uvList = attachment.uvs;
-        indexList = attachment.triangles;
-        vertexCount = uvList.length >> 1;
-        indexCount = indexList.length;
-
-        attachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-
+        ixList = attachment.triangles;
+        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
         attachmentR = attachment.r;
         attachmentG = attachment.g;
         attachmentB = attachment.b;
@@ -89,13 +81,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
       } else if (attachment is MeshAttachment) {
 
-        uvList = attachment.uvs;
-        indexList = attachment.triangles;
-        vertexCount = uvList.length >> 1;
-        indexCount = indexList.length;
-
-        attachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-
+        ixList = attachment.triangles;
+        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
         attachmentR = attachment.r;
         attachmentG = attachment.g;
         attachmentB = attachment.b;
@@ -104,13 +91,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
       } else if (attachment is SkinnedMeshAttachment) {
 
-        uvList = attachment.uvs;
-        indexList = attachment.triangles;
-        vertexCount = uvList.length >> 1;
-        indexCount = indexList.length;
-
-        attachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-
+        ixList = attachment.triangles;
+        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
         attachmentR = attachment.r;
         attachmentG = attachment.g;
         attachmentB = attachment.b;
@@ -119,25 +101,18 @@ class SkeletonDisplayObject extends DisplayObject {
       }
 
       if (renderTexture != null) {
-
-        num rr = attachmentR * skeletonR * slot.r;
-        num gg = attachmentG * skeletonG * slot.g;
-        num bb = attachmentB * skeletonB * slot.b;
-        num aa = attachmentA * skeletonA * slot.a;
-
+        num r = attachmentR * skeletonR * slot.r;
+        num g = attachmentG * skeletonG * slot.g;
+        num b = attachmentB * skeletonB * slot.b;
+        num a = attachmentA * skeletonA * slot.a;
         renderContextWebGL.activateRenderTexture(renderTexture);
         renderContextWebGL.activateBlendMode(slot.data.blendMode);
-
-        renderProgramMesh.renderMesh(
-            renderState,
-            indexCount, indexList,
-            vertexCount, xyList, uvList,
-            rr, gg, bb, aa);
+        renderProgram.renderTextureMesh(renderState, ixList, vxList, r, g, b, a);
       }
     }
   }
 
-  //-----------------------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   void _renderCanvas(RenderState renderState) {
 
@@ -148,9 +123,8 @@ class SkeletonDisplayObject extends DisplayObject {
     Matrix tmpMatrix = new Matrix.fromIdentity();
     RenderState tmpRenderState = new RenderState(renderContext);
 
-    Float32List xyList = _xyList;
-    Float32List uvList = new Float32List(0);
-    Int16List indexList = new Int16List(0);
+    Int16List ixList = new Int16List(0);
+    Float32List vxList = new Float32List(0);
     List<Slot> drawOrder = skeleton.drawOrder;
 
     num skeletonX = skeleton.x;
@@ -163,58 +137,39 @@ class SkeletonDisplayObject extends DisplayObject {
       Bone bone = slot.bone;
       Attachment attachment = slot.attachment;
       BlendMode blendMode = globalBlendMode;
-      int vertexCount = 0;
-      int indexCount = 0;
       num alpha = 0.0;
 
       if (attachment is RegionAttachment) {
 
+        var bd = attachment.bitmapData;
         blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
-
         tmpMatrix.copyFrom(attachment.matrix);
         tmpMatrix.translate(skeletonX, skeletonY);
         tmpMatrix.concat(bone.worldMatrix);
         tmpMatrix.concat(globalMatrix);
-
         tmpRenderState.reset(tmpMatrix, alpha, blendMode);
-        tmpRenderState.renderQuad(attachment.bitmapData.renderTextureQuad);
+        tmpRenderState.renderTextureQuad(bd.renderTextureQuad);
 
       } else if (attachment is MeshAttachment) {
 
+        var bd = attachment.bitmapData;
         blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
-
-        uvList = attachment.uvs;
-        indexList = attachment.triangles;
-        vertexCount = uvList.length >> 1;
-        indexCount = indexList.length;
-
-        attachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-
+        ixList = attachment.triangles;
+        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
         tmpRenderState.reset(globalMatrix, alpha, blendMode);
-        renderContext.renderMesh(
-            tmpRenderState, attachment.bitmapData.renderTexture,
-            indexCount, indexList,
-            vertexCount, xyList, uvList);
+        tmpRenderState.renderTextureMesh(bd.renderTexture, ixList, vxList);
 
       } else if (attachment is SkinnedMeshAttachment) {
 
+        var bd = attachment.bitmapData;
         blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
-
-        uvList = attachment.uvs;
-        indexList = attachment.triangles;
-        vertexCount = uvList.length >> 1;
-        indexCount = indexList.length;
-
-        attachment.computeWorldVertices(skeletonX, skeletonY, slot, xyList);
-
+        ixList = attachment.triangles;
+        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
         tmpRenderState.reset(globalMatrix, alpha, blendMode);
-        renderContext.renderMesh(
-            tmpRenderState, attachment.bitmapData.renderTexture,
-            indexCount, indexList,
-            vertexCount, xyList, uvList);
+        tmpRenderState.renderTextureMesh(bd.renderTexture, ixList, vxList);
       }
     }
   }
