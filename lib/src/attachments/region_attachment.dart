@@ -95,8 +95,8 @@ class RegionAttachment extends Attachment {
   Float32List getWorldVertices(num posX, num posY, Slot slot) {
 
     var matrix = slot.bone.worldMatrix;
-    var result = _tmpFloat32List;
-    var resultLength = 0;
+    var vxList = _tmpFloat32List;
+    var vxIndex = 0;
 
     var ma = matrix.a;
     var mb = matrix.b;
@@ -112,14 +112,14 @@ class RegionAttachment extends Attachment {
       var u = uvs[i + 0];
       var v = uvs[i + 1];
 
-      result[resultLength + 0] = x * ma + y * mc + mx;
-      result[resultLength + 1] = x * mb + y * md + my;
-      result[resultLength + 2] = u;
-      result[resultLength + 3] = v;
-      resultLength += 4;
+      vxList[vxIndex + 0] = x * ma + y * mc + mx;
+      vxList[vxIndex + 1] = x * mb + y * md + my;
+      vxList[vxIndex + 2] = u;
+      vxList[vxIndex + 3] = v;
+      vxIndex += 4;
     }
 
-    return new Float32List.view(result.buffer, 0, resultLength);
+    return new Float32List.view(vxList.buffer, 0, vxIndex);
   }
 
 }

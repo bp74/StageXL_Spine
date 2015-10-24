@@ -35,12 +35,12 @@ class MeshAttachment extends Attachment {
   final String path;
   final BitmapData bitmapData;
 
-  Int16List edges = null;
-  int hullLength = 0;
-  int vertexLength = 0;
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+  int hullLength = 0;
+  int vertexLength = 0;
 
+  Int16List edges = null;
   Int16List triangles = null;
   Float32List vertices = null;
   Float32List uvs = null;
@@ -77,8 +77,8 @@ class MeshAttachment extends Attachment {
   Float32List getWorldVertices(num posX, num posY, Slot slot) {
 
     var matrix = slot.bone.worldMatrix;
-    var result = _tmpFloat32List;
-    var resultLength = 0;
+    var vxList = _tmpFloat32List;
+    var vxIndex = 0;
 
     var ma = matrix.a;
     var mb = matrix.b;
@@ -98,13 +98,13 @@ class MeshAttachment extends Attachment {
       var u = uvs[i + 0];
       var v = uvs[i + 1];
 
-      result[resultLength + 0] = x * ma + y * mc + mx;
-      result[resultLength + 1] = x * mb + y * md + my;
-      result[resultLength + 2] = u;
-      result[resultLength + 3] = v;
-      resultLength += 4;
+      vxList[vxIndex + 0] = x * ma + y * mc + mx;
+      vxList[vxIndex + 1] = x * mb + y * md + my;
+      vxList[vxIndex + 2] = u;
+      vxList[vxIndex + 3] = v;
+      vxIndex += 4;
     }
 
-    return new Float32List.view(result.buffer, 0, resultLength);
+    return new Float32List.view(vxList.buffer, 0, vxIndex);
   }
 }

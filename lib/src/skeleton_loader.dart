@@ -489,8 +489,7 @@ class SkeletonLoader {
             Float32List vertices;
             if (valueMap.containsKey("vertices") == false) {
               if (attachment is MeshAttachment) {
-                var meshAttachment = attachment;
-                vertices = meshAttachment.vertices;
+                vertices = attachment.vertices;
               } else {
                 vertices = new Float32List(vertexLength);
               }
@@ -502,8 +501,7 @@ class SkeletonLoader {
                 vertices[i + start] = verticesValue[i];
               }
               if (attachment is MeshAttachment) {
-                var meshAttachment = attachment;
-                var meshVertices = meshAttachment.vertices;
+                var meshVertices = attachment.vertices;
                 for (int i = 0; i < vertexLength; i++) {
                   vertices[i] += meshVertices[i];
                 }

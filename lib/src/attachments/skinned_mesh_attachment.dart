@@ -35,12 +35,12 @@ class SkinnedMeshAttachment extends Attachment {
   final String path;
   final BitmapData bitmapData;
 
-  Int16List edges = null;
-  int hullLength = 0;
-  int vertexLength = 0;
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+  int hullLength = 0;
+  int vertexLength = 0;
 
+  Int16List edges = null;
   Int16List triangles = null;
   Float32List vertices = null;
   Float32List uvs = null;
@@ -84,41 +84,47 @@ class SkinnedMeshAttachment extends Attachment {
 
     var skeletonBones = slot.skeleton.bones;
     var attachmentVertices = slot.attachmentVertices;  // ffd
-    var result = _tmpFloat32List;
-    var resultLength = 0;
+    var vxList = _tmpFloat32List;
+    var vxIndex = 0;
+    var uvIndex = 0;
+    var avIndex = 0;
 
-    for (int i = 0, o = 0; i < vertices.length; o += 2) {
+    for (int i = 0; i < vertices.length; ) {
 
-      var x = 0.0;
-      var y = 0.0;
+      var x = posX;
+      var y = posY;
       var boneCount = vertices[i++];
 
       for(int b = 0; b < boneCount; b++) {
 
         var boneIndex = vertices[i + 0];
+        var bone = skeletonBones[boneIndex.toInt()];
+        var wm = bone.worldMatrix;
+
         var vx = vertices[i + 1];
         var vy = vertices[i + 2];
         var vs = vertices[i + 3];
-        i += 4;
 
-        if (attachmentVertices.length != 0) {
-          vx += attachmentVertices[b + b + 0];
-          vy += attachmentVertices[b + b + 1];
+        if (avIndex < attachmentVertices.length - 1) {
+          vx += attachmentVertices[avIndex + 0];
+          vy += attachmentVertices[avIndex + 1];
+          avIndex += 2;
         }
 
-        var wm = skeletonBones[boneIndex.toInt()].worldMatrix;
         x += (vx * wm.a + vy * wm.c + wm.tx) * vs;
         y += (vx * wm.b + vy * wm.d + wm.ty) * vs;
+        i += 4;
       }
 
-      result[resultLength + 0] = x + posX;
-      result[resultLength + 1] = y + posY;
-      result[resultLength + 2] = uvs[o + 0];
-      result[resultLength + 3] = uvs[o + 1];
-      resultLength += 4;
+      vxList[vxIndex + 0] = x;
+      vxList[vxIndex + 1] = y;
+      vxList[vxIndex + 2] = uvs[uvIndex + 0];
+      vxList[vxIndex + 3] = uvs[uvIndex + 1];
+      vxIndex += 4;
+      uvIndex += 2;
     }
 
-    return new Float32List.view(result.buffer, 0, resultLength);
+    return new Float32List.view(vxList.buffer, 0, vxIndex);
   }
 
 }
