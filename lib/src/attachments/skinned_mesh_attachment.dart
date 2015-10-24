@@ -35,10 +35,9 @@ class SkinnedMeshAttachment extends Attachment {
   final String path;
   final BitmapData bitmapData;
 
-  Int16List bones = null;
-  Float32List weights = null;
   Int16List edges = null;
   int hullLength = 0;
+  int vertexLength = 0;
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
@@ -50,28 +49,18 @@ class SkinnedMeshAttachment extends Attachment {
 
   //---------------------------------------------------------------------------
 
-  void update(Int16List triangles, Float32List vertices, Float32List uvs, num scale) {
+  void update(Int16List triangles, Float32List vertices, Float32List uvs) {
 
-    var weights = new List<double>();
-    var bones = new List<int>();
-
-    for (int i = 0; i < vertices.length; ) {
-      int boneCount = vertices[i++].toInt();
-      bones.add(boneCount);
-      for (int nn = i + boneCount * 4; i < nn; ) {
-        bones.add(vertices[i].toInt());
-        weights.add(vertices[i + 1] * scale);
-        weights.add(vertices[i + 2] * scale);
-        weights.add(vertices[i + 3]);
-        i += 4;
-      }
-    }
-
-    this.bones = new Int16List.fromList(bones);
-    this.weights = new Float32List.fromList(weights);
     this.triangles = triangles;
     this.vertices = vertices;
     this.uvs = uvs;
+    this.vertexLength = 0;
+
+    for (int i = 0; i < this.vertices.length; i++) {
+      var boneCount = vertices[i].toInt();
+      this.vertexLength += boneCount * 2;
+      i += boneCount * 4;
+    }
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;
@@ -95,40 +84,41 @@ class SkinnedMeshAttachment extends Attachment {
 
     var skeletonBones = slot.skeleton.bones;
     var attachmentVertices = slot.attachmentVertices;  // ffd
-    var weights = this.weights;
-    var bones = this.bones;
     var result = _tmpFloat32List;
-    var length = 0;
+    var resultLength = 0;
 
-    for (int b = 0, w = 0, a = 0, i = 0; b < bones.length; i++) {
+    for (int i = 0, o = 0; i < vertices.length; o += 2) {
 
       var x = 0.0;
       var y = 0.0;
-      var nn = bones[b++] + b;
+      var boneCount = vertices[i++];
 
-      for ( ; b < nn; b++, w += 3, a += 2) {
-        var wm = skeletonBones[bones[b]].worldMatrix;
-        var vx = weights[w + 0];
-        var vy = weights[w + 1];
-        var weight = weights[w + 2];
+      for(int b = 0; b < boneCount; b++) {
+
+        var boneIndex = vertices[i + 0];
+        var vx = vertices[i + 1];
+        var vy = vertices[i + 2];
+        var vs = vertices[i + 3];
+        i += 4;
 
         if (attachmentVertices.length != 0) {
-          vx += attachmentVertices[a + 0];
-          vy += attachmentVertices[a + 1];
+          vx += attachmentVertices[b + b + 0];
+          vy += attachmentVertices[b + b + 1];
         }
 
-        x += (vx * wm.a + vy * wm.c + wm.tx) * weight;
-        y += (vx * wm.b + vy * wm.d + wm.ty) * weight;
+        var wm = skeletonBones[boneIndex.toInt()].worldMatrix;
+        x += (vx * wm.a + vy * wm.c + wm.tx) * vs;
+        y += (vx * wm.b + vy * wm.d + wm.ty) * vs;
       }
 
-      result[(i << 2) + 0] = x + posX;
-      result[(i << 2) + 1] = y + posY;
-      result[(i << 2) + 2] = uvs[(i << 1) + 0];
-      result[(i << 2) + 3] = uvs[(i << 1) + 1];
-      length += 4;
+      result[resultLength + 0] = x + posX;
+      result[resultLength + 1] = y + posY;
+      result[resultLength + 2] = uvs[o + 0];
+      result[resultLength + 3] = uvs[o + 1];
+      resultLength += 4;
     }
 
-    return new Float32List.view(result.buffer, 0, length);
+    return new Float32List.view(result.buffer, 0, resultLength);
   }
 
 }

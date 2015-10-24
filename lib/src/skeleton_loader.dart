@@ -33,9 +33,8 @@ part of stagexl_spine;
 class SkeletonLoader {
 
   final AttachmentLoader attachmentLoader;
-  final num scale;
 
-  SkeletonLoader(this.attachmentLoader, {this.scale: 1.0});
+  SkeletonLoader(this.attachmentLoader);
 
   /// Parameter 'object' must be a String or Map.
   ///
@@ -82,9 +81,9 @@ class SkeletonLoader {
       }
 
       var boneData = new BoneData(_getString(boneMap, "name", null), parent);
-      boneData.length = _getDouble(boneMap, "length", 0.0) * scale;
-      boneData.x = _getDouble(boneMap, "x", 0.0) * scale;
-      boneData.y = _getDouble(boneMap, "y", 0.0) * scale;
+      boneData.length = _getDouble(boneMap, "length", 0.0);
+      boneData.x = _getDouble(boneMap, "x", 0.0);
+      boneData.y = _getDouble(boneMap, "y", 0.0);
       boneData.rotation = _getDouble(boneMap, "rotation", 0.0);
       boneData.scaleX = _getDouble(boneMap, "scaleX", 1.0);
       boneData.scaleY = _getDouble(boneMap, "scaleY", 1.0);
@@ -199,7 +198,6 @@ class SkeletonLoader {
     var typeName = _getString(map, "type", "region");
     var type = AttachmentType.get(typeName);
     var path = _getString(map, "path", name);
-    var scale = this.scale;
 
     switch (type) {
 
@@ -210,13 +208,13 @@ class SkeletonLoader {
 
         var regionColor = _getString(map, "color", "FFFFFFFF");
 
-        region.x = _getDouble(map, "x", 0.0) * scale;
-        region.y = _getDouble(map, "y", 0.0) * scale;
+        region.x = _getDouble(map, "x", 0.0);
+        region.y = _getDouble(map, "y", 0.0);
         region.scaleX = _getDouble(map, "scaleX", 1.0);
         region.scaleY = _getDouble(map, "scaleY", 1.0);
         region.rotation = _getDouble(map, "rotation", 0.0);
-        region.width = _getDouble(map, "width", 0.0) * scale;
-        region.height = _getDouble(map, "height", 0.0) * scale;
+        region.width = _getDouble(map, "width", 0.0);
+        region.height = _getDouble(map, "height", 0.0);
         region.r = _toColor(regionColor, 0);
         region.g = _toColor(regionColor, 1);
         region.b = _toColor(regionColor, 2);
@@ -232,8 +230,8 @@ class SkeletonLoader {
 
         var meshColor = _getString(map, "color", "FFFFFFFF");
         var triangles = _getInt16List(map, "triangles");
-        var vertices = _getFloat32List(map, "vertices", scale);
-        var uvs = _getFloat32List(map, "uvs", 1.0);
+        var vertices = _getFloat32List(map, "vertices");
+        var uvs = _getFloat32List(map, "uvs");
 
         mesh.r = _toColor(meshColor, 0);
         mesh.g = _toColor(meshColor, 1);
@@ -241,8 +239,8 @@ class SkeletonLoader {
         mesh.a = _toColor(meshColor, 3);
         mesh.hullLength = _getInt(map, "hull", 0) * 2;
         mesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
-        mesh.width = _getDouble(map, "width", 0.0) * scale;
-        mesh.height = _getDouble(map, "height", 0.0) * scale;
+        mesh.width = _getDouble(map, "width", 0.0);
+        mesh.height = _getDouble(map, "height", 0.0);
         mesh.update(triangles, vertices, uvs);
 
         return mesh;
@@ -254,8 +252,8 @@ class SkeletonLoader {
 
         var skinnedMeshColor = _getString(map, "color", "FFFFFFFF");
         var triangles = _getInt16List(map, "triangles");
-        var vertices = _getFloat32List(map, "vertices", 1.0);
-        var uvs = _getFloat32List(map, "uvs", 1.0);
+        var vertices = _getFloat32List(map, "vertices");
+        var uvs = _getFloat32List(map, "uvs");
 
         skinnedMesh.r = _toColor(skinnedMeshColor, 0);
         skinnedMesh.g = _toColor(skinnedMeshColor, 1);
@@ -263,9 +261,9 @@ class SkeletonLoader {
         skinnedMesh.a = _toColor(skinnedMeshColor, 3);
         skinnedMesh.hullLength = _getInt(map, "hull", 0) * 2;
         skinnedMesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
-        skinnedMesh.width = _getDouble(map, "width", 0.0) * scale;
-        skinnedMesh.height = _getDouble(map, "height", 0.0) * scale;
-        skinnedMesh.update(triangles, vertices, uvs, scale);
+        skinnedMesh.width = _getDouble(map, "width", 0.0);
+        skinnedMesh.height = _getDouble(map, "height", 0.0);
+        skinnedMesh.update(triangles, vertices, uvs);
 
         return skinnedMesh;
 
@@ -274,7 +272,7 @@ class SkeletonLoader {
         var box = attachmentLoader.newBoundingBoxAttachment(skin, name);
         if (box == null) return null;
 
-        box.vertices = _getFloat32List(map, "vertices", scale);
+        box.vertices = _getFloat32List(map, "vertices");
         return box;
     }
 
@@ -380,21 +378,19 @@ class SkeletonLoader {
         } else if (timelineName == "translate" || timelineName == "scale") {
 
           TranslateTimeline timeline;
-          num timelineScale = 1;
 
           if (timelineName == "scale") {
             timeline = new ScaleTimeline(values.length);
           } else {
             timeline = new TranslateTimeline(values.length);
-            timelineScale = scale;
           }
 
           timeline.boneIndex = boneIndex;
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            num x = _getDouble(valueMap, "x", 0.0) * timelineScale;
-            num y = _getDouble(valueMap, "y", 0.0) * timelineScale;
+            num x = _getDouble(valueMap, "x", 0.0);
+            num y = _getDouble(valueMap, "y", 0.0);
             num time = _getDouble(valueMap, "time", 0.0);
             timeline.setFrame(frameIndex, time, x, y);
             _readCurve(timeline, frameIndex, valueMap);
@@ -479,13 +475,11 @@ class SkeletonLoader {
           ffdTimeline.slotIndex = slotIndex;
           ffdTimeline.attachment = attachment;
 
-          int vertexCount;
+          int vertexLength;
           if (attachment is MeshAttachment) {
-            var meshAttachment = attachment;
-            vertexCount = meshAttachment.vertices.length;
+            vertexLength = attachment.vertexLength;
           } else if (attachment is SkinnedMeshAttachment) {
-            var skinnedMeshAttachment = attachment;
-            vertexCount = skinnedMeshAttachment.weights.length ~/ 3 * 2;
+            vertexLength = attachment.vertexLength;
           } else {
             throw new StateError("Invalid attachment.");
           }
@@ -498,19 +492,19 @@ class SkeletonLoader {
                 var meshAttachment = attachment;
                 vertices = meshAttachment.vertices;
               } else {
-                vertices = new Float32List(vertexCount);
+                vertices = new Float32List(vertexLength);
               }
             } else {
-              Float32List verticesValue = _getFloat32List(valueMap, "vertices", scale);
+              Float32List verticesValue = _getFloat32List(valueMap, "vertices");
               int start = _getInt(valueMap, "offset", 0);
-              vertices = new Float32List(vertexCount);
+              vertices = new Float32List(vertexLength);
               for (int i = 0; i < verticesValue.length; i++) {
                 vertices[i + start] = verticesValue[i];
               }
               if (attachment is MeshAttachment) {
                 var meshAttachment = attachment;
                 var meshVertices = meshAttachment.vertices;
-                for (int i = 0; i < vertexCount; i++) {
+                for (int i = 0; i < vertexLength; i++) {
                   vertices[i] += meshVertices[i];
                 }
               }
@@ -634,11 +628,11 @@ class SkeletonLoader {
     return int.parse(substring, radix: 16) / 255;
   }
 
-  Float32List _getFloat32List(Map map, String name, num scale) {
+  Float32List _getFloat32List(Map map, String name) {
     List values = map[name];
     Float32List result = new Float32List(values.length);
     for (int i = 0; i < values.length; i++) {
-      result[i] = values[i].toDouble() * scale;
+      result[i] = values[i].toDouble();
     }
     return result;
   }

@@ -37,6 +37,7 @@ class MeshAttachment extends Attachment {
 
   Int16List edges = null;
   int hullLength = 0;
+  int vertexLength = 0;
   num width = 0.0, height = 0.0;
   num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
@@ -53,6 +54,7 @@ class MeshAttachment extends Attachment {
     this.triangles = triangles;
     this.vertices = vertices;
     this.uvs = uvs;
+    this.vertexLength = vertices.length;
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;
@@ -76,7 +78,7 @@ class MeshAttachment extends Attachment {
 
     var matrix = slot.bone.worldMatrix;
     var result = _tmpFloat32List;
-    var length = vertices.length;
+    var resultLength = 0;
 
     var ma = matrix.a;
     var mb = matrix.b;
@@ -89,17 +91,20 @@ class MeshAttachment extends Attachment {
       this.vertices = slot.attachmentVertices;
     }
 
-    for (int i = 0; i <= length - 2; i += 2) {
+    for (int i = 0; i <= vertices.length - 2; i += 2) {
+
       var x = vertices[i + 0];
       var y = vertices[i + 1];
       var u = uvs[i + 0];
       var v = uvs[i + 1];
-      result[(i << 1) + 0] = x * ma + y * mc + mx;
-      result[(i << 1) + 1] = x * mb + y * md + my;
-      result[(i << 1) + 2] = u;
-      result[(i << 1) + 3] = v;
+
+      result[resultLength + 0] = x * ma + y * mc + mx;
+      result[resultLength + 1] = x * mb + y * md + my;
+      result[resultLength + 2] = u;
+      result[resultLength + 3] = v;
+      resultLength += 4;
     }
 
-    return new Float32List.view(result.buffer, 0, length * 2);
+    return new Float32List.view(result.buffer, 0, resultLength);
   }
 }
