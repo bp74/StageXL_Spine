@@ -98,6 +98,7 @@ class SkinnedMeshAttachment extends Attachment {
     var weights = this.weights;
     var bones = this.bones;
     var result = _tmpFloat32List;
+    var length = 0;
 
     for (int b = 0, w = 0, a = 0, i = 0; b < bones.length; i++) {
 
@@ -124,9 +125,10 @@ class SkinnedMeshAttachment extends Attachment {
       result[(i << 2) + 1] = y + posY;
       result[(i << 2) + 2] = uvs[(i << 1) + 0];
       result[(i << 2) + 3] = uvs[(i << 1) + 1];
+      length += 4;
     }
 
-    return result;
+    return new Float32List.view(result.buffer, 0, length);
   }
 
 }

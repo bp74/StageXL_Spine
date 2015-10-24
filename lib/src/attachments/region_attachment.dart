@@ -96,6 +96,7 @@ class RegionAttachment extends Attachment {
 
     var matrix = slot.bone.worldMatrix;
     var result = _tmpFloat32List;
+    var length = vertices.length;
 
     var ma = matrix.a;
     var mb = matrix.b;
@@ -104,7 +105,7 @@ class RegionAttachment extends Attachment {
     var mx = matrix.tx + posX;
     var my = matrix.ty + posY;
 
-    for (int i = 0; i < this.vertices.length - 1; i += 2) {
+    for (int i = 0; i <= length - 2; i += 2) {
       var x = vertices[i + 0];
       var y = vertices[i + 1];
       var u = uvs[i + 0];
@@ -115,7 +116,7 @@ class RegionAttachment extends Attachment {
       result[(i << 1) + 3] = v;
     }
 
-    return result;
+    return new Float32List.view(result.buffer, 0, length * 2);
   }
 
 }
