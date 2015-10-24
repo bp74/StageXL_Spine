@@ -45,10 +45,6 @@ class SkeletonDisplayObject extends DisplayObject {
     RenderContextWebGL renderContextWebGL = renderContext;
     RenderProgramTinted renderProgram = renderContextWebGL.renderProgramTinted;
 
-    Int16List ixList = new Int16List(0);
-    Float32List vxList = new Float32List(0);
-    List<Slot> drawOrder = skeleton.drawOrder;
-
     num skeletonX = skeleton.x;
     num skeletonY = skeleton.y;
     num skeletonR = skeleton.r;
@@ -58,11 +54,12 @@ class SkeletonDisplayObject extends DisplayObject {
 
     renderContextWebGL.activateRenderProgram(renderProgram);
 
-    for (var i = 0; i < drawOrder.length; i++) {
+    for (var slot in skeleton.drawOrder) {
 
-      Slot slot = drawOrder[i];
-      Attachment attachment = slot.attachment;
+      Int16List ixList = null;
+      Float32List vxList = null;
       RenderTexture renderTexture = null;
+      Attachment attachment = slot.attachment;
 
       num attachmentR = 0.0;
       num attachmentG = 0.0;
@@ -123,18 +120,14 @@ class SkeletonDisplayObject extends DisplayObject {
     Matrix tmpMatrix = new Matrix.fromIdentity();
     RenderState tmpRenderState = new RenderState(renderContext);
 
-    Int16List ixList = new Int16List(0);
-    Float32List vxList = new Float32List(0);
-    List<Slot> drawOrder = skeleton.drawOrder;
-
     num skeletonX = skeleton.x;
     num skeletonY = skeleton.y;
     num skeletonA = skeleton.a;
 
-    for (var i = 0; i < drawOrder.length; i++) {
+    for (var slot in skeleton.drawOrder) {
 
-      Slot slot = drawOrder[i];
-      Bone bone = slot.bone;
+      Int16List ixList = null;
+      Float32List vxList = null;
       Attachment attachment = slot.attachment;
       BlendMode blendMode = globalBlendMode;
       num alpha = 0.0;
@@ -146,7 +139,7 @@ class SkeletonDisplayObject extends DisplayObject {
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
         tmpMatrix.copyFrom(attachment.matrix);
         tmpMatrix.translate(skeletonX, skeletonY);
-        tmpMatrix.concat(bone.worldMatrix);
+        tmpMatrix.concat(slot.bone.worldMatrix);
         tmpMatrix.concat(globalMatrix);
         tmpRenderState.reset(tmpMatrix, alpha, blendMode);
         tmpRenderState.renderTextureQuad(bd.renderTextureQuad);
