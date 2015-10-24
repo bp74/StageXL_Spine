@@ -68,8 +68,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
       if (attachment is RegionAttachment) {
 
-        ixList = attachment.triangles;
-        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
+        ixList = attachment.ixList;
+        vxList = attachment.getVertexList(skeletonX, skeletonY, slot);
         attachmentR = attachment.r;
         attachmentG = attachment.g;
         attachmentB = attachment.b;
@@ -78,8 +78,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
       } else if (attachment is MeshAttachment) {
 
-        ixList = attachment.triangles;
-        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
+        ixList = attachment.ixList;
+        vxList = attachment.getVertexList(skeletonX, skeletonY, slot);
         attachmentR = attachment.r;
         attachmentG = attachment.g;
         attachmentB = attachment.b;
@@ -88,8 +88,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
       } else if (attachment is SkinnedMeshAttachment) {
 
-        ixList = attachment.triangles;
-        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
+        ixList = attachment.ixList;
+        vxList = attachment.getVertexList(skeletonX, skeletonY, slot);
         attachmentR = attachment.r;
         attachmentG = attachment.g;
         attachmentB = attachment.b;
@@ -149,8 +149,8 @@ class SkeletonDisplayObject extends DisplayObject {
         var bd = attachment.bitmapData;
         blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
-        ixList = attachment.triangles;
-        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
+        ixList = attachment.ixList;
+        vxList = attachment.getVertexList(skeletonX, skeletonY, slot);
         tmpRenderState.reset(globalMatrix, alpha, blendMode);
         tmpRenderState.renderTextureMesh(bd.renderTexture, ixList, vxList);
 
@@ -159,8 +159,8 @@ class SkeletonDisplayObject extends DisplayObject {
         var bd = attachment.bitmapData;
         blendMode = slot.data.blendMode;
         alpha = globalAlpha * skeletonA * attachment.a * slot.a;
-        ixList = attachment.triangles;
-        vxList = attachment.getWorldVertices(skeletonX, skeletonY, slot);
+        ixList = attachment.ixList;
+        vxList = attachment.getVertexList(skeletonX, skeletonY, slot);
         tmpRenderState.reset(globalMatrix, alpha, blendMode);
         tmpRenderState.renderTextureMesh(bd.renderTexture, ixList, vxList);
       }

@@ -41,9 +41,9 @@ class SkinnedMeshAttachment extends Attachment {
   int vertexLength = 0;
 
   Int16List edges = null;
-  Int16List triangles = null;
+  Int16List ixList = null;
+  Float32List vxList = null;
   Float32List vertices = null;
-  Float32List uvs = null;
 
   SkinnedMeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
@@ -51,16 +51,16 @@ class SkinnedMeshAttachment extends Attachment {
 
   void update(Int16List triangles, Float32List vertices, Float32List uvs) {
 
-    this.triangles = triangles;
-    this.vertices = vertices;
-    this.uvs = uvs;
     this.vertexLength = 0;
-
-    for (int i = 0; i < this.vertices.length; i++) {
+    for (int i = 0; i < vertices.length; i++) {
       var boneCount = vertices[i].toInt();
       this.vertexLength += boneCount * 2;
       i += boneCount * 4;
     }
+
+    this.ixList = triangles;
+    this.vxList = new Float32List(this.vertexLength * 2);
+    this.vertices = vertices;
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;
@@ -70,23 +70,23 @@ class SkinnedMeshAttachment extends Attachment {
     var mx = matrix.tx;
     var my = matrix.ty;
 
-    for (int i = 0; i < this.uvs.length - 1; i += 2) {
-      var x = this.uvs[i + 0];
-      var y = this.uvs[i + 1];
-      this.uvs[i + 0] = x * ma + y * mc + mx;
-      this.uvs[i + 1] = x * mb + y * md + my;
+    for (int i = 0, o = 0; i < uvs.length - 1; i += 2, o += 4) {
+      var u = uvs[i + 0];
+      var v = uvs[i + 1];
+      this.vxList[o + 2] = u * ma + v * mc + mx;
+      this.vxList[o + 3] = u * mb + v * md + my;
     }
   }
 
   //---------------------------------------------------------------------------
 
-  Float32List getWorldVertices(num posX, num posY, Slot slot) {
+  Float32List getVertexList(num posX, num posY, Slot slot) {
 
     var skeletonBones = slot.skeleton.bones;
     var attachmentVertices = slot.attachmentVertices;  // ffd
-    var vxList = _tmpFloat32List;
+    var vertices = this.vertices;
+    var vxList = this.vxList;
     var vxIndex = 0;
-    var uvIndex = 0;
     var avIndex = 0;
 
     for (int i = 0; i < vertices.length; ) {
@@ -118,13 +118,10 @@ class SkinnedMeshAttachment extends Attachment {
 
       vxList[vxIndex + 0] = x;
       vxList[vxIndex + 1] = y;
-      vxList[vxIndex + 2] = uvs[uvIndex + 0];
-      vxList[vxIndex + 3] = uvs[uvIndex + 1];
       vxIndex += 4;
-      uvIndex += 2;
     }
 
-    return new Float32List.view(vxList.buffer, 0, vxIndex);
+    return vxList;
   }
 
 }

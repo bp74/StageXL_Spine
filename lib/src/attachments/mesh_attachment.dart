@@ -41,9 +41,9 @@ class MeshAttachment extends Attachment {
   int vertexLength = 0;
 
   Int16List edges = null;
-  Int16List triangles = null;
+  Int16List ixList = null;
+  Float32List vxList = null;
   Float32List vertices = null;
-  Float32List uvs = null;
 
   MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
@@ -51,9 +51,9 @@ class MeshAttachment extends Attachment {
 
   void update(Int16List triangles, Float32List vertices, Float32List uvs) {
 
-    this.triangles = triangles;
+    this.ixList = triangles;
+    this.vxList = new Float32List(vertices.length * 2);
     this.vertices = vertices;
-    this.uvs = uvs;
     this.vertexLength = vertices.length;
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
@@ -64,21 +64,21 @@ class MeshAttachment extends Attachment {
     var mx = matrix.tx;
     var my = matrix.ty;
 
-    for (int i = 0; i < uvs.length - 1; i += 2) {
-      var u = this.uvs[i + 0];
-      var v = this.uvs[i + 1];
-      this.uvs[i + 0] = u * ma + v * mc + mx;
-      this.uvs[i + 1] = u * mb + v * md + my;
+    for (int i = 0, o = 0; i < uvs.length - 1; i += 2, o+= 4) {
+      var u = uvs[i + 0];
+      var v = uvs[i + 1];
+      this.vxList[o + 2] = u * ma + v * mc + mx;
+      this.vxList[o + 3] = u * mb + v * md + my;
     }
   }
 
   //---------------------------------------------------------------------------
 
-  Float32List getWorldVertices(num posX, num posY, Slot slot) {
+  Float32List getVertexList(num posX, num posY, Slot slot) {
 
     var matrix = slot.bone.worldMatrix;
-    var vxList = _tmpFloat32List;
-    var vxIndex = 0;
+    var vertices = this.vertices;
+    var vxList = this.vxList;
 
     var ma = matrix.a;
     var mb = matrix.b;
@@ -88,23 +88,16 @@ class MeshAttachment extends Attachment {
     var my = matrix.ty + posY;
 
     if (slot.attachmentVertices.length == this.vertices.length) {
-      this.vertices = slot.attachmentVertices;
+      this.vertices = vertices = slot.attachmentVertices;
     }
 
-    for (int i = 0; i <= vertices.length - 2; i += 2) {
-
+    for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {
       var x = vertices[i + 0];
       var y = vertices[i + 1];
-      var u = uvs[i + 0];
-      var v = uvs[i + 1];
-
-      vxList[vxIndex + 0] = x * ma + y * mc + mx;
-      vxList[vxIndex + 1] = x * mb + y * md + my;
-      vxList[vxIndex + 2] = u;
-      vxList[vxIndex + 3] = v;
-      vxIndex += 4;
+      vxList[o + 0] = x * ma + y * mc + mx;
+      vxList[o + 1] = x * mb + y * md + my;
     }
 
-    return new Float32List.view(vxList.buffer, 0, vxIndex);
+    return vxList;
   }
 }
