@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class SkinnedMeshAttachment extends Attachment {
+class SkinnedMeshAttachment extends Attachment implements _RenderAttachment {
 
   final String path;
   final BitmapData bitmapData;
@@ -97,7 +97,7 @@ class SkinnedMeshAttachment extends Attachment {
 
       for(int b = 0; b < boneCount; b++) {
 
-        var boneIndex = vertices[i + 0];
+        var boneIndex = vertices[i];
         var bone = skeletonBones[boneIndex.toInt()];
         var wm = bone.worldMatrix;
 

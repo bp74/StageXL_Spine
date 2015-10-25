@@ -42,3 +42,14 @@ class Attachment {
 
   String toString() => name;
 }
+
+
+abstract class _RenderAttachment {
+  Int16List get ixList;
+  BitmapData get bitmapData;
+  num get r;
+  num get g;
+  num get b;
+  num get a;
+  Float32List getVertexList(num posX, num posY, Slot slot);
+}

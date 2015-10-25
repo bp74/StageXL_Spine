@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class MeshAttachment extends Attachment {
+class MeshAttachment extends Attachment implements _RenderAttachment {
 
   final String path;
   final BitmapData bitmapData;
@@ -87,7 +87,7 @@ class MeshAttachment extends Attachment {
     var mx = matrix.tx + posX;
     var my = matrix.ty + posY;
 
-    if (slot.attachmentVertices.length == this.vertices.length) {
+    if (slot.attachmentVertices.length == vertices.length) {
       this.vertices = vertices = slot.attachmentVertices;
     }
 
