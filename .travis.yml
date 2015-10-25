@@ -9,4 +9,5 @@ before_script:
 
 script:
   #- pub run test -p content-shell
-  - dartanalyzer lib/stagexl_spine.dart
+  - set -e
+  - dartanalyzer --fatal-hints --fatal-warnings lib/stagexl_spine.dart
