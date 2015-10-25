@@ -3,7 +3,6 @@ part of stagexl_spine;
 class SkeletonDisplayObject extends DisplayObject {
 
   final Skeleton skeleton;
-  num timeScale = 1.0;
 
   SkeletonDisplayObject(SkeletonData skeletonData)
       : skeleton = new Skeleton(skeletonData) {
