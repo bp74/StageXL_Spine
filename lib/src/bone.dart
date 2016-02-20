@@ -128,15 +128,20 @@ class Bone implements Updatable {
       pd = 1;
 
       for (var p = parent; p != null; p = p.parent) {
+
         radians = p.appliedRotation * math.PI / 180.0;
         cos = math.cos(radians);
         sin = math.sin(radians);
-        num temp = pa * cos + pb * sin;
-        pb = pa * -sin + pb * cos;
-        pa = temp;
-        temp = pc * cos + pd * sin;
-        pd = pc * -sin + pd * cos;
-        pc = temp;
+
+        num ta = pa * cos + pb * sin;
+        num tb = pb * cos - pa * sin;
+        num tc = pc * cos + pd * sin;
+        num td = pd * cos - pc * sin;
+
+        pa = ta;
+        pb = tb;
+        pc = tc;
+        pd = td;
       }
 
       _a = pa * la + pb * lc;
@@ -157,29 +162,19 @@ class Bone implements Updatable {
         cos = math.cos(radians);
         sin = math.sin(radians);
 
-        num psx = p.appliedScaleX;
-        num psy = p.appliedScaleY;
-        num za = cos * psx;
-        num zb = -sin * psy;
-        num zc = sin * psx;
-        num zd = cos * psy;
+        num ta = p.appliedScaleX * (pa * cos + pb * sin);
+        num tb = p.appliedScaleY * (pb * cos - pa * sin);
+        num tc = p.appliedScaleX * (pc * cos + pd * sin);
+        num td = p.appliedScaleY * (pd * cos - pc * sin);
 
-        num temp = pa * za + pb * zc;
-        pb = pa * zb + pb * zd;
-        pa = temp;
-        temp = pc * za + pd * zc;
-        pd = pc * zb + pd * zd;
-        pc = temp;
-
-        if (psx < 0) radians = -radians;
+        if (p.appliedScaleX < 0) radians = -radians;
         cos = math.cos(-radians);
         sin = math.sin(-radians);
-        temp = pa * cos + pb * sin;
-        pb = pa * -sin + pb * cos;
-        pa = temp;
-        temp = pc * cos + pd * sin;
-        pd = pc * -sin + pd * cos;
-        pc = temp;
+
+        pa = ta * cos + tb * sin;
+        pb = tb * cos - ta * sin;
+        pc = tc * cos + td * sin;
+        pd = td * cos - tc * sin;
       }
 
       _a = pa * la + pb * lc;
