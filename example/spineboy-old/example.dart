@@ -8,7 +8,7 @@ Future main() async {
 
   // configure StageXL default options
 
-  StageXL.stageOptions.renderEngine = RenderEngine.Canvas2D;
+  StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
   StageXL.bitmapDataLoadOptions.webp = true;
 
