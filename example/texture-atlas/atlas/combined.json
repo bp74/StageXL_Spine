@@ -2,46 +2,46 @@
 
 {
 	"filename": "goblins-mesh.png",
-	"frame": {"x":2,"y":727,"w":457,"h":263},
+	"frame": {"x":2,"y":731,"w":509,"h":254},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":457,"h":263},
-	"sourceSize": {"w":461,"h":267},
+	"spriteSourceSize": {"x":1,"y":1,"w":509,"h":254},
+	"sourceSize": {"w":512,"h":256},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "hero-mesh.png",
-	"frame": {"x":504,"y":209,"w":498,"h":265},
+	"frame": {"x":506,"y":211,"w":500,"h":267},
 	"rotated": true,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":498,"h":265},
+	"spriteSourceSize": {"x":1,"y":1,"w":500,"h":267},
 	"sourceSize": {"w":502,"h":269},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "raptor.png",
-	"frame": {"x":2,"y":209,"w":500,"h":516},
+	"frame": {"x":2,"y":211,"w":502,"h":518},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":500,"h":516},
+	"spriteSourceSize": {"x":1,"y":1,"w":502,"h":518},
 	"sourceSize": {"w":504,"h":520},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "speedy.png",
-	"frame": {"x":836,"y":2,"w":814,"h":128},
+	"frame": {"x":838,"y":2,"w":816,"h":130},
 	"rotated": true,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":814,"h":128},
+	"spriteSourceSize": {"x":1,"y":1,"w":816,"h":130},
 	"sourceSize": {"w":819,"h":132},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "spineboy-hoverboard.png",
-	"frame": {"x":2,"y":2,"w":832,"h":205},
+	"frame": {"x":2,"y":2,"w":834,"h":207},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":2,"y":2,"w":832,"h":205},
+	"spriteSourceSize": {"x":1,"y":1,"w":834,"h":207},
 	"sourceSize": {"w":836,"h":209},
 	"pivot": {"x":0.5,"y":0.5}
 }],
@@ -50,8 +50,8 @@
 	"version": "1.0",
 	"image": "combined.png",
 	"format": "RGBA8888",
-	"size": {"w":966,"h":992},
+	"size": {"w":970,"h":987},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:8a5d98904000b12bbe05890dc76e75e4:16a48985e51ea356470077b23d0ae055:3095d46931c42493d5042f9206258520$"
+	"smartupdate": "$TexturePacker:SmartUpdate:21fbe0f83a8d3ab152758cbccdefea01:f0ed4a13ec1cef5ba853da0e9e2ddec2:3095d46931c42493d5042f9206258520$"
 }
 }

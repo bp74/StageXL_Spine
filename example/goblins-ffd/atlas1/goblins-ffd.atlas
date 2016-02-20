@@ -1,291 +1,292 @@
 
 goblins-ffd.png
+size: 512,256
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 dagger
-  rotate: false
-  xy: 2, 28
+  rotate: true
+  xy: 249, 204
   size: 26, 108
   orig: 26, 108
   offset: 0, 0
   index: -1
 goblin/eyes-closed
   rotate: false
-  xy: 137, 29
+  xy: 133, 10
   size: 34, 12
   orig: 34, 12
   offset: 0, 0
   index: -1
 goblin/head
   rotate: false
-  xy: 26, 357
-  size: 103, 66
+  xy: 2, 85
+  size: 103, 64
   orig: 103, 66
   offset: 0, 0
   index: -1
 goblin/left-arm
   rotate: false
-  xy: 30, 28
+  xy: 327, 167
   size: 37, 35
   orig: 37, 35
   offset: 0, 0
   index: -1
 goblin/left-foot
-  rotate: false
-  xy: 134, 260
+  rotate: true
+  xy: 100, 18
   size: 65, 31
   orig: 65, 31
   offset: 0, 0
   index: -1
 goblin/left-hand
-  rotate: false
-  xy: 69, 25
+  rotate: true
+  xy: 324, 129
   size: 36, 41
   orig: 36, 41
   offset: 0, 0
   index: -1
 goblin/left-lower-leg
-  rotate: false
-  xy: 134, 293
-  size: 33, 70
+  rotate: true
+  xy: 177, 126
+  size: 30, 70
   orig: 33, 70
-  offset: 0, 0
+  offset: 2, 0
   index: -1
 goblin/left-shoulder
-  rotate: false
-  xy: 137, 43
+  rotate: true
+  xy: 321, 98
   size: 29, 44
   orig: 29, 44
   offset: 0, 0
   index: -1
 goblin/left-upper-leg
-  rotate: false
-  xy: 30, 65
+  rotate: true
+  xy: 249, 132
   size: 33, 73
   orig: 33, 73
   offset: 0, 0
   index: -1
 goblin/neck
   rotate: false
-  xy: 201, 387
+  xy: 366, 176
   size: 36, 41
   orig: 36, 41
   offset: 0, 0
   index: -1
 goblin/pelvis
   rotate: false
-  xy: 26, 140
+  xy: 107, 89
   size: 62, 43
   orig: 62, 43
   offset: 0, 0
   index: -1
 goblin/right-arm
-  rotate: false
-  xy: 171, 84
+  rotate: true
+  xy: 441, 186
   size: 23, 50
   orig: 23, 50
   offset: 0, 0
   index: -1
 goblin/right-foot
-  rotate: false
-  xy: 134, 225
+  rotate: true
+  xy: 205, 2
   size: 63, 33
   orig: 63, 33
   offset: 0, 0
   index: -1
 goblin/right-hand
-  rotate: false
-  xy: 204, 258
+  rotate: true
+  xy: 441, 148
   size: 36, 37
   orig: 36, 37
   offset: 0, 0
   index: -1
 goblin/right-lower-leg
-  rotate: false
-  xy: 201, 430
-  size: 36, 76
+  rotate: true
+  xy: 249, 167
+  size: 35, 76
   orig: 36, 76
-  offset: 0, 0
+  offset: 1, 0
   index: -1
 goblin/right-shoulder
   rotate: false
-  xy: 130, 89
-  size: 39, 45
+  xy: 275, 23
+  size: 39, 42
   orig: 39, 45
   offset: 0, 0
   index: -1
 goblin/right-upper-leg
   rotate: false
-  xy: 98, 214
+  xy: 133, 24
   size: 34, 63
   orig: 34, 63
   offset: 0, 0
   index: -1
 goblin/torso
   rotate: false
-  xy: 131, 410
+  xy: 107, 134
   size: 68, 96
   orig: 68, 96
   offset: 0, 0
   index: -1
 goblin/undie-straps
   rotate: false
-  xy: 2, 7
+  xy: 275, 2
   size: 55, 19
   orig: 55, 19
   offset: 0, 0
   index: -1
 goblin/undies
   rotate: false
-  xy: 199, 227
+  xy: 332, 2
   size: 36, 29
   orig: 36, 29
   offset: 0, 0
   index: -1
 goblingirl/eyes-closed
-  rotate: false
-  xy: 59, 2
-  size: 37, 21
+  rotate: true
+  xy: 357, 38
+  size: 37, 15
   orig: 37, 21
   offset: 0, 0
   index: -1
 goblingirl/head
   rotate: false
-  xy: 26, 425
-  size: 103, 81
+  xy: 2, 151
+  size: 103, 79
   orig: 103, 81
-  offset: 0, 0
+  offset: 0, 2
   index: -1
 goblingirl/left-arm
-  rotate: false
-  xy: 201, 190
+  rotate: true
+  xy: 374, 47
   size: 37, 35
   orig: 37, 35
   offset: 0, 0
   index: -1
 goblingirl/left-foot
   rotate: false
-  xy: 134, 192
+  xy: 243, 67
   size: 65, 31
   orig: 65, 31
   offset: 0, 0
   index: -1
 goblingirl/left-hand
   rotate: false
-  xy: 196, 109
+  xy: 404, 177
   size: 35, 40
   orig: 35, 40
   offset: 0, 0
   index: -1
 goblingirl/left-lower-leg
-  rotate: false
-  xy: 169, 293
-  size: 33, 70
+  rotate: true
+  xy: 249, 100
+  size: 30, 70
   orig: 33, 70
-  offset: 0, 0
+  offset: 2, 0
   index: -1
 goblingirl/left-shoulder
   rotate: false
-  xy: 107, 30
-  size: 28, 46
+  xy: 367, 86
+  size: 28, 45
   orig: 28, 46
-  offset: 0, 0
+  offset: 0, 1
   index: -1
 goblingirl/left-upper-leg
-  rotate: false
-  xy: 65, 68
+  rotate: true
+  xy: 171, 91
   size: 33, 70
   orig: 33, 70
   offset: 0, 0
   index: -1
 goblingirl/neck
   rotate: false
-  xy: 204, 297
-  size: 35, 41
+  xy: 367, 133
+  size: 33, 41
   orig: 35, 41
   offset: 0, 0
   index: -1
 goblingirl/pelvis
   rotate: false
-  xy: 131, 365
-  size: 62, 43
+  xy: 450, 211
+  size: 59, 43
   orig: 62, 43
-  offset: 0, 0
+  offset: 1, 0
   index: -1
 goblingirl/right-arm
-  rotate: false
-  xy: 100, 97
-  size: 28, 50
+  rotate: true
+  xy: 171, 67
+  size: 22, 50
   orig: 28, 50
-  offset: 0, 0
+  offset: 3, 0
   index: -1
 goblingirl/right-foot
-  rotate: false
-  xy: 134, 157
+  rotate: true
+  xy: 240, 2
   size: 63, 33
   orig: 63, 33
   offset: 0, 0
   index: -1
 goblingirl/right-hand
   rotate: false
-  xy: 199, 151
-  size: 36, 37
+  xy: 404, 138
+  size: 35, 37
   orig: 36, 37
-  offset: 0, 0
+  offset: 1, 0
   index: -1
 goblingirl/right-lower-leg
-  rotate: false
-  xy: 96, 279
-  size: 36, 76
+  rotate: true
+  xy: 372, 219
+  size: 35, 76
   orig: 36, 76
-  offset: 0, 0
+  offset: 1, 0
   index: -1
 goblingirl/right-shoulder
   rotate: false
-  xy: 204, 340
-  size: 39, 45
+  xy: 316, 33
+  size: 39, 42
   orig: 39, 45
   offset: 0, 0
   index: -1
 goblingirl/right-upper-leg
   rotate: false
-  xy: 98, 149
+  xy: 169, 2
   size: 34, 63
   orig: 34, 63
   offset: 0, 0
   index: -1
 goblingirl/torso
-  rotate: false
-  xy: 26, 259
-  size: 68, 96
+  rotate: true
+  xy: 2, 17
+  size: 66, 96
   orig: 68, 96
   offset: 0, 0
   index: -1
 goblingirl/undie-straps
   rotate: false
-  xy: 134, 136
+  xy: 310, 77
   size: 55, 19
   orig: 55, 19
   offset: 0, 0
   index: -1
 goblingirl/undies
-  rotate: false
-  xy: 196, 78
+  rotate: true
+  xy: 480, 148
   size: 36, 29
   orig: 36, 29
   offset: 0, 0
   index: -1
 shield
   rotate: false
-  xy: 26, 185
+  xy: 177, 158
   size: 70, 72
   orig: 70, 72
   offset: 0, 0
   index: -1
 spear
-  rotate: false
-  xy: 2, 138
+  rotate: true
+  xy: 2, 232
   size: 22, 368
   orig: 22, 368
   offset: 0, 0
