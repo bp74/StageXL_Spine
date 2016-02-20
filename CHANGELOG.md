@@ -3,9 +3,12 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.5.0
+  * Updated to Spine v3 export format.
+
 #### Pub version 0.4.1
-  * Added support for all texture atlas features
-  * Code optimizations and cleanups
+  * Added support for all texture atlas features.
+  * Code optimizations and cleanups.
   * Updated to StageXL 0.13.0
 
 #### Pub version 0.4.0
