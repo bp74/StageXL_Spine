@@ -19,6 +19,9 @@ part 'src/skeleton_loader.dart';
 part 'src/skin.dart';
 part 'src/slot.dart';
 part 'src/slot_data.dart';
+part 'src/transform_constraint.dart';
+part 'src/transform_constraint_data.dart';
+part 'src/updatable.dart';
 
 part 'src/animation/animation.dart';
 part 'src/animation/animation_state.dart';
@@ -29,8 +32,6 @@ part 'src/animation/curve_timeline.dart';
 part 'src/animation/draw_order_timeline.dart';
 part 'src/animation/event_timeline.dart';
 part 'src/animation/ffd_timeline.dart';
-part 'src/animation/flip_x_timeline.dart';
-part 'src/animation/flip_y_timeline.dart';
 part 'src/animation/ik_constraint_timeline.dart';
 part 'src/animation/rotate_timeline.dart';
 part 'src/animation/scale_timeline.dart';
@@ -44,7 +45,7 @@ part 'src/attachments/attachment_type.dart';
 part 'src/attachments/bounding_box_attachment.dart';
 part 'src/attachments/mesh_attachment.dart';
 part 'src/attachments/region_attachment.dart';
-part 'src/attachments/skinned_mesh_attachment.dart';
+part 'src/attachments/weighted_mesh_attachment.dart';
 
 part 'src/stagexl/skeleton_animation.dart';
 part 'src/stagexl/skeleton_display_object.dart';

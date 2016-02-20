@@ -32,13 +32,14 @@ part of stagexl_spine;
 
 class Event {
 
+  final num time;
   final EventData data;
 
   int intValue = null;
   num floatValue = null;
   String stringValue = null;
 
-  Event(this.data) {
+  Event(this.time, this.data) {
     if (data == null) throw new ArgumentError("data cannot be null.");
   }
 

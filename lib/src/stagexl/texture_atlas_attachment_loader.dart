@@ -21,9 +21,9 @@ class TextureAtlasAttachmentLoader implements AttachmentLoader {
     return new MeshAttachment(name, path, bitmapData);
   }
 
-  SkinnedMeshAttachment newSkinnedMeshAttachment(Skin skin, String name, String path) {
+  WeightedMeshAttachment newWeightedMeshAttachment(Skin skin, String name, String path) {
     var bitmapData = textureAtlas.getBitmapData(namePrefix + path);
-    return new SkinnedMeshAttachment(name, path, bitmapData);
+    return new WeightedMeshAttachment(name, path, bitmapData);
   }
 
   BoundingBoxAttachment newBoundingBoxAttachment(Skin skin, String name) {

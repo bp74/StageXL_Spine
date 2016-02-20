@@ -30,10 +30,7 @@
 
 part of stagexl_spine;
 
-class IkConstraint {
-
-  static final num _radDeg = 180 / math.PI;
-  static final Float32List _tempPosition = new Float32List(2);
+class IkConstraint implements Updatable {
 
   final List<Bone> bones = new List<Bone>();
   final IkConstraintData data;
@@ -58,13 +55,14 @@ class IkConstraint {
   }
 
   void apply() {
+    update();
+  }
 
+  void update () {
     switch (bones.length) {
-
       case 1:
         apply1(bones[0], target.worldX, target.worldY, mix);
         break;
-
       case 2:
         apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
         break;
@@ -76,14 +74,14 @@ class IkConstraint {
   /// Adjusts the bone rotation so the tip is as close to the target
   /// position as possible. The target is specified in the world
   /// coordinate system.
-  ///
+
   static void apply1(Bone bone, num targetX, num targetY, num alpha) {
-    Bone parent = bone.data.inheritRotation ? bone.parent : null;
-    num parentRotation = parent != null ? parent.worldRotation : 0.0;
+    num parentRotation = bone.parent == null ? 0 : bone.parent.worldRotationX;
     num rotation = bone.rotation;
-    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * _radDeg;
-    if (bone.worldFlipX != bone.worldFlipY) rotationIK = 0.0 - rotationIK;
-    bone.rotationIK = rotation - (parentRotation + rotation + rotationIK) * alpha;
+    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * 180 / math.PI - parentRotation;
+    if (bone.worldSignX != bone.worldSignY) rotationIK = 360 - rotationIK;
+    if (rotationIK > 180) rotationIK -= 360; else if (rotationIK < -180) rotationIK += 360;
+    bone.updateWorldTransformWith(bone.x, bone.y, rotation + (rotationIK - rotation) * alpha, bone.scaleX, bone.scaleY);
   }
 
   /// Adjusts the parent and child bone rotations so the tip of the
@@ -91,74 +89,178 @@ class IkConstraint {
   /// is specified in the world coordinate system.
   ///
   /// [child] Any descendant bone of the parent.
-  ///
-  static void apply2(Bone parent, Bone child, num targetX, num targetY, int bendDirection, num alpha) {
 
-    num childRotation = child.rotation;
-    num parentRotation = parent.rotation;
+  static void apply2(Bone parent, Bone child, num targetX, num targetY, int bendDir, num alpha) {
 
-    if (alpha == 0) {
-      child.rotationIK = childRotation;
-      parent.rotationIK = parentRotation;
-      return;
-    }
+    if (alpha == 0) return;
 
-    num positionX = 0.0;
-    num positionY = 0.0;
-    Bone parentParent = parent.parent;
+    num px = parent.x;
+    num py = parent.y;
+    num psx = parent.scaleX;
+    num psy = parent.scaleY;
+    num csx = child.scaleX;
+    num cy = child.y;
 
-    if (parentParent != null) {
-      _tempPosition[0] = targetX;
-      _tempPosition[1] = targetY;
-      parentParent.worldToLocal(_tempPosition);
-      targetX = (_tempPosition[0] - parent.x) * parentParent.worldScaleX;
-      targetY = (_tempPosition[1] - parent.y) * parentParent.worldScaleY;
+    int offset1 = 0;
+    int offset2 = 0;
+    int sign2 = 0;
+
+    if (psx < 0) {
+      psx = -psx;
+      offset1 = 180;
+      sign2 = -1;
     } else {
-      targetX -= parent.x;
-      targetY -= parent.y;
+      offset1 = 0;
+      sign2 = 1;
     }
 
-    if (child.parent == parent) {
-      positionX = child.x;
-      positionY = child.y;
+    if (psy < 0) {
+      psy = -psy;
+      sign2 = -sign2;
+    }
+
+    if (csx < 0) {
+      csx = -csx;
+      offset2 = 180;
     } else {
-      _tempPosition[0] = child.x;
-      _tempPosition[1] = child.y;
-      child.parent.localToWorld(_tempPosition);
-      parent.worldToLocal(_tempPosition);
-      positionX = _tempPosition[0];
-      positionY = _tempPosition[1];
+      offset2 = 0;
     }
 
-    num childX = positionX * parent.worldScaleX;
-    num childY = positionY * parent.worldScaleY;
-    num offset = math.atan2(childY, childX);
-    num len1 = math.sqrt(childX * childX + childY * childY);
-    num len2 = child.data.length * child.worldScaleX;
+    Bone pp = parent.parent;
+    num tx = 0.0;
+    num ty = 0.0;
+    num dx = 0.0;
+    num dy = 0.0;
 
-    // Based on code by Ryan Juckett with permission: Copyright (c) 2008-2009 Ryan Juckett
-    // http://www.ryanjuckett.com/
+    if (pp == null) {
 
-    num cosDenom = 2.0 * len1 * len2;
-    if (cosDenom < 0.0001) {
-      child.rotationIK = childRotation + (math.atan2(targetY, targetX) * _radDeg - parentRotation - childRotation) * alpha;
-      return;
+      tx = targetX - px;
+      ty = targetY - py;
+      dx = child.worldX - px;
+      dy = child.worldY - py;
+
+    } else {
+
+      num ppa = pp.a;
+      num ppb = pp.b;
+      num ppc = pp.c;
+      num ppd = pp.d;
+
+      num invDet = 1 / (ppa * ppd - ppb * ppc);
+      num wx = pp.worldX;
+      num wy = pp.worldY;
+      num twx = targetX - wx;
+      num twy = targetY - wy;
+      tx = (twx * ppd - twy * ppb) * invDet - px;
+      ty = (twy * ppa - twx * ppc) * invDet - py;
+      twx = child.worldX - wx;
+      twy = child.worldY - wy;
+      dx = (twx * ppd - twy * ppb) * invDet - px;
+      dy = (twy * ppa - twx * ppc) * invDet - py;
     }
 
-    num cos = (targetX * targetX + targetY * targetY - len1 * len1 - len2 * len2) / cosDenom;
-    if (cos >  1.0) cos =  1.0;
-    if (cos < -1.0) cos = -1.0;
-    num childAngle = math.acos(cos) * bendDirection;
-    num adjacent = len1 + len2 * cos;
-    num opposite = len2 * math.sin(childAngle);
-    num parentAngle = math.atan2(targetY * adjacent - targetX * opposite, targetX * adjacent + targetY * opposite);
-    num rotation = (parentAngle - offset) * _radDeg - parentRotation;
-    if (rotation >  180.0) rotation -= 360.0;
-    if (rotation < -180.0) rotation += 360.0;
-    parent.rotationIK = parentRotation + rotation * alpha;
-    rotation = (childAngle + offset) * _radDeg - childRotation;
-    if (rotation >  180.0) rotation -= 360.0;
-    if (rotation < -180.0) rotation += 360.0;
-    child.rotationIK = childRotation + (rotation + parent.worldRotation - child.parent.worldRotation) * alpha;
+    num l1 = math.sqrt(dx * dx + dy * dy);
+    num l2 = child.data.length * csx;
+    num a1 = 0.0;
+    num a2 = 0.0;
+
+    outer:
+
+    if ((psx - psy).abs() <= 0.0001) {
+
+      l2 = l2 * psx;
+      num cos = (tx * tx + ty * ty - l1 * l1 - l2 * l2) / (2 * l1 * l2);
+      if (cos < -1) cos = -1; else if (cos > 1) cos = 1;
+      a2 = math.acos(cos) * bendDir;
+      num ad = l1 + l2 * cos;
+      num o = l2 * math.sin(a2);
+      a1 = math.atan2(ty * ad - tx * o, tx * ad + ty * o);
+
+    } else {
+
+      cy = 0;
+      num a = psx * l2;
+      num b = psy * l2;
+      num ta = math.atan2(ty, tx);
+      num aa = a * a;
+      num bb = b * b;
+      num ll = l1 * l1;
+      num dd = tx * tx + ty * ty;
+      num c0 = bb * ll + aa * dd - aa * bb;
+      num c1 = -2 * bb * l1;
+      num c2 = bb - aa;
+      num d = c1 * c1 - 4 * c2 * c0;
+
+      if (d >= 0) {
+        num q = math.sqrt(d);
+        if (c1 < 0) q = -q;
+        q = -(c1 + q) / 2;
+        num r0 = q / c2;
+        num r1 = c0 / q;
+        num r = r0.abs() < r1.abs() ? r0 : r1;
+        if (r * r <= dd) {
+          num y1 = math.sqrt(dd - r * r) * bendDir;
+          a1 = ta - math.atan2(y1, r);
+          a2 = math.atan2(y1 / psy, (r - l1) / psx);
+          break outer;
+        }
+      }
+
+      num minAngle = 0.0;
+      num minDist = double.MAX_FINITE;
+      num minX = 0.0;
+      num minY = 0.0;
+      num maxAngle = 0;
+      num maxDist = 0;
+      num maxX = 0;
+      num maxY= 0;
+      num x = l1 + a;
+      num dist = x * x;
+      if (dist > maxDist) {
+        maxAngle = 0;
+        maxDist = dist;
+        maxX = x;
+      }
+      x = l1 - a;
+      dist = x * x;
+      if (dist < minDist) {
+        minAngle = math.PI;
+        minDist = dist;
+        minX = x;
+      }
+      num angle = math.acos(-a * l1 / (aa - bb));
+      x = a * math.cos(angle) + l1;
+      num y = b * math.sin(angle);
+      dist = x * x + y * y;
+      if (dist < minDist) {
+        minAngle = angle;
+        minDist = dist;
+        minX = x;
+        minY = y;
+      }
+      if (dist > maxDist) {
+        maxAngle = angle;
+        maxDist = dist;
+        maxX = x;
+        maxY = y;
+      }
+      if (dd <= (minDist + maxDist) / 2) {
+        a1 = ta - math.atan2(minY * bendDir, minX);
+        a2 = minAngle * bendDir;
+      } else {
+        a1 = ta - math.atan2(maxY * bendDir, maxX);
+        a2 = maxAngle * bendDir;
+      }
+    }
+
+    num offset = math.atan2(cy, child.x) * sign2;
+    a1 = (a1 - offset) * 180.0 / math.PI + offset1;
+    a2 = (a2 + offset) * 180.0 / math.PI * sign2 + offset2;
+    if (a1 > 180) a1 -= 360; else if (a1 < -180) a1 += 360;
+    if (a2 > 180) a2 -= 360; else if (a2 < -180) a2 += 360;
+    num rotation = parent.rotation;
+    parent.updateWorldTransformWith(parent.x, parent.y, rotation + (a1 - rotation) * alpha, parent.scaleX, parent.scaleY);
+    rotation = child.rotation;
+    child.updateWorldTransformWith(child.x, cy, rotation + (a2 - rotation) * alpha, child.scaleX, child.scaleY);
   }
 }

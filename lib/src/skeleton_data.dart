@@ -45,7 +45,8 @@ class SkeletonData {
   List<EventData> events = new List<EventData>();
   List<Animation> animations = new List<Animation>();
   List<IkConstraintData> ikConstraints = new List<IkConstraintData>();
-  
+  List<TransformConstraintData> transformConstraints = new List<TransformConstraintData>();
+
   Skin defaultSkin = null;
 
   // --- Bones.
@@ -101,11 +102,18 @@ class SkeletonData {
 
   // --- IK constraints.
 
-  IkConstraintData findIkConstraint (String ikConstraintName) {
-    if (ikConstraintName == null) throw new ArgumentError("ikConstraintName cannot be null.");
-    return ikConstraints.firstWhere((i) => i.name == ikConstraintName, orElse: () => null);
+  IkConstraintData findIkConstraint (String constraintName) {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    return ikConstraints.firstWhere((i) => i.name == constraintName, orElse: () => null);
   }
-  
+
+  // --- Transform constraints.
+
+  TransformConstraintData findTransformConstraint(String constraintName) {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    return transformConstraints.firstWhere((t) => t.name == constraintName, orElse: () => null);
+  }
+
   // ---
 
   String toString() => name != null ? name : super.toString();

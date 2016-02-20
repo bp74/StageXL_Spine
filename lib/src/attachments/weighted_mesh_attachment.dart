@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class SkinnedMeshAttachment extends Attachment implements _RenderAttachment {
+class WeightedMeshAttachment extends Attachment implements _RenderAttachment {
 
   final String path;
   final BitmapData bitmapData;
@@ -45,7 +45,7 @@ class SkinnedMeshAttachment extends Attachment implements _RenderAttachment {
   Float32List vxList = null;
   Float32List vertices = null;
 
-  SkinnedMeshAttachment(String name, this.path, this.bitmapData) : super(name);
+  WeightedMeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
   //---------------------------------------------------------------------------
 
@@ -99,7 +99,6 @@ class SkinnedMeshAttachment extends Attachment implements _RenderAttachment {
 
         var boneIndex = vertices[i];
         var bone = skeletonBones[boneIndex.toInt()];
-        var wm = bone.worldMatrix;
 
         var vx = vertices[i + 1];
         var vy = vertices[i + 2];
@@ -111,8 +110,8 @@ class SkinnedMeshAttachment extends Attachment implements _RenderAttachment {
           avIndex += 2;
         }
 
-        x += (vx * wm.a + vy * wm.c + wm.tx) * vs;
-        y += (vx * wm.b + vy * wm.d + wm.ty) * vs;
+        x += (vx * bone.a + vy * bone.c + bone.worldX) * vs;
+        y += (vx * bone.b + vy * bone.d + bone.worldY) * vs;
         i += 4;
       }
 

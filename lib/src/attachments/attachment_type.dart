@@ -36,7 +36,7 @@ class AttachmentType {
   static const AttachmentType regionsequence = const AttachmentType(1, "regionsequence");
   static const AttachmentType boundingbox = const AttachmentType(2, "boundingbox");
   static const AttachmentType mesh = const AttachmentType(3, "mesh");
-  static const AttachmentType skinnedmesh = const AttachmentType(4, "skinnedmesh");
+  static const AttachmentType weightedmesh = const AttachmentType(4, "weightedmesh");
 
   final int ordinal;
   final String name;
@@ -53,8 +53,8 @@ class AttachmentType {
         return AttachmentType.boundingbox;
       case "mesh":
         return AttachmentType.mesh;
-      case "skinnedmesh":
-        return AttachmentType.skinnedmesh;
+      case "weightedmesh":
+        return AttachmentType.weightedmesh;
       default:
         throw new StateError("Unknwon AttachmentType: $name");
     }

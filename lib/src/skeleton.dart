@@ -37,7 +37,8 @@ class Skeleton {
   final List<Slot> slots = new List<Slot>();
   final List<Slot> drawOrder = new List<Slot>();
   final List<IkConstraint> ikConstraints = new List<IkConstraint>();
-  final List<List<Bone>> _boneCache = new List<List<Bone>>();
+  final List<TransformConstraint> transformConstraints = new List<TransformConstraint>();
+  final List<Updatable> _updateCache = new List<Updatable>();
 
   Skin _skin = null;
 
@@ -73,95 +74,73 @@ class Skeleton {
       ikConstraints.add(ikConstraint);
     }
 
+    for (TransformConstraintData transformConstraintData in data.transformConstraints) {
+      TransformConstraint transformConstraint = new TransformConstraint(transformConstraintData, this);
+      transformConstraints.add(transformConstraint);
+    }
+
     updateCache();
   }
 
-  /// Caches information about bones and IK constraints. Must be called if
-  /// bones or IK constraints are added or removed.
-  ///
+  /// Caches information about bones and constraints. Must be called if bones
+  /// or constraints are added or removed.
+
   void updateCache() {
 
-    int ikConstraintsCount = ikConstraints.length;
-    int arrayCount = ikConstraintsCount + 1;
+    _updateCache.clear();
 
-    if (_boneCache.length > arrayCount) {
-      _boneCache.length = arrayCount;
-    }
-
-    for (List<Bone> cachedBones in _boneCache) {
-      cachedBones.clear();
-    }
-
-    while (_boneCache.length < arrayCount){
-      _boneCache.add(new List<Bone>());
-    }
-
-    List<Bone> nonIkBones = _boneCache[0];
-
-    outer:
     for (Bone bone in bones) {
-      Bone current = bone;
-      do {
-        int ii = 0;
-        for (IkConstraint ikConstraint in ikConstraints) {
-          Bone parent = ikConstraint.bones[0];
-          Bone child = ikConstraint.bones[ikConstraint.bones.length - 1];
-          while (true) {
-            if (current == child) {
-              _boneCache[ii + 0].add(bone);
-              _boneCache[ii + 1].add(bone);
-              continue outer;
-            }
-            if (child == parent) break;
-            child = child.parent;
-          }
-          ii++;
+
+      _updateCache.add(bone);
+
+      for (TransformConstraint transformConstraint in transformConstraints) {
+        if (bone == transformConstraint.bone) {
+          _updateCache.add(transformConstraint);
+          break;
         }
-        current = current.parent;
-      } while (current != null);
-      nonIkBones.add(bone);
+      }
+
+      for (IkConstraint ikConstraint in ikConstraints) {
+        if (bone == ikConstraint.bones.last) {
+          _updateCache.add(ikConstraint);
+          break;
+        }
+      }
     }
   }
 
-  /// Updates the world transform for each bone and applies IK constraints.
-  ///
+  /// Updates the world transform for each bone and applies constraints.
+
   void updateWorldTransform() {
-
-    for(int i = 0; i < this.bones.length; i++) {
-      var bone = this.bones[i];
-      if (bone is! Bone) continue; // dart2js_hint
-      bone.rotationIK = bone.rotation;
-    }
-
-    for(int i = 0 ; i < _boneCache.length; i++) {
-
-      var boneCache = _boneCache[i];
-      for(int i = 0; i < boneCache.length; i++) {
-        var bone = boneCache[i];
-        if (bone is! Bone) continue; // dart2js_hint
-        bone.updateWorldTransform();
-      }
-
-      if (i < ikConstraints.length) {
-        ikConstraints[i].apply();
-      }
+    for (Updatable updatable in _updateCache) {
+      updatable.update();
     }
   }
 
-  /// Sets the bones and slots to their setup pose values.
-  ///
+  /// Sets the bones, constraints, and slots to their setup pose values.
+
   void setToSetupPose() {
     setBonesToSetupPose();
     setSlotsToSetupPose();
   }
 
+  /// Sets the bones and constraints to their setup pose values.
+
   void setBonesToSetupPose() {
+
     for (Bone bone in bones) {
       bone.setToSetupPose();
     }
+
     for (IkConstraint ikConstraint in ikConstraints) {
       ikConstraint.bendDirection = ikConstraint.data.bendDirection;
       ikConstraint.mix = ikConstraint.data.mix;
+    }
+
+    for (TransformConstraint transformConstraint in transformConstraints) {
+      transformConstraint.translateMix = transformConstraint.data.translateMix;
+      transformConstraint.x = transformConstraint.data.x;
+      transformConstraint.y = transformConstraint.data.y;
     }
   }
 
@@ -278,11 +257,20 @@ class Skeleton {
     throw new ArgumentError("Slot not found: $slotName");
   }
 
-  IkConstraint findIkConstraint (String ikConstraintName) {
-    if (ikConstraintName == null) {
-      throw new ArgumentError("ikConstraintName cannot be null.");
+  IkConstraint findIkConstraint (String constraintName) {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    for (IkConstraint ikConstraint in ikConstraints) {
+      if (ikConstraint.data.name == constraintName) return ikConstraint;
     }
-    return this.ikConstraints.firstWhere((i) => i.data.name == ikConstraintName, orElse: () => null);
+    return null;
+  }
+
+  TransformConstraint findTransformConstraint(String constraintName) {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    for (TransformConstraint transformConstraint in transformConstraints) {
+      if (transformConstraint.data.name == constraintName) return transformConstraint;
+    }
+    return null;
   }
 
   void update(num delta) {

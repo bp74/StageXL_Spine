@@ -30,29 +30,30 @@
 
 part of stagexl_spine;
 
-class Bone {
+class Bone implements Updatable {
 
   final BoneData data;
   final Skeleton skeleton;
   final Bone parent;
-  final Matrix worldMatrix = new Matrix.fromIdentity();
 
   num x = 0.0;
   num y = 0.0;
   num scaleX = 0.0;
   num scaleY = 0.0;
   num rotation = 0.0;
-  num rotationIK = 0.0;
-  bool flipX = false;
-  bool flipY = false;
+  num appliedScaleX = 0.0;
+  num appliedScaleY = 0.0;
+  num appliedRotation = 0.0;
+
+  num _a = 1.0;
+  num _b = 0.0;
+  num _c = 0.0;
+  num _d = 1.0;
 
   num _worldX = 0.0;
   num _worldY = 0.0;
-  num _worldScaleX = 0.0;
-  num _worldScaleY = 0.0;
-  num _worldRotation = 0.0;
-  bool _worldFlipX = false;
-  bool _worldFlipY = false;
+  num _worldSignX = 0.0;
+  num _worldSignY = 0.0;
 
   Bone(this.data, this.skeleton, this.parent) {
     if (data == null) throw new ArgumentError("data cannot be null.");
@@ -60,49 +61,167 @@ class Bone {
     setToSetupPose();
   }
 
-  /// Computes the world SRT using the parent bone and the local SRT.
-  ///
+  /// Computes the world SRT using the parent bone and this bone's local SRT.
+
   void updateWorldTransform() {
+    updateWorldTransformWith(x, y, rotation, scaleX, scaleY);
+  }
 
-    if (this.parent != null) {
+  /// Same as updateWorldTransform(). This method exists for Bone to implement
+  /// Updatable.
 
-      Matrix parentMatrix = parent.worldMatrix;
+  void update () {
+    updateWorldTransformWith(x, y, rotation, scaleX, scaleY);
+  }
 
-      _worldX = x * parentMatrix.a + y * parentMatrix.c + parentMatrix.tx;
-      _worldY = x * parentMatrix.b + y * parentMatrix.d + parentMatrix.ty;
-      _worldScaleX = data.inheritScale ? parent._worldScaleX * scaleX : scaleX;
-      _worldScaleY = data.inheritScale ? parent._worldScaleY * scaleY : scaleY;
-      _worldRotation = data.inheritRotation ? parent._worldRotation + rotationIK : rotationIK;
-      _worldFlipX = parent._worldFlipX != flipX;
-      _worldFlipY = parent._worldFlipY != flipY;
+  /// Computes the world SRT using the parent bone and the specified local SRT.
+  void updateWorldTransformWith(num x, num y, num rotation, num scaleX, num scaleY) {
+
+    this.appliedRotation = rotation;
+    this.appliedScaleX = scaleX;
+    this.appliedScaleY = scaleY;
+
+    num radians = rotation * math.PI / 180.0;
+    num cos = math.cos(radians);
+    num sin = math.sin(radians);
+    num la = cos * scaleX;
+    num lb = -sin * scaleY;
+    num lc = sin * scaleX;
+    num ld = cos * scaleY;
+
+    if (parent == null) {
+      if (skeleton.flipX) {
+        x = -x;
+        la = -la;
+        lb = -lb;
+      }
+      if (!skeleton.flipY) {
+        y = -y;
+        lc = -lc;
+        ld = -ld;
+      }
+      _a = la;
+      _b = lb;
+      _c = lc;
+      _d = ld;
+      _worldX = x;
+      _worldY = y;
+      _worldSignX = scaleX < 0 ? -1 : 1;
+      _worldSignY = scaleY < 0 ? -1 : 1;
+      return;
+    }
+
+    num pa = parent._a;
+    num pb = parent._b;
+    num pc = parent._c;
+    num pd = parent._d;
+
+    _worldX = pa * x + pb * y + parent._worldX;
+    _worldY = pc * x + pd * y + parent._worldY;
+    _worldSignX = parent._worldSignX * (scaleX < 0 ? -1 : 1);
+    _worldSignY = parent._worldSignY * (scaleY < 0 ? -1 : 1);
+
+    if (data.inheritRotation && data.inheritScale) {
+
+      _a = pa * la + pb * lc;
+      _b = pa * lb + pb * ld;
+      _c = pc * la + pd * lc;
+      _d = pc * lb + pd * ld;
+
+    } else if (data.inheritRotation) { // No scale inheritance.
+
+      pa = 1;
+      pb = 0;
+      pc = 0;
+      pd = 1;
+
+      for (var p = parent; p != null; p = p.parent) {
+        radians = p.appliedRotation * math.PI / 180.0;
+        cos = math.cos(radians);
+        sin = math.sin(radians);
+        num temp1 = pa * cos + pb * sin;
+        pb = pa * -sin + pb * cos;
+        pa = temp1;
+        temp1 = pc * cos + pd * sin;
+        pd = pc * -sin + pd * cos;
+        pc = temp1;
+      }
+
+      _a = pa * la + pb * lc;
+      _b = pa * lb + pb * ld;
+      _c = pc * la + pd * lc;
+      _d = pc * lb + pd * ld;
+
+      if (skeleton.flipX) {
+        _a = -_a;
+        _b = -_b;
+      }
+
+      if (!skeleton.flipY) {
+        _c = -_c;
+        _d = -_d;
+      }
+
+    } else if (data.inheritScale) { // No rotation inheritance.
+
+      pa = 1;
+      pb = 0;
+      pc = 0;
+      pd = 1;
+
+      for (var p = parent; p != null; p = p.parent) {
+
+        radians = p.rotation * math.PI / 180.0;
+        cos = math.cos(radians);
+        sin = math.sin(radians);
+
+        num psx = p.appliedScaleX;
+        num psy = p.appliedScaleY;
+        num za = cos * psx;
+        num zb = -sin * psy;
+        num zc = sin * psx;
+        num zd = cos * psy;
+
+        num temp2 = pa * za + pb * zc;
+        pb = pa * zb + pb * zd;
+        pa = temp2;
+        temp2 = pc * za + pd * zc;
+        pd = pc * zb + pd * zd;
+        pc = temp2;
+
+        if (psx < 0) radians = -radians;
+        cos = math.cos(-radians);
+        sin = math.sin(-radians);
+        temp2 = pa * cos + pb * sin;
+        pb = pa * -sin + pb * cos;
+        pa = temp2;
+        temp2 = pc * cos + pd * sin;
+        pd = pc * -sin + pd * cos;
+        pc = temp2;
+      }
+
+      _a = pa * la + pb * lc;
+      _b = pa * lb + pb * ld;
+      _c = pc * la + pd * lc;
+      _d = pc * lb + pd * ld;
+
+      if (skeleton.flipX) {
+        _a = -_a;
+        _b = -_b;
+      }
+
+      if (!skeleton.flipY) {
+        _c = -_c;
+        _d = -_d;
+      }
 
     } else {
 
-      var skeletonFlipX = skeleton.flipX;
-      var skeletonFlipY = skeleton.flipY;
-
-      _worldX = skeletonFlipX ? -x : x;
-      _worldY = skeletonFlipY ? y : -y;
-      _worldScaleX = scaleX;
-      _worldScaleY = scaleY;
-      _worldRotation = rotationIK;
-      _worldFlipX = skeletonFlipX != flipX;
-      _worldFlipY = skeletonFlipY != flipY;
+      _a = la;
+      _b = lb;
+      _c = lc;
+      _d = ld;
     }
-
-    num radians = _worldRotation * math.PI / 180.0;
-    num cos = math.cos(radians);
-    num sin = math.sin(radians);
-
-    num a =  cos * _worldScaleX;
-    num b = -sin * _worldScaleX;
-    num c = -sin * _worldScaleY;
-    num d = -cos * _worldScaleY;
-
-    if (_worldFlipX) { a = -a; c = -c; }
-    if (_worldFlipY) { b = -b; d = -d; }
-
-    this.worldMatrix.setTo(a, b, c, d, _worldX, _worldY);
   }
 
   void setToSetupPose() {
@@ -111,49 +230,40 @@ class Bone {
     scaleX = this.data.scaleX;
     scaleY = this.data.scaleY;
     rotation = this.data.rotation;
-    rotationIK = this.rotation;
-    flipX = this.data.flipX;
-    flipY = this.data.flipY;
   }
 
+  num get a => _a;
+  num get b => _b;
+  num get c => _c;
+  num get d => _d;
   num get worldX => _worldX;
   num get worldY => _worldY;
-  num get worldScaleX => _worldScaleX;
-  num get worldScaleY => _worldScaleY;
-  num get worldRotation => _worldRotation;
-  bool get worldFlipX => _worldFlipX;
-  bool get worldFlipY => _worldFlipY;
+  Matrix get worldMatrix => new Matrix(_a, _b, _c, _d, _worldX, _worldY);
+
+  num get worldSignX => _worldSignX;
+  num get worldSignY => _worldSignY;
+  num get worldRotationX => math.atan2(_c, _a) * 180 / math.PI;
+  num get worldRotationY => math.atan2(_d, _b) * 180 / math.PI;
+  num get worldScaleX => math.sqrt(_a * _a + _b * _b) * _worldSignX;
+  num get worldScaleY => math.sqrt(_c * _c + _d * _d) * _worldSignY;
 
   void worldToLocal (Float32List world) {
-
-    num dx = world[0] - _worldX;
-    num dy = world[1] - _worldY;
-    num a = this.worldMatrix.a;
-    num b = this.worldMatrix.b;
-    num c = this.worldMatrix.c;
-    num d = this.worldMatrix.d;
-
-    if (_worldFlipX == _worldFlipY) {
-      a = -a;
-      d = -d;
-    }
-
-    num invDet = 1.0 / (a * d - c * b);
-    world[0] = (dx * a * invDet - dy * c * invDet);
-    world[1] = (dy * d * invDet - dx * b * invDet);
+    num x = world[0] - _worldX;
+    num y = world[1] - _worldY;
+    num a = _a;
+    num b = _b;
+    num c = _c;
+    num d = _d;
+    num invDet = 1 / (a * d - b * c);
+    world[0] = (x * a * invDet - y * b * invDet);
+    world[1] = (y * d * invDet - x * c * invDet);
   }
 
   void localToWorld (Float32List local) {
-
     num localX = local[0];
     num localY = local[1];
-    num a = this.worldMatrix.a;
-    num b = this.worldMatrix.b;
-    num c = this.worldMatrix.c;
-    num d = this.worldMatrix.d;
-
-    local[0] = localX * a + localY * c + _worldX;
-    local[1] = localX * b + localY * d + _worldY;
+    local[0] = localX * _a + localY * _b + _worldX;
+    local[1] = localX * _c + localY * _d + _worldY;
   }
 
   String toString() => this.data.name;

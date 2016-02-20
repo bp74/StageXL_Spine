@@ -86,16 +86,15 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   Float32List getVertexList(num posX, num posY, Slot slot) {
 
-    var matrix = slot.bone.worldMatrix;
     var vertices = this.vertices;
     var vxList = this.vxList;
 
-    var ma = matrix.a;
-    var mb = matrix.b;
-    var mc = matrix.c;
-    var md = matrix.d;
-    var mx = matrix.tx + posX;
-    var my = matrix.ty + posY;
+    var ma = slot.bone.a;
+    var mb = slot.bone.b;
+    var mc = slot.bone.c;
+    var md = slot.bone.d;
+    var mx = slot.bone.worldX + posX;
+    var my = slot.bone.worldY + posY;
 
     for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {
       var x = vertices[i + 0];

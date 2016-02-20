@@ -55,6 +55,7 @@ class Slot {
   Attachment get attachment => _attachment;
 
   void set attachment(Attachment attachment) {
+    if (_attachment == attachment) return;
     _attachment = attachment;
     _attachmentTime = bone.skeleton.time;
     attachmentVertices = new Float32List(0);
@@ -68,14 +69,17 @@ class Slot {
   }
 
   void setToSetupPose() {
-    int slotIndex = bone.skeleton.data.slots.indexOf(data);
     r = data.r;
     g = data.g;
     b = data.b;
     a = data.a;
-    attachment = data.attachmentName == null
-        ? null
-        : bone.skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
+    if (data.attachmentName == null) {
+      attachment = null;
+    } else {
+      _attachment = null;
+      int slotIndex = bone.skeleton.data.slots.indexOf(data);
+      attachment = bone.skeleton.getAttachmentForSlotIndex(slotIndex, data.attachmentName);
+    }
   }
 
   String toString() => data.name;

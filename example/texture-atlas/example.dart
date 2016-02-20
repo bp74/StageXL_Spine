@@ -22,15 +22,15 @@ Future main() async {
 
   var resourceManager = new ResourceManager();
   resourceManager.addTextureAtlas("combined", "atlas/combined.json");
-  resourceManager.addTextFile("goblins-mesh-spine", "atlas/goblins-mesh.json");
+  resourceManager.addTextFile("goblins-mesh-spine", "spine/goblins-mesh.json");
   resourceManager.addTextFile("goblins-mesh-atlas", "atlas/goblins-mesh.atlas");
-  resourceManager.addTextFile("hero-mesh-spine", "atlas/hero-mesh.json");
+  resourceManager.addTextFile("hero-mesh-spine", "spine/hero-mesh.json");
   resourceManager.addTextFile("hero-mesh-atlas", "atlas/hero-mesh.atlas");
-  resourceManager.addTextFile("raptor-spine", "atlas/raptor.json");
+  resourceManager.addTextFile("raptor-spine", "spine/raptor.json");
   resourceManager.addTextFile("raptor-atlas", "atlas/raptor.atlas");
-  resourceManager.addTextFile("speedy-spine", "atlas/speedy.json");
+  resourceManager.addTextFile("speedy-spine", "spine/speedy.json");
   resourceManager.addTextFile("speedy-atlas", "atlas/speedy.atlas");
-  resourceManager.addTextFile("spineboy-hoverboard-spine", "atlas/spineboy-hoverboard.json");
+  resourceManager.addTextFile("spineboy-hoverboard-spine", "spine/spineboy-hoverboard.json");
   resourceManager.addTextFile("spineboy-hoverboard-atlas", "atlas/spineboy-hoverboard.atlas");
   await resourceManager.load();
 
