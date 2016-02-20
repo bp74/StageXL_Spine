@@ -111,8 +111,8 @@ class WeightedMeshAttachment extends Attachment implements _RenderAttachment {
           avIndex += 2;
         }
 
-        x += (vx * bone.a - vy * bone.c + bone.worldX) * vs;
-        y += (vx * bone.b - vy * bone.d - bone.worldY) * vs;
+        x += (vx * bone.a + vy * bone.b + bone.worldX) * vs;
+        y -= (vx * bone.c + vy * bone.d + bone.worldY) * vs;
         i += 4;
       }
 

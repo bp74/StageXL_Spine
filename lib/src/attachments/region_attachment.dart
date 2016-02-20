@@ -89,19 +89,20 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
     var vertices = this.vertices;
     var vxList = this.vxList;
+    var bone = slot.bone;
 
-    var ma = slot.bone.a;
-    var mb = slot.bone.b;
-    var mc = slot.bone.c;
-    var md = slot.bone.d;
-    var mx = slot.bone.worldX + posX;
-    var my = slot.bone.worldY + posY;
+    var ba = bone.a;
+    var bb = bone.b;
+    var bc = bone.c;
+    var bd = bone.d;
+    var bx = bone.worldX + posX;
+    var by = bone.worldY + posY;
 
     for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {
       var x = vertices[i + 0];
       var y = vertices[i + 1];
-      vxList[o + 0] = x * ma - y * mc + mx;
-      vxList[o + 1] = x * mb - y * md - my;
+      vxList[o + 0] = 0.0 + x * ba + y * bb + bx;
+      vxList[o + 1] = 0.0 - x * bc - y * bd - by;
     }
 
     return vxList;

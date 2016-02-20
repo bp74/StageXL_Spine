@@ -39,18 +39,18 @@ class BoundingBoxAttachment extends Attachment {
 
   void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
 
-    num a  = bone.a;
-    num b  = bone.b;
-    num c  = bone.c;
-    num d  = bone.d;
-    num tx = bone.worldX + x;
-    num ty = bone.worldY + y;
+    num ba = bone.a;
+    num bb = bone.b;
+    num bc = bone.c;
+    num bd = bone.d;
+    num bx = bone.worldX + x;
+    num by = bone.worldY + y;
 
     for (int i = 0; i < this.vertices.length; i += 2) {
       num px = this.vertices[i + 0];
       num py = this.vertices[i + 1];
-      worldVertices[i + 0] = px * a - py * c + tx;
-      worldVertices[i + 1] = px * b - py * d - ty;
+      worldVertices[i + 0] = 0.0 + px * ba + py * bb + bx;
+      worldVertices[i + 1] = 0.0 - px * bc - py * bd - by;
     }
   }
 

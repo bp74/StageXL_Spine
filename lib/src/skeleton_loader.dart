@@ -73,12 +73,10 @@ class SkeletonLoader {
 
       BoneData parent = null;
 
-      if (boneMap.containsKey("parent")) {
-        String parentName = _getString(boneMap, "parent", null);
+      String parentName = _getString(boneMap, "parent", null);
+      if (parentName != null) {
         parent = skeletonData.findBone(parentName);
-        if (parent == null) {
-          throw new StateError("Parent bone not found: $parentName");
-        }
+        if (parent == null) throw new StateError("Parent bone not found: $parentName");
       }
 
       var boneData = new BoneData(_getString(boneMap, "name", null), parent);
@@ -307,8 +305,7 @@ class SkeletonLoader {
 
     //-------------------------------------
 
-    Map slots = map["slots"];
-    if (slots == null) slots = const {};
+    Map slots = map["slots"] ?? {};
 
     for (String slotName in slots.keys) {
 
@@ -365,8 +362,7 @@ class SkeletonLoader {
 
     //-------------------------------------
 
-    Map bones = map["bones"];
-    if (bones == null) bones = const {};
+    Map bones = map["bones"] ?? {};
 
     for (String boneName in bones.keys) {
 

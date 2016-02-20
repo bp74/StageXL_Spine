@@ -76,6 +76,7 @@ class Bone implements Updatable {
   }
 
   /// Computes the world SRT using the parent bone and the specified local SRT.
+
   void updateWorldTransformWith(num x, num y, num rotation, num scaleX, num scaleY) {
 
     this.appliedRotation = rotation;
@@ -102,15 +103,15 @@ class Bone implements Updatable {
       return;
     }
 
-    num pa = parent._a;
-    num pb = parent._b;
-    num pc = parent._c;
-    num pd = parent._d;
+    num pa = parent.a;
+    num pb = parent.b;
+    num pc = parent.c;
+    num pd = parent.d;
 
-    _worldX = pa * x + pb * y + parent._worldX;
-    _worldY = pc * x + pd * y + parent._worldY;
-    _worldSignX = parent._worldSignX * (scaleX < 0 ? -1 : 1);
-    _worldSignY = parent._worldSignY * (scaleY < 0 ? -1 : 1);
+    _worldX = pa * x + pb * y + parent.worldX;
+    _worldY = pc * x + pd * y + parent.worldY;
+    _worldSignX = parent.worldSignX * (scaleX < 0 ? -1 : 1);
+    _worldSignY = parent.worldSignY * (scaleY < 0 ? -1 : 1);
 
     if (data.inheritRotation && data.inheritScale) {
 

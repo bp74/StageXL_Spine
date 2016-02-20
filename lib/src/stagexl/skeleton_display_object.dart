@@ -90,7 +90,7 @@ class SkeletonDisplayObject extends DisplayObject {
         var blendMode = slot.data.blendMode;
         var alpha = globalAlpha * skeletonA * attachment.a * slot.a;
         var b = slot.bone;
-        boneMatrix.setTo(b.a, b.b, 0 - b.c, 0 - b.d, b.worldX, 0 - b.worldY);
+        boneMatrix.setTo(b.a, 0.0 - b.c, b.b, 0 - b.d, b.worldX, 0 - b.worldY);
         tmpMatrix.copyFrom(attachment.matrix);
         tmpMatrix.translate(skeletonX, skeletonY);
         tmpMatrix.concat(boneMatrix);
