@@ -3,6 +3,9 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.5.0+1
+  * Fixed wrong matrix calculation.
+    
 #### Pub version 0.5.0
   * Updated to Spine v3 export format.
 
