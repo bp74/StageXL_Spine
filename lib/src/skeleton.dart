@@ -47,8 +47,6 @@ class Skeleton {
   num b = 1.0;
   num a = 1.0;
 
-  bool flipX = false;
-  bool flipY = false;
   num time = 0.0;
   num x = 0;
   num y = 0;

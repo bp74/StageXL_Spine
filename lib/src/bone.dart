@@ -90,16 +90,6 @@ class Bone implements Updatable {
     num ld = cos * scaleY;
 
     if (parent == null) {
-      if (skeleton.flipX) {
-        x = -x;
-        la = -la;
-        lb = -lb;
-      }
-      if (!skeleton.flipY) {
-        y = -y;
-        lc = -lc;
-        ld = -ld;
-      }
       _a = la;
       _b = lb;
       _c = lc;
@@ -139,28 +129,18 @@ class Bone implements Updatable {
         radians = p.appliedRotation * math.PI / 180.0;
         cos = math.cos(radians);
         sin = math.sin(radians);
-        num temp1 = pa * cos + pb * sin;
+        num temp = pa * cos + pb * sin;
         pb = pa * -sin + pb * cos;
-        pa = temp1;
-        temp1 = pc * cos + pd * sin;
+        pa = temp;
+        temp = pc * cos + pd * sin;
         pd = pc * -sin + pd * cos;
-        pc = temp1;
+        pc = temp;
       }
 
       _a = pa * la + pb * lc;
       _b = pa * lb + pb * ld;
       _c = pc * la + pd * lc;
       _d = pc * lb + pd * ld;
-
-      if (skeleton.flipX) {
-        _a = -_a;
-        _b = -_b;
-      }
-
-      if (!skeleton.flipY) {
-        _c = -_c;
-        _d = -_d;
-      }
 
     } else if (data.inheritScale) { // No rotation inheritance.
 
@@ -182,38 +162,28 @@ class Bone implements Updatable {
         num zc = sin * psx;
         num zd = cos * psy;
 
-        num temp2 = pa * za + pb * zc;
+        num temp = pa * za + pb * zc;
         pb = pa * zb + pb * zd;
-        pa = temp2;
-        temp2 = pc * za + pd * zc;
+        pa = temp;
+        temp = pc * za + pd * zc;
         pd = pc * zb + pd * zd;
-        pc = temp2;
+        pc = temp;
 
         if (psx < 0) radians = -radians;
         cos = math.cos(-radians);
         sin = math.sin(-radians);
-        temp2 = pa * cos + pb * sin;
+        temp = pa * cos + pb * sin;
         pb = pa * -sin + pb * cos;
-        pa = temp2;
-        temp2 = pc * cos + pd * sin;
+        pa = temp;
+        temp = pc * cos + pd * sin;
         pd = pc * -sin + pd * cos;
-        pc = temp2;
+        pc = temp;
       }
 
       _a = pa * la + pb * lc;
       _b = pa * lb + pb * ld;
       _c = pc * la + pd * lc;
       _d = pc * lb + pd * ld;
-
-      if (skeleton.flipX) {
-        _a = -_a;
-        _b = -_b;
-      }
-
-      if (!skeleton.flipY) {
-        _c = -_c;
-        _d = -_d;
-      }
 
     } else {
 
@@ -238,7 +208,6 @@ class Bone implements Updatable {
   num get d => _d;
   num get worldX => _worldX;
   num get worldY => _worldY;
-  Matrix get worldMatrix => new Matrix(_a, _b, _c, _d, _worldX, _worldY);
 
   num get worldSignX => _worldSignX;
   num get worldSignY => _worldSignY;

@@ -77,6 +77,7 @@ class SkeletonDisplayObject extends DisplayObject {
     var globalAlpha = renderState.globalAlpha;
     var tmpMatrix = new Matrix.fromIdentity();
     var tmpRenderState = new RenderState(renderContext);
+    var boneMatrix = new Matrix.fromIdentity();
 
     var skeletonX = skeleton.x;
     var skeletonY = skeleton.y;
@@ -88,9 +89,11 @@ class SkeletonDisplayObject extends DisplayObject {
         var bitmapData = attachment.bitmapData;
         var blendMode = slot.data.blendMode;
         var alpha = globalAlpha * skeletonA * attachment.a * slot.a;
+        var b = slot.bone;
+        boneMatrix.setTo(b.a, b.b, 0 - b.c, 0 - b.d, b.worldX, 0 - b.worldY);
         tmpMatrix.copyFrom(attachment.matrix);
         tmpMatrix.translate(skeletonX, skeletonY);
-        tmpMatrix.concat(slot.bone.worldMatrix);
+        tmpMatrix.concat(boneMatrix);
         tmpMatrix.concat(globalMatrix);
         tmpRenderState.reset(tmpMatrix, alpha, blendMode);
         tmpRenderState.renderTextureQuad(bitmapData.renderTextureQuad);

@@ -99,8 +99,8 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
     for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {
       var x = vertices[i + 0];
       var y = vertices[i + 1];
-      vxList[o + 0] = x * ma + y * mc + mx;
-      vxList[o + 1] = x * mb + y * md + my;
+      vxList[o + 0] = x * ma - y * mc + mx;
+      vxList[o + 1] = x * mb - y * md - my;
     }
 
     return vxList;
