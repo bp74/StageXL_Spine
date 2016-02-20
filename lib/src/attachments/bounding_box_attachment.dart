@@ -48,8 +48,8 @@ class BoundingBoxAttachment extends Attachment {
     for (int i = 0; i < this.vertices.length; i += 2) {
       num px = this.vertices[i + 0];
       num py = this.vertices[i + 1];
-      worldVertices[i + 0] = px * a + py * c + tx;
-      worldVertices[i + 1] = px * b + py * d + ty;
+      worldVertices[i + 0] = px * a - py * c + tx;
+      worldVertices[i + 1] = px * b - py * d - ty;
     }
   }
 
