@@ -83,7 +83,8 @@ class Bone implements Updatable {
     this.appliedScaleX = scaleX;
     this.appliedScaleY = scaleY;
 
-    num radians = rotation * math.PI / 180.0;
+    num deg2rad = math.PI / 180.0;
+    num radians = rotation * deg2rad;
     num cos = math.cos(radians);
     num sin = math.sin(radians);
     num la = cos * scaleX;
@@ -129,7 +130,7 @@ class Bone implements Updatable {
 
       for (var p = parent; p != null; p = p.parent) {
 
-        radians = p.appliedRotation * math.PI / 180.0;
+        radians = p.appliedRotation * deg2rad;
         cos = math.cos(radians);
         sin = math.sin(radians);
 
@@ -158,7 +159,7 @@ class Bone implements Updatable {
 
       for (var p = parent; p != null; p = p.parent) {
 
-        radians = p.rotation * math.PI / 180.0;
+        radians = p.rotation * deg2rad;
         cos = math.cos(radians);
         sin = math.sin(radians);
 
