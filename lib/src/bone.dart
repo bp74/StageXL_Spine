@@ -143,6 +143,8 @@ class Bone implements Updatable {
         pb = tb;
         pc = tc;
         pd = td;
+
+        if (p.data.inheritRotation == false) break;
       }
 
       _a = pa * la + pb * lc;
@@ -176,6 +178,8 @@ class Bone implements Updatable {
         pb = tb * cos - ta * sin;
         pc = tc * cos + td * sin;
         pd = td * cos - tc * sin;
+
+        if (p.data.inheritScale == false) break;
       }
 
       _a = pa * la + pb * lc;
