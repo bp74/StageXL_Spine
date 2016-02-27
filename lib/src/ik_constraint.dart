@@ -78,8 +78,9 @@ class IkConstraint implements Updatable {
 
   static void apply1(Bone bone, num targetX, num targetY, num alpha) {
     num parentRotation = bone.parent == null ? 0 : bone.parent.worldRotationX;
+    num rad2deg = 180 / math.PI;
     num rotation = bone.rotation;
-    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * 180 / math.PI - parentRotation;
+    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * rad2deg - parentRotation;
     if (bone.worldSignX != bone.worldSignY) rotationIK = 360 - rotationIK;
     if (rotationIK > 180) rotationIK -= 360; else if (rotationIK < -180) rotationIK += 360;
     bone.updateWorldTransformWith(bone.x, bone.y, rotation + (rotationIK - rotation) * alpha, bone.scaleX, bone.scaleY);
