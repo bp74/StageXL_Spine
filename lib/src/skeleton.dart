@@ -89,19 +89,21 @@ class Skeleton {
     _updateCache.clear();
 
     for (Bone bone in bones) {
-
       _updateCache.add(bone);
-
-      for (TransformConstraint transformConstraint in transformConstraints) {
-        if (bone == transformConstraint.bone) {
-          _updateCache.add(transformConstraint);
+      for (var ikConstraint in ikConstraints) {
+        if (bone == ikConstraint.bones.last) {
+          _updateCache.add(ikConstraint);
           break;
         }
       }
+    }
 
-      for (IkConstraint ikConstraint in ikConstraints) {
-        if (bone == ikConstraint.bones.last) {
-          _updateCache.add(ikConstraint);
+    for (var transformConstraint in transformConstraints) {
+      for (int i = _updateCache.length - 1; i >= 0; i--) {
+        var updatable = _updateCache[i];
+        if (updatable == transformConstraint.bone ||
+            updatable == transformConstraint.target) {
+          _updateCache.insert(i + 1, transformConstraint);
           break;
         }
       }
