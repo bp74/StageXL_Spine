@@ -17,7 +17,7 @@ Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)
 
 ##License
 
-Based on the spine-as3 runtime (2016-02-18)  
+Based on the spine-as3 runtime (2016-02-27)  
 <https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
   
 Spine Runtimes Software License  
