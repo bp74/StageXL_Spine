@@ -31,7 +31,7 @@
 
 part of stagexl_spine;
 
-class WeightedMeshAttachment extends Attachment implements _RenderAttachment {
+class WeightedMeshAttachment extends FfdAttachment implements _RenderAttachment {
 
   final String path;
   final BitmapData bitmapData;
@@ -41,18 +41,46 @@ class WeightedMeshAttachment extends Attachment implements _RenderAttachment {
   int hullLength = 0;
   int vertexLength = 0;
 
+  bool inheritFFD = false;
+  WeightedMeshAttachment _parentMesh = null;
+
   Int16List edges = null;
   Int16List ixList = null;
   Float32List vxList = null;
   Float32List vertices = null;
+  Float32List uvs = null;
 
   WeightedMeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
   //---------------------------------------------------------------------------
 
+  WeightedMeshAttachment get parentMesh => _parentMesh;
+
+  set parentMesh(WeightedMeshAttachment parentMesh) {
+    _parentMesh = parentMesh;
+    if (parentMesh != null) {
+      hullLength = parentMesh.hullLength;
+      edges = parentMesh.edges;
+      width = parentMesh.width;
+      height = parentMesh.height;
+      update(parentMesh.ixList, parentMesh.vertices, parentMesh.uvs);
+    }
+  }
+
+  bool applyFFD(Attachment sourceAttachment) {
+    if (sourceAttachment == this) return true;
+    if (sourceAttachment == _parentMesh && inheritFFD) return true;
+    return false;
+  }
+
+  //---------------------------------------------------------------------------
+
   void update(Int16List triangles, Float32List vertices, Float32List uvs) {
 
+    this.uvs = uvs;
+    this.vertices = vertices;
     this.vertexLength = 0;
+
     for (int i = 0; i < vertices.length; i++) {
       var boneCount = vertices[i].toInt();
       this.vertexLength += boneCount * 2;
@@ -61,7 +89,6 @@ class WeightedMeshAttachment extends Attachment implements _RenderAttachment {
 
     this.ixList = triangles;
     this.vxList = new Float32List(this.vertexLength * 2);
-    this.vertices = vertices;
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;

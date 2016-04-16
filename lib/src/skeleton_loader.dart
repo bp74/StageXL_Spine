@@ -34,6 +34,7 @@ part of stagexl_spine;
 class SkeletonLoader {
 
   final AttachmentLoader attachmentLoader;
+  final List<_LinkedMesh> _linkedMeshes = new List<_LinkedMesh>();
 
   SkeletonLoader(this.attachmentLoader);
 
@@ -174,13 +175,31 @@ class SkeletonLoader {
         var slotIndex = skeletonData.findSlotIndex(slotName);
         var slotEntry = skinMap[slotName];
         for (String attachmentName in slotEntry.keys) {
-          var attachment = readAttachment(skin, attachmentName, slotEntry[attachmentName]);
+          var attachment = readAttachment(skin, slotIndex, attachmentName, slotEntry[attachmentName]);
           if (attachment != null) skin.addAttachment(slotIndex, attachmentName, attachment);
         }
       }
       skeletonData.skins.add(skin);
       if (skin.name == "default") skeletonData.defaultSkin = skin;
     }
+
+    // Linked meshes.
+
+    for (var linkedMesh in _linkedMeshes) {
+      var parentSkin = linkedMesh.skin == null ? skeletonData.defaultSkin : skeletonData.findSkin(linkedMesh.skin);
+      if (parentSkin == null) throw new StateError("Skin not found: ${linkedMesh.skin}");
+      var parentMesh = parentSkin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
+      if (parentMesh == null) throw new StateError("Parent mesh not found: ${linkedMesh.parent}");
+      if (linkedMesh.mesh is MeshAttachment) {
+        MeshAttachment mesh = linkedMesh.mesh;
+        mesh.parentMesh = parentMesh as MeshAttachment;
+      } else {
+        WeightedMeshAttachment weightedMesh  = linkedMesh.mesh;
+        weightedMesh.parentMesh = parentMesh as WeightedMeshAttachment;
+      }
+    }
+
+    _linkedMeshes.clear();
 
     // Events
 
@@ -208,7 +227,7 @@ class SkeletonLoader {
 
   //---------------------------------------------------------------------------
 
-  Attachment readAttachment(Skin skin, String name, Map map) {
+  Attachment readAttachment(Skin skin, int slotIndex, String name, Map map) {
 
     name = _getString(map, "name", name);
 
@@ -241,46 +260,64 @@ class SkeletonLoader {
         return region;
 
       case AttachmentType.mesh:
+      case AttachmentType.linkedmesh:
 
         var mesh = attachmentLoader.newMeshAttachment(skin, name, path);
         if (mesh == null) return null;
 
         var meshColor = _getString(map, "color", "FFFFFFFF");
-        var triangles = _getInt16List(map, "triangles");
-        var vertices = _getFloat32List(map, "vertices");
-        var uvs = _getFloat32List(map, "uvs");
-
         mesh.r = _toColor(meshColor, 0);
         mesh.g = _toColor(meshColor, 1);
         mesh.b = _toColor(meshColor, 2);
         mesh.a = _toColor(meshColor, 3);
-        mesh.hullLength = _getInt(map, "hull", 0) * 2;
-        mesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
         mesh.width = _getDouble(map, "width", 0.0);
         mesh.height = _getDouble(map, "height", 0.0);
-        mesh.update(triangles, vertices, uvs);
+
+        if (map.containsKey("parent") == false) {
+          var triangles = _getInt16List(map, "triangles");
+          var vertices = _getFloat32List(map, "vertices");
+          var uvs = _getFloat32List(map, "uvs");
+          mesh.hullLength = _getInt(map, "hull", 0) * 2;
+          mesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
+          mesh.update(triangles, vertices, uvs);
+        } else {
+          var skin = _getString(map, "skin", null);
+          var parent = _getString(map, "parent", null);
+          var linkedMesh = new _LinkedMesh(mesh, skin, slotIndex, parent);
+          mesh.inheritFFD = _getBool(map, "ffd", true);
+          _linkedMeshes.add(linkedMesh);
+        }
 
         return mesh;
 
       case AttachmentType.weightedmesh:
+      case AttachmentType.weightedlinkedmesh:
 
         var weightedMesh = attachmentLoader.newWeightedMeshAttachment(skin, name, path);
         if (weightedMesh == null) return null;
 
         var weightedMeshColor = _getString(map, "color", "FFFFFFFF");
-        var triangles = _getInt16List(map, "triangles");
-        var vertices = _getFloat32List(map, "vertices");
-        var uvs = _getFloat32List(map, "uvs");
-
         weightedMesh.r = _toColor(weightedMeshColor, 0);
         weightedMesh.g = _toColor(weightedMeshColor, 1);
         weightedMesh.b = _toColor(weightedMeshColor, 2);
         weightedMesh.a = _toColor(weightedMeshColor, 3);
-        weightedMesh.hullLength = _getInt(map, "hull", 0) * 2;
-        weightedMesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
         weightedMesh.width = _getDouble(map, "width", 0.0);
         weightedMesh.height = _getDouble(map, "height", 0.0);
-        weightedMesh.update(triangles, vertices, uvs);
+
+        if (map.containsKey("parent") == false) {
+          var triangles = _getInt16List(map, "triangles");
+          var vertices = _getFloat32List(map, "vertices");
+          var uvs = _getFloat32List(map, "uvs");
+          weightedMesh.hullLength = _getInt(map, "hull", 0) * 2;
+          weightedMesh.edges = map.containsKey("edges") ? _getInt16List(map, "edges") : null;
+          weightedMesh.update(triangles, vertices, uvs);
+        } else {
+          var skin = _getString(map, "skin", null);
+          var parent = _getString(map, "parent", null);
+          var linkedMesh = new _LinkedMesh(weightedMesh, skin, slotIndex, parent);
+          weightedMesh.inheritFFD = _getBool(map, "ffd", true);
+          _linkedMeshes.add(linkedMesh);
+        }
 
         return weightedMesh;
 
@@ -673,5 +710,14 @@ class SkeletonLoader {
       return false;
     }
   }
+}
 
+class _LinkedMesh {
+
+  final String parent;
+  final String skin;
+  final int slotIndex;
+  final Attachment mesh;
+
+  _LinkedMesh(this.mesh, this.skin, this.slotIndex, this.parent);
 }

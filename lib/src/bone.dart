@@ -225,9 +225,8 @@ class Bone implements Updatable {
     num b = _b;
     num c = _c;
     num d = _d;
-    num invDet = 1 / (a * d - b * c);
-    world[0] = (x * d * invDet - y * b * invDet);
-    world[1] = (y * a * invDet - x * c * invDet);
+    world[0] = (x * d - y * b) / (a * d - b * c);
+    world[1] = (y * a - x * c) / (a * d - b * c);
   }
 
   void localToWorld (Float32List local) {

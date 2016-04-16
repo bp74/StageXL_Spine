@@ -38,6 +38,8 @@ class AttachmentType {
   static const AttachmentType boundingbox = const AttachmentType(2, "boundingbox");
   static const AttachmentType mesh = const AttachmentType(3, "mesh");
   static const AttachmentType weightedmesh = const AttachmentType(4, "weightedmesh");
+  static const AttachmentType linkedmesh = const AttachmentType(5, "linkedmesh");
+  static const AttachmentType weightedlinkedmesh = const AttachmentType(6, "weightedlinkedmesh");
 
   final int ordinal;
   final String name;
@@ -56,6 +58,10 @@ class AttachmentType {
         return AttachmentType.mesh;
       case "weightedmesh":
         return AttachmentType.weightedmesh;
+      case "linkedmesh":
+        return AttachmentType.linkedmesh;
+      case "weightedlinkedmesh":
+        return AttachmentType.weightedlinkedmesh;
       default:
         throw new StateError("Unknwon AttachmentType: $name");
     }

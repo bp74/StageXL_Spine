@@ -31,7 +31,7 @@
 
 part of stagexl_spine;
 
-class MeshAttachment extends Attachment implements _RenderAttachment {
+class MeshAttachment extends FfdAttachment implements _RenderAttachment {
 
   final String path;
   final BitmapData bitmapData;
@@ -41,21 +41,48 @@ class MeshAttachment extends Attachment implements _RenderAttachment {
   int hullLength = 0;
   int vertexLength = 0;
 
+  bool inheritFFD = false;
+  MeshAttachment _parentMesh = null;
+
   Int16List edges = null;
   Int16List ixList = null;
   Float32List vxList = null;
   Float32List vertices = null;
+  Float32List uvs = null;
 
   MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
   //---------------------------------------------------------------------------
 
+  MeshAttachment get parentMesh => _parentMesh;
+
+  set parentMesh(MeshAttachment parentMesh) {
+    _parentMesh = parentMesh;
+    if (parentMesh != null) {
+      hullLength = parentMesh.hullLength;
+      edges = parentMesh.edges;
+      width = parentMesh.width;
+      height = parentMesh.height;
+      update(parentMesh.ixList, parentMesh.vertices, parentMesh.uvs);
+    }
+  }
+
+  bool applyFFD(Attachment sourceAttachment) {
+    if (sourceAttachment == this) return true;
+    if (sourceAttachment == _parentMesh && inheritFFD) return true;
+    return false;
+  }
+
+  //---------------------------------------------------------------------------
+
   void update(Int16List triangles, Float32List vertices, Float32List uvs) {
+
+    this.uvs = uvs;
+    this.vertices = vertices;
+    this.vertexLength = vertices.length;
 
     this.ixList = triangles;
     this.vxList = new Float32List(vertices.length * 2);
-    this.vertices = vertices;
-    this.vertexLength = vertices.length;
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;
@@ -89,7 +116,7 @@ class MeshAttachment extends Attachment implements _RenderAttachment {
     var by = bone.worldY + posY;
 
     if (slot.attachmentVertices.length == vertices.length) {
-      this.vertices = vertices = slot.attachmentVertices;
+      vertices = slot.attachmentVertices;
     }
 
     for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {

@@ -83,7 +83,7 @@ class IkConstraint implements Updatable {
     num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * rad2deg - parentRotation;
     if (bone.worldSignX != bone.worldSignY) rotationIK = 360 - rotationIK;
     if (rotationIK > 180) rotationIK -= 360; else if (rotationIK < -180) rotationIK += 360;
-    bone.updateWorldTransformWith(bone.x, bone.y, rotation + (rotationIK - rotation) * alpha, bone.scaleX, bone.scaleY);
+    bone.updateWorldTransformWith(bone.x, bone.y, rotation + (rotationIK - rotation) * alpha, bone.appliedScaleX, bone.appliedScaleY);
   }
 
   /// Adjusts the parent and child bone rotations so the tip of the
@@ -98,34 +98,43 @@ class IkConstraint implements Updatable {
 
     num px = parent.x;
     num py = parent.y;
-    num psx = parent.scaleX;
-    num psy = parent.scaleY;
-    num csx = child.scaleX;
-    num cy = child.y;
+    num psx = parent.appliedScaleX;
+    num psy = parent.appliedScaleY;
 
-    int offset1 = 0;
-    int offset2 = 0;
-    int sign2 = 0;
+    int o1 = 0;
+    int o2 = 0;
+    int s2 = 0;
 
     if (psx < 0) {
       psx = -psx;
-      offset1 = 180;
-      sign2 = -1;
+      o1 = 180;
+      s2 = -1;
     } else {
-      offset1 = 0;
-      sign2 = 1;
+      o1 = 0;
+      s2 = 1;
     }
 
     if (psy < 0) {
       psy = -psy;
-      sign2 = -sign2;
+      s2 = -s2;
+    }
+
+    num cx = child.x;
+    num cy = child.y;
+    num csx = child.appliedScaleX;
+    bool u = (psx - psy).abs() <= 0.0001;
+
+    if (!u && cy != 0) {
+      child._worldX = parent.a * cx + parent.worldX;
+      child._worldY = parent.c * cx + parent.worldY;
+      cy = 0;
     }
 
     if (csx < 0) {
       csx = -csx;
-      offset2 = 180;
+      o2 = 180;
     } else {
-      offset2 = 0;
+      o2 = 0;
     }
 
     Bone pp = parent.parent;
@@ -168,7 +177,7 @@ class IkConstraint implements Updatable {
 
     outer:
 
-    if ((psx - psy).abs() <= 0.0001) {
+    if (u) {
 
       l2 = l2 * psx;
       num cos = (tx * tx + ty * ty - l1 * l1 - l2 * l2) / (2 * l1 * l2);
@@ -180,7 +189,6 @@ class IkConstraint implements Updatable {
 
     } else {
 
-      cy = 0;
       num a = psx * l2;
       num b = psy * l2;
       num ta = math.atan2(ty, tx);
@@ -255,14 +263,15 @@ class IkConstraint implements Updatable {
       }
     }
 
-    num offset = math.atan2(cy, child.x) * sign2;
-    a1 = (a1 - offset) * 180.0 / math.PI + offset1;
-    a2 = (a2 + offset) * 180.0 / math.PI * sign2 + offset2;
+    num os = math.atan2(cy, cx) * s2;
+    num rad2deg = 180 / math.PI;
+    a1 = (a1 - os) * rad2deg + o1;
+    a2 = (a2 + os) * rad2deg * s2 + o2;
     if (a1 > 180) a1 -= 360; else if (a1 < -180) a1 += 360;
     if (a2 > 180) a2 -= 360; else if (a2 < -180) a2 += 360;
     num rotation = parent.rotation;
-    parent.updateWorldTransformWith(parent.x, parent.y, rotation + (a1 - rotation) * alpha, parent.scaleX, parent.scaleY);
+    parent.updateWorldTransformWith(px, py, rotation + (a1 - rotation) * alpha, parent.appliedScaleX, parent.appliedScaleY);
     rotation = child.rotation;
-    child.updateWorldTransformWith(child.x, cy, rotation + (a2 - rotation) * alpha, child.scaleX, child.scaleY);
+    child.updateWorldTransformWith(cx, cy, rotation + (a2 - rotation) * alpha, child.appliedScaleX, child.appliedScaleY);
   }
 }

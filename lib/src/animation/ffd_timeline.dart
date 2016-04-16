@@ -52,18 +52,22 @@ class FfdTimeline extends CurveTimeline {
 
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    Slot slot = skeleton.slots[slotIndex];
-    if (slot.attachment != attachment) return;
+    var slot = skeleton.slots[slotIndex];
+    var slotAttachment = slot.attachment;
 
-    Float32List frames = this.frames;
-    if (time < frames[0]) return; // Time is before first frame.
+    if (slotAttachment is FfdAttachment) {
+      if (slotAttachment.applyFFD(attachment) == false) return;
+    }
 
-    Float32List attachmentVertices = slot.attachmentVertices;
-    List<Float32List> frameVertices = this.frameVertices;
+    var frames = this.frames;
+    if (frames[0] >= time) return; // Time is before first frame.
+
+    var frameVertices = this.frameVertices;
     int vertexCount = frameVertices[0].length;
 
-    if (attachmentVertices.length != vertexCount) {
-      attachmentVertices = slot.attachmentVertices = new Float32List(vertexCount);
+    var vertices = slot.attachmentVertices;
+    if (vertices.length != vertexCount) {
+      vertices = slot.attachmentVertices = new Float32List(vertexCount);
       alpha = 1; // Don't mix from uninitialized slot vertices.
     }
 
@@ -73,11 +77,11 @@ class FfdTimeline extends CurveTimeline {
 
       if (alpha < 1) {
         for (int i = 0; i < vertexCount; i++) {
-          attachmentVertices[i] += (lastVertices[i] - attachmentVertices[i]) * alpha;
+          vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
         }
       } else {
         for (int i = 0; i < vertexCount; i++) {
-          attachmentVertices[i] = lastVertices[i];
+          vertices[i] = lastVertices[i];
         }
       }
 
@@ -94,17 +98,15 @@ class FfdTimeline extends CurveTimeline {
     Float32List prevVertices = frameVertices[frameIndex - 1];
     Float32List nextVertices = frameVertices[frameIndex];
 
-    num prev;
-
     if (alpha < 1) {
       for (int i = 0; i < vertexCount; i++) {
-        prev = prevVertices[i];
-        attachmentVertices[i] += (prev + (nextVertices[i] - prev) * percent - attachmentVertices[i]) * alpha;
+        num prev = prevVertices[i];
+        vertices[i] += (prev + (nextVertices[i] - prev) * percent - vertices[i]) * alpha;
       }
     } else {
       for (int i = 0; i < vertexCount; i++) {
-        prev = prevVertices[i];
-        attachmentVertices[i] = prev + (nextVertices[i] - prev) * percent;
+        num prev = prevVertices[i];
+        vertices[i] = prev + (nextVertices[i] - prev) * percent;
       }
     }
   }
