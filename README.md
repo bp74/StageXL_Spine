@@ -5,7 +5,7 @@ The Spine runtime for the StageXL library.
 
 [![Build Status](https://travis-ci.org/bp74/StageXL_Spine.svg?branch=master)](https://travis-ci.org/bp74/StageXL_Spine)
 
-##Examples
+## Examples
 
 Raptor (<http://www.stagexl.org/show/spine/raptor/example.html>)    
 SpineBoy (<http://www.stagexl.org/show/spine/spineboy/example.html>)      
@@ -15,10 +15,15 @@ PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)
 Hero (<http://www.stagexl.org/show/spine/hero/example.html>)    
 Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)    
 
-##License
+## Spine Runtime
 
 Based on the spine-as3 runtime (2016-04-15)  
+This runtime works with the data exported from Spine v3.1.08.  
+Support for the data export from Spine v3.2 is in progress.    
+
 <https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
+
+## Spine License
   
 Spine Runtimes Software License  
 Version 2.3  
