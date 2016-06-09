@@ -98,8 +98,6 @@ class Animation {
         current = (low + high) >> 1;
       }
     }
-
-    return 0; // Can't happen.
   }
 
   static int binarySearch1(Float32List values, num target) {
@@ -117,8 +115,6 @@ class Animation {
       if (low == high) return low + 1;
       current = (low + high) >> 1;
     }
-
-    return 0; // Can't happen.
   }
   
   static int linearSearch(Float32List values, num target, int step) {
