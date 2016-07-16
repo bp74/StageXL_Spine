@@ -10,7 +10,6 @@ Future main() async {
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
-  StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
 
@@ -22,15 +21,15 @@ Future main() async {
   // load "spineboy-old" skeleton resources
 
   var resourceManager = new ResourceManager();
-  resourceManager.addTextFile("spineboy-old", "spine/spineboy-old.json");
-  //resourceManager.addTextureAtlas("spineboy-old", "atlas1/spineboy-old.atlas", TextureAtlasFormat.LIBGDX);
-  resourceManager.addTextureAtlas("spineboy-old", "atlas2/spineboy-old.json", TextureAtlasFormat.JSONARRAY);
+  var libgdx = TextureAtlasFormat.LIBGDX;
+  resourceManager.addTextFile("spineboy", "spine/spineboy-old.json");
+  resourceManager.addTextureAtlas("spineboy", "spine/spineboy-old.atlas", libgdx);
   await resourceManager.load();
 
   // load Spine skeleton
 
-  var spineJson = resourceManager.getTextFile("spineboy-old");
-  var textureAtlas = resourceManager.getTextureAtlas("spineboy-old");
+  var spineJson = resourceManager.getTextFile("spineboy");
+  var textureAtlas = resourceManager.getTextureAtlas("spineboy");
   var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
   var skeletonLoader = new SkeletonLoader(attachmentLoader);
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);

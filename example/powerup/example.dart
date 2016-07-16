@@ -9,7 +9,6 @@ Future main() async {
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
-  StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
 
@@ -21,9 +20,9 @@ Future main() async {
   // load "powerup" skeleton resources
 
   var resourceManager = new ResourceManager();
+  var libgdx = TextureAtlasFormat.LIBGDX;
   resourceManager.addTextFile("powerup", "spine/powerup.json");
-  //resourceManager.addTextureAtlas("powerup", "atlas1/powerup.atlas", TextureAtlasFormat.LIBGDX);
-  resourceManager.addTextureAtlas("powerup", "atlas2/powerup.json", TextureAtlasFormat.JSONARRAY);
+  resourceManager.addTextureAtlas("powerup", "spine/powerup.atlas", libgdx);
   await resourceManager.load();
 
   // load Spine skeleton

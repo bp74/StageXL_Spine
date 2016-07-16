@@ -1,5 +1,5 @@
 {
-"skeleton": { "hash": "nDTxthz7F1MUanXoQEA0PWcoY6I", "spine": "3.4.01", "width": 511.47, "height": 739.87, "images": "./images/" },
+"skeleton": { "hash": "Z1+8Fuu/gTrPMQQyw2bt/EsqNzw", "spine": "3.4.01", "width": 511.47, "height": 739.87, "images": "./images/" },
 "bones": [
 	{ "name": "root" },
 	{ "name": "hip", "parent": "root", "x": -49.89, "y": 290.95 },
@@ -87,10 +87,10 @@
 	{ "name": "front_thigh", "bone": "front_thigh", "attachment": "front_thigh" },
 	{ "name": "front_foot", "bone": "front_foot", "attachment": "front_foot" },
 	{ "name": "front_shin", "bone": "front_shin", "attachment": "front_shin" },
-	{ "name": "mouth", "bone": "head", "attachment": "mouth_smile" },
+	{ "name": "mouth", "bone": "head", "attachment": "mouth_grind" },
 	{ "name": "goggles", "bone": "head", "attachment": "goggles" },
 	{ "name": "front_bracer", "bone": "front_bracer", "attachment": "front_bracer" },
-	{ "name": "front_fist", "bone": "front_fist", "attachment": "front_fist_closed" },
+	{ "name": "front_fist", "bone": "front_fist", "attachment": "front_fist_open" },
 	{ "name": "muzzle", "bone": "gunTip", "blend": "additive" },
 	{ "name": "head-bb", "bone": "head" },
 	{ "name": "hoverglow_front", "bone": "hoverglow_front", "attachment": "hoverglow_small", "blend": "additive" },

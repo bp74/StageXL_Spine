@@ -9,7 +9,6 @@ Future main() async {
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
-  StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
 
@@ -21,15 +20,15 @@ Future main() async {
   // load "goblins-ffd" skeleton resources
 
   var resourceManager = new ResourceManager();
-  resourceManager.addTextFile("goblins-ffd", "spine/goblins-mesh.json");
-  //resourceManager.addTextureAtlas("goblins-ffd", "atlas1/goblins-ffd.atlas", TextureAtlasFormat.LIBGDX);
-  resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
+  var libgdx = TextureAtlasFormat.LIBGDX;
+  resourceManager.addTextFile("goblins", "spine/goblins-mesh.json");
+  resourceManager.addTextureAtlas("goblins", "spine/goblins-mesh.atlas", libgdx);
   await resourceManager.load();
 
   // load Spine skeleton
 
-  var spineJson = resourceManager.getTextFile("goblins-ffd");
-  var textureAtlas = resourceManager.getTextureAtlas("goblins-ffd");
+  var spineJson = resourceManager.getTextFile("goblins");
+  var textureAtlas = resourceManager.getTextureAtlas("goblins");
   var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
   var skeletonLoader = new SkeletonLoader(attachmentLoader);
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);

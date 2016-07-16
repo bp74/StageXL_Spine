@@ -9,7 +9,6 @@ Future main() async {
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
-  StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
 
@@ -21,9 +20,9 @@ Future main() async {
   // load "spineboy" skeleton resources
 
   var resourceManager = new ResourceManager();
+  var libgdx = TextureAtlasFormat.LIBGDX;
   resourceManager.addTextFile("spineboy", "spine/spineboy-hover.json");
-  //resourceManager.addTextureAtlas("spineboy", "atlas1/spineboy-hoverboard.atlas", TextureAtlasFormat.LIBGDX);
-  resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy-hoverboard.json", TextureAtlasFormat.JSONARRAY);
+  resourceManager.addTextureAtlas("spineboy", "spine/spineboy-hover.atlas", libgdx);
   await resourceManager.load();
 
   // load Spine skeleton
