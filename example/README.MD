@@ -5,4 +5,7 @@ http://www.stagexl.org/show/spine/raptor/example.html
 http://www.stagexl.org/show/spine/spineboy-mesh/example.html  
 http://www.stagexl.org/show/spine/spineboy-old/example.html  
 http://www.stagexl.org/show/spine/spineboy/example.html  
+http://www.stagexl.org/show/spine/stretchyman/example.html  
+http://www.stagexl.org/show/spine/tank/example.html  
 http://www.stagexl.org/show/spine/texture-atlas/example.html  
+http://www.stagexl.org/show/spine/vine/example.html  
