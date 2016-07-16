@@ -7,19 +7,20 @@ The Spine runtime for the StageXL library.
 
 ## Examples
 
-Raptor (<http://www.stagexl.org/show/spine/raptor/example.html>)    
-SpineBoy (<http://www.stagexl.org/show/spine/spineboy/example.html>)      
-SpineBoy Mesh (<http://www.stagexl.org/show/spine/spineboy-mesh/example.html>)      
-Goblins (<http://www.stagexl.org/show/spine/goblins-ffd/example.html>)      
-PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)      
-Hero (<http://www.stagexl.org/show/spine/hero/example.html>)    
+Raptor (<http://www.stagexl.org/show/spine/raptor/example.html>)  
+Tank (<http://www.stagexl.org/show/spine/tank/example.html>)  
+Stretchyman (<http://www.stagexl.org/show/spine/stretchyman/example.html>)  
+SpineBoy (<http://www.stagexl.org/show/spine/spineboy/example.html>)  
+SpineBoy Mesh (<http://www.stagexl.org/show/spine/spineboy-mesh/example.html>)  
+Goblins (<http://www.stagexl.org/show/spine/goblins-ffd/example.html>)  
+PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)  
+Hero (<http://www.stagexl.org/show/spine/hero/example.html>)  
 Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)    
 
 ## Spine Runtime
 
-Based on the spine-as3 runtime (2016-04-15)  
-This runtime works with the data exported from Spine v3.1.08.  
-Support for the data export from Spine v3.2 is in progress.    
+Based on the spine-as3 runtime (2016-06-17)  
+This runtime supports the export format and features of Spine v3.4.    
 
 <https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
 

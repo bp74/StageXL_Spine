@@ -3,8 +3,11 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.7.0
+  * Added all features of the Spine v3.4 format.
+  
 #### Pub version 0.6.0
-  * Added support for linked meshes (Spine v3.1)
+  * Added all features of the Spine v3.1 format
 
 #### Pub version 0.5.1
   * Fixed bone matrix calculation.
