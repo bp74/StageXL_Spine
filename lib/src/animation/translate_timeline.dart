@@ -41,11 +41,6 @@ class TranslateTimeline extends CurveTimeline {
   static const int _X = 1;
   static const int _Y = 2;
 
-  // TODO: remove
-  final int _PREV_FRAME_TIME = -3;
-  final int _FRAME_X = 1;
-  final int _FRAME_Y = 2;
-
   final Float32List frames; // time, value, value, ...
   int boneIndex = 0;
 
@@ -77,13 +72,18 @@ class TranslateTimeline extends CurveTimeline {
 
     // Interpolate between the previous frame and the current frame.
     int frameIndex = Animation.binarySearch(frames, time, 3);
-    num prevFrameX = frames[frameIndex - 2];
-    num prevFrameY = frames[frameIndex - 1];
+    num prevTime = frames[frameIndex + _PREV_TIME];
+    num prevX = frames[frameIndex - 2];
+    num prevY = frames[frameIndex - 1];
     num frameTime = frames[frameIndex];
-    num percent = 1 - (time - frameTime) / (frames[frameIndex + _PREV_FRAME_TIME] - frameTime);
-    percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+    num frameX = frames[frameIndex + _X];
+    num frameY = frames[frameIndex + _Y];
 
-    bone.x += (bone.data.x + prevFrameX + (frames[frameIndex + _FRAME_X] - prevFrameX) * percent - bone.x) * alpha;
-    bone.y += (bone.data.y + prevFrameY + (frames[frameIndex + _FRAME_Y] - prevFrameY) * percent - bone.y) * alpha;
+    num percent = getCurvePercent(
+        frameIndex ~/ 3 - 1,
+        1.0 - (time - frameTime) / (prevTime - frameTime));
+
+    bone.x += (bone.data.x + prevX + (frameX - prevX) * percent - bone.x) * alpha;
+    bone.y += (bone.data.y + prevY + (frameY - prevY) * percent - bone.y) * alpha;
   }
 }
