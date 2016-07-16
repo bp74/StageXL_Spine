@@ -427,9 +427,9 @@ class PathConstraint implements Updatable {
 
       p *= curveLength;
 
-			for (;; segment++) {
+      for (;; segment++) {
 				num length = segments[segment];
-				if (p > length) continue;
+				if (p > length + 0.0001) continue;
 				if (segment == 0) {
           p /= length;
         } else {
