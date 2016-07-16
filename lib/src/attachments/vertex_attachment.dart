@@ -86,8 +86,8 @@ class VertexAttachment extends Attachment {
       for (w = offset; w < count; v += 2, w += 2) {
         vx = vertices[v + 0];
         vy = vertices[v + 1];
-        worldVertices[w + 0] = 0 + (vx * ba + vy * bb + x);
-        worldVertices[w + 1] = 0 - (vx * bc + vy * bd + y);
+        worldVertices[w + 0] = vx * ba + vy * bb + x;
+        worldVertices[w + 1] = vx * bc + vy * bd + y;
       }
       return;
     }
@@ -117,8 +117,8 @@ class VertexAttachment extends Attachment {
           wx += (vx * bone.a + vy * bone.b + bone.worldX) * weight;
           wy += (vx * bone.c + vy * bone.d + bone.worldY) * weight;
         }
-        worldVertices[w + 0] = 0 + wx;
-        worldVertices[w + 1] = 0 - wy;
+        worldVertices[w + 0] = wx;
+        worldVertices[w + 1] = wy;
       }
 
     } else {
@@ -139,8 +139,8 @@ class VertexAttachment extends Attachment {
           wx += (vx * bone.a + vy * bone.b + bone.worldX) * weight;
           wy += (vx * bone.c + vy * bone.d + bone.worldY) * weight;
         }
-        worldVertices[w + 0] = 0 + wx;
-        worldVertices[w + 1] = 0 - wy;
+        worldVertices[w + 0] = wx;
+        worldVertices[w + 1] = wy;
       }
     }
   }

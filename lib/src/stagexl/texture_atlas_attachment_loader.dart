@@ -26,6 +26,6 @@ class TextureAtlasAttachmentLoader implements AttachmentLoader {
   }
 
   PathAttachment newPathAttachment(Skin skin, String name) {
-    throw new StateError("Not Implemented");
+    return new PathAttachment(name);
   }
 }

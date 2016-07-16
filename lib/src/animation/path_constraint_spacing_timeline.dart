@@ -51,7 +51,7 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 		// Interpolate between the previous frame and the current frame.
 
     int frame = Animation.binarySearch(frames, time, PathConstraintPositionTimeline._ENTRIES);
-    num prevTime = frames[frame + PathConstraintPositionTimeline._PREV_VALUE];
+    num prevTime = frames[frame + PathConstraintPositionTimeline._PREV_TIME];
 		num prevValue = frames[frame + PathConstraintPositionTimeline._PREV_VALUE];
 		num frameTime = frames[frame + PathConstraintPositionTimeline._TIME];
     num frameValue = frames[frame + PathConstraintPositionTimeline._VALUE];

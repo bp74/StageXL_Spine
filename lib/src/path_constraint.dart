@@ -99,6 +99,7 @@ class PathConstraint implements Updatable {
 		Float32List spaces = _spaces;
     Float32List lengths = null;
 		num spacing = this.spacing;
+
 		if (scale || lengthSpacing) {
 			if (scale) {
         if (_lengths.length != boneCount) _lengths = new Float32List(boneCount);
@@ -111,7 +112,7 @@ class PathConstraint implements Updatable {
         num y = length * bone.c;
 				length = math.sqrt(x * x + y * y);
 				if (scale) lengths[i] = length;
-				spaces[++i] = lengthSpacing ? math.max(0, length + spacing) : spacing;
+        spaces[++i] = lengthSpacing ? math.max(0.0, length + spacing) : spacing;
 			}
 		} else {
 			for (int i = 1; i < spacesCount; i++) {
@@ -131,12 +132,12 @@ class PathConstraint implements Updatable {
     num boneY = positions[1];
     num offsetRotation = data.offsetRotation;
 		bool tip = rotateMode == RotateMode.chain && offsetRotation == 0;
-		num p = 3.0;
-		for (int i = 0; i < boneCount; i++, p += 3.0) {
+		int p = 3;
+		for (int i = 0; i < boneCount; i++, p += 3) {
 			Bone bone = bones[i];
 			bone._worldX += (boneX - skeletonX - bone.worldX) * translateMix;
 			bone._worldY += (boneY - skeletonY - bone.worldY) * translateMix;
-			num x = positions[p];
+			num x = positions[p + 0];
       num y = positions[p + 1];
       num dx = x - boneX;
       num dy = y - boneY;

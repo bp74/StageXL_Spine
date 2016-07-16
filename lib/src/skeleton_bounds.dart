@@ -80,6 +80,11 @@ class SkeletonBounds {
         if (vertices == null) vertices = new Float32List(verticesLength);
         boundingBox.computeWorldVertices(slot, vertices);
 
+        for(int i = 0; i < verticesLength - 1; i += 2) {
+          // flipY
+          vertices[i + 1] = 0.0 - vertices[i + 1];
+        }
+
         boundingBoxes.add(boundingBox);
         verticesList.add(vertices);
       }

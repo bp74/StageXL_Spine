@@ -121,7 +121,7 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
     for (int i = 0, o = 0; i <= worldVertices.length - 2; i += 2, o += 4) {
       _vxList[o + 0] = posX + worldVertices[i + 0];
-      _vxList[o + 1] = posY + worldVertices[i + 1];
+      _vxList[o + 1] = posY - worldVertices[i + 1];
     }
 
     return _vxList;

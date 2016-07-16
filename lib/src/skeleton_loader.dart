@@ -202,9 +202,9 @@ class SkeletonLoader {
       var rotateMode = _getString(constraintMap, "rotateMode", "tangent");
 
       pathConstraintData.target = target;
-      pathConstraintData.positionMode = PositionMode.values.firstWhere((e) => e == positionMode);
-      pathConstraintData.spacingMode = SpacingMode.values.firstWhere((e) => e == spacingMode);
-      pathConstraintData.rotateMode = RotateMode.values.firstWhere((e) => e == rotateMode);
+      pathConstraintData.positionMode = PositionMode.values.firstWhere((e) => e.toString().endsWith(positionMode));
+      pathConstraintData.spacingMode = SpacingMode.values.firstWhere((e) => e.toString().endsWith(spacingMode));
+      pathConstraintData.rotateMode = RotateMode.values.firstWhere((e) => e.toString().endsWith(rotateMode));
       pathConstraintData.offsetRotation = _getDouble(constraintMap, "rotation", 0.0);
       pathConstraintData.position = _getDouble(constraintMap, "position", 0.0);
       pathConstraintData.spacing = _getDouble(constraintMap, "spacing", 0.0);
@@ -588,6 +588,7 @@ class SkeletonLoader {
         if (timelineName == "position" || timelineName == "spacing") {
 
           PathConstraintPositionTimeline pathTimeline;
+
           if (timelineName == "spacing") {
             pathTimeline = new PathConstraintSpacingTimeline(valueMaps.length);
           } else {
@@ -599,7 +600,8 @@ class SkeletonLoader {
 
           for (Map valueMap in valueMaps) {
             num value = _getDouble(valueMap, timelineName, 0.0);
-            pathTimeline.setFrame(frameIndex, valueMap["time"], value);
+            num time = _getDouble(valueMap, "time", 0.0);
+            pathTimeline.setFrame(frameIndex, time, value);
             _readCurve(valueMap, pathTimeline, frameIndex);
             frameIndex++;
           }
