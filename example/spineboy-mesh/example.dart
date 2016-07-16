@@ -21,7 +21,7 @@ Future main() async {
   // load "spineboy" skeleton resources
 
   var resourceManager = new ResourceManager();
-  resourceManager.addTextFile("spineboy", "spine/spineboy-hoverboard.json");
+  resourceManager.addTextFile("spineboy", "spine/spineboy-hover.json");
   //resourceManager.addTextureAtlas("spineboy", "atlas1/spineboy-hoverboard.atlas", TextureAtlasFormat.LIBGDX);
   resourceManager.addTextureAtlas("spineboy", "atlas2/spineboy-hoverboard.json", TextureAtlasFormat.JSONARRAY);
   await resourceManager.load();

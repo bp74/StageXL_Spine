@@ -21,7 +21,7 @@ Future main() async {
   // load "goblins-ffd" skeleton resources
 
   var resourceManager = new ResourceManager();
-  resourceManager.addTextFile("goblins-ffd", "spine/goblins-ffd.json");
+  resourceManager.addTextFile("goblins-ffd", "spine/goblins-mesh.json");
   //resourceManager.addTextureAtlas("goblins-ffd", "atlas1/goblins-ffd.atlas", TextureAtlasFormat.LIBGDX);
   resourceManager.addTextureAtlas("goblins-ffd", "atlas2/goblins-ffd.json", TextureAtlasFormat.JSONARRAY);
   await resourceManager.load();

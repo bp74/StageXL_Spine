@@ -30,7 +30,7 @@ Future main() async {
   resourceManager.addTextFile("raptor-atlas", "atlas/raptor.atlas");
   resourceManager.addTextFile("speedy-spine", "spine/speedy.json");
   resourceManager.addTextFile("speedy-atlas", "atlas/speedy.atlas");
-  resourceManager.addTextFile("spineboy-hoverboard-spine", "spine/spineboy-hoverboard.json");
+  resourceManager.addTextFile("spineboy-hoverboard-spine", "spine/spineboy-hover.json");
   resourceManager.addTextFile("spineboy-hoverboard-atlas", "atlas/spineboy-hoverboard.atlas");
   await resourceManager.load();
 
