@@ -197,14 +197,14 @@ class SkeletonLoader {
       var target = skeletonData.findSlot(targetName);
       if (target == null) throw new StateError("Path target slot not found: $targetName");
 
-      var positionMode = _getString(constraintMap, "positionMode", "percent");
-      var spacingMode = _getString(constraintMap, "spacingMode", "length");
-      var rotateMode = _getString(constraintMap, "rotateMode", "tangent");
+      var positionMode = "PositionMode." + _getString(constraintMap, "positionMode", "percent");
+      var spacingMode = "SpacingMode." + _getString(constraintMap, "spacingMode", "length");
+      var rotateMode = "RotateMode." + _getString(constraintMap, "rotateMode", "tangent");
 
       pathConstraintData.target = target;
-      pathConstraintData.positionMode = PositionMode.values.firstWhere((e) => e.toString().endsWith(positionMode));
-      pathConstraintData.spacingMode = SpacingMode.values.firstWhere((e) => e.toString().endsWith(spacingMode));
-      pathConstraintData.rotateMode = RotateMode.values.firstWhere((e) => e.toString().endsWith(rotateMode));
+      pathConstraintData.positionMode = PositionMode.values.firstWhere((e) => e.toString() == positionMode);
+      pathConstraintData.spacingMode = SpacingMode.values.firstWhere((e) => e.toString() == spacingMode);
+      pathConstraintData.rotateMode = RotateMode.values.firstWhere((e) => e.toString() == rotateMode);
       pathConstraintData.offsetRotation = _getDouble(constraintMap, "rotation", 0.0);
       pathConstraintData.position = _getDouble(constraintMap, "position", 0.0);
       pathConstraintData.spacing = _getDouble(constraintMap, "spacing", 0.0);
@@ -276,8 +276,8 @@ class SkeletonLoader {
 
     name = _getString(map, "name", name);
 
-    var typeName = _getString(map, "type", "region");
-    var type = AttachmentType.values.firstWhere((e) => e.toString().endsWith(typeName));
+    var typeName = "AttachmentType." + _getString(map, "type", "region");
+    var type = AttachmentType.values.firstWhere((e) => e.toString() == typeName);
     var path = _getString(map, "path", name);
 
     switch (type) {
