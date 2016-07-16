@@ -42,22 +42,27 @@ class ScaleTimeline extends TranslateTimeline {
 
     Bone bone = skeleton.bones[boneIndex];
 
-    if (time >= frames[frames.length - 3]) { // Time is after last frame.
-      bone.scaleX += (bone.data.scaleX * frames[frames.length - 2] - bone.scaleX) * alpha;
-      bone.scaleY += (bone.data.scaleY * frames[frames.length - 1] - bone.scaleY) * alpha;
+    if (time >= frames[frames.length - TranslateTimeline._ENTRIES]) { // Time is after last frame.
+      bone.scaleX += (bone.data.scaleX * frames[frames.length + TranslateTimeline._PREV_X] - bone.scaleX) * alpha;
+      bone.scaleY += (bone.data.scaleY * frames[frames.length + TranslateTimeline._PREV_Y] - bone.scaleY) * alpha;
       return;
     }
 
     // Interpolate between the previous frame and the current frame.
 
-    int frameIndex = Animation.binarySearch(frames, time, 3);
-    num prevFrameX = frames[frameIndex - 2];
-    num prevFrameY = frames[frameIndex - 1];
-    num frameTime = frames[frameIndex];
-    num percent = 1 - (time - frameTime) / (frames[frameIndex + TranslateTimeline._PREV_FRAME_TIME] - frameTime);
-    percent = getCurvePercent(frameIndex ~/ 3 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
+    int frame = Animation.binarySearch(frames, time, TranslateTimeline._ENTRIES);
+    num prevTime = frames[frame + TranslateTimeline._PREV_TIME];
+    num prevX = frames[frame + TranslateTimeline._PREV_X];
+    num prevY = frames[frame + TranslateTimeline._PREV_Y];
+    num frameTime = frames[frame + TranslateTimeline._TIME];
 
-    bone.scaleX += (bone.data.scaleX * (prevFrameX + (frames[frameIndex + TranslateTimeline._FRAME_X] - prevFrameX) * percent) - bone.scaleX) * alpha;
-    bone.scaleY += (bone.data.scaleY * (prevFrameY + (frames[frameIndex + TranslateTimeline._FRAME_Y] - prevFrameY) * percent) - bone.scaleY) * alpha;
+    num percent = getCurvePercent(
+        frame ~/ TranslateTimeline._ENTRIES - 1,
+        1.0 - (time - frameTime) / (prevTime - frameTime));
+
+    num x = frames[frame + TranslateTimeline._X];
+    num y = frames[frame + TranslateTimeline._Y];
+    bone.scaleX += (bone.data.scaleX * (prevX + (x - prevX) * percent) - bone.scaleX) * alpha;
+    bone.scaleY += (bone.data.scaleY * (prevY + (y - prevY) * percent) - bone.scaleY) * alpha;
   }
 }

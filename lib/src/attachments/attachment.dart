@@ -44,13 +44,6 @@ class Attachment {
 
 //-----------------------------------------------------------------------------
 
-abstract class FfdAttachment extends Attachment {
-  FfdAttachment(String name) : super(name);
-  bool applyFFD(Attachment sourceAttachment);
-}
-
-//-----------------------------------------------------------------------------
-
 abstract class _RenderAttachment {
   Int16List get ixList;
   BitmapData get bitmapData;

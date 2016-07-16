@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.3
- *
+ * 
  * Copyright (c) 2013-2015, Esoteric Software
  * All rights reserved.
- *
+ * 
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to use, install, execute and perform the Spine
  * Runtimes Software (the "Software") and derivative works solely for personal
@@ -16,7 +16,7 @@
  * or other intellectual property or proprietary rights notices on or in the
  * Software, including any copy thereof. Redistributions in binary or source
  * form must include this license and terms.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -31,57 +31,62 @@
 
 part of stagexl_spine;
 
-class IkConstraintTimeline extends CurveTimeline {
+class PathConstraintMixTimeline extends CurveTimeline {
 
-  static const int _ENTRIES = 3;
-  static const int _PREV_TIME = -3;
-  static const int _PREV_MIX = -2;
-  static const int _PREV_BEND_DIRECTION = -1;
+	static const int _ENTRIES = 3;
+	static const int _PREV_TIME = -3;
+  static const int _PREV_ROTATE = -2;
+  static const int _PREV_TRANSLATE = -1;
   static const int _TIME = 0;
-  static const int _MIX = 1;
-  static const int _BEND_DIRECTION = 2;
+	static const int _ROTATE = 1;
+  static const int _TRANSLATE = 2;
 
-  final Float32List frames;  // time, mix, bendDirection, ...
-  int ikConstraintIndex = 0;
+	int pathConstraintIndex = 0;
+	
+	final Float32List frames; // time, rotate mix, translate mix, ...
 
-  IkConstraintTimeline(int frameCount) : super(frameCount),
-    frames = new Float32List(frameCount * _ENTRIES);
+	PathConstraintMixTimeline (int frameCount)
+      : frames = new Float32List(frameCount * _ENTRIES),
+        super(frameCount);
 
-  /// Sets the time, mix and bend direction of the specified keyframe.
+	/// Sets the time and mixes of the specified keyframe.
 
-  void setFrame (int frameIndex, num time, num mix, int bendDirection) {
-    frameIndex *= _ENTRIES;
-    frames[frameIndex + _TIME] = time;
-    frames[frameIndex + _MIX] = mix;
-    frames[frameIndex + _BEND_DIRECTION] = bendDirection.toDouble();
-  }
+  void setFrame(int frameIndex, num time, num rotateMix, num translateMix) {
+		frameIndex *= _ENTRIES;
+		frames[frameIndex + _TIME] = time;
+		frames[frameIndex + _ROTATE] = rotateMix;
+		frames[frameIndex + _TRANSLATE] = translateMix;
+	}
 
-  @override
+	@override
   void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
-    IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
+    PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
 
-    if (time >= frames[frames.length - _ENTRIES]) {
-      // Time is after last frame.
-      constraint.mix += (frames[frames.length + _PREV_MIX] - constraint.mix) * alpha;
-      constraint.bendDirection = frames[frames.length + _PREV_BEND_DIRECTION].round();
-      return;
-    }
+		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
+			int i = frames.length;
+			constraint.rotateMix += (frames[i + _PREV_ROTATE] - constraint.rotateMix) * alpha;
+			constraint.translateMix += (frames[i + _PREV_TRANSLATE] - constraint.translateMix) * alpha;
+			return;
+		}
 
-    // Interpolate between the previous frame and the current frame.
+		// Interpolate between the previous frame and the current frame.
 
-    int frame = Animation.binarySearch(frames, time, _ENTRIES);
+		int frame = Animation.binarySearch(frames, time, _ENTRIES);
     num prevTime = frames[frame + _PREV_TIME];
-    num prevMix = frames[frame + _PREV_MIX];
+		num prevRotate = frames[frame + _PREV_ROTATE];
+		num prevTranslate = frames[frame + _PREV_TRANSLATE];
     num frameTime = frames[frame + _TIME];
-    num frameMix = frames[frame + _MIX];
-    num percent = getCurvePercent(
+    num frameRotate = frames[frame + _ROTATE];
+    num frameTranslate = frames[frame + _TRANSLATE];
+
+		num percent = getCurvePercent(
         frame ~/ _ENTRIES - 1,
         1.0 - (time - frameTime) / (prevTime - frameTime));
 
-    constraint.mix += (prevMix + (frameMix - prevMix) * percent - constraint.mix) * alpha;
-    constraint.bendDirection = frames[frame + _PREV_BEND_DIRECTION].toInt();
-  }
+		constraint.rotateMix += (prevRotate + (frameRotate - prevRotate) * percent - constraint.rotateMix) * alpha;
+		constraint.translateMix += (prevTranslate + (frameTranslate - prevTranslate) * percent - constraint.translateMix) * alpha;
+	}
 }

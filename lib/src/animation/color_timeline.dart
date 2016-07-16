@@ -33,11 +33,17 @@ part of stagexl_spine;
 
 class ColorTimeline extends CurveTimeline {
 
-  static const int _FRAME_TIME = 0;
-  static const int _FRAME_R = 1;
-  static const int _FRAME_G = 2;
-  static const int _FRAME_B = 3;
-  static const int _FRAME_A = 4;
+  static const int _ENTRIES = 5;
+  static const int _PREV_TIME = -5;
+  static const int _PREV_R = -4;
+  static const int _PREV_G = -3;
+  static const int _PREV_B = -2;
+  static const int _PREV_A = -1;
+  static const int _TIME = 0;
+  static const int _R = 1;
+  static const int _G = 2;
+  static const int _B = 3;
+  static const int _A = 4;
 
   final Float32List frames; // time, r, g, b, a, ...
   int slotIndex = 0;
@@ -49,59 +55,47 @@ class ColorTimeline extends CurveTimeline {
   /// Sets the time and value of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, num r, num g, num b, num a) {
-    frameIndex *= 5;
-    frames[frameIndex + 0] = time.toDouble();
-    frames[frameIndex + 1] = r.toDouble();
-    frames[frameIndex + 2] = g.toDouble();
-    frames[frameIndex + 3] = b.toDouble();
-    frames[frameIndex + 4] = a.toDouble();
+    frameIndex *= _ENTRIES;
+    frames[frameIndex + _TIME] = time.toDouble();
+    frames[frameIndex + _R] = r.toDouble();
+    frames[frameIndex + _G] = g.toDouble();
+    frames[frameIndex + _B] = b.toDouble();
+    frames[frameIndex + _A] = a.toDouble();
   }
 
   @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    num r, g, b, a;
+    if (time < frames[0 + _TIME]) return; // Time is before first frame.
 
-    if (time < frames[0 + _FRAME_TIME]) {
-      return; // Time is before first frame.
-    }
+    num r = 0.0, g = 0.0, b = 0.0, a = 0.0, t = 0.0;
 
-    // The following code contains dart2js_hints
-
-    int lastFrameIndex = frames.length - 5;
-    if (lastFrameIndex < 0) throw new RangeError("");
-
-    if (time >= frames[lastFrameIndex]) {
+    if (time >= frames[frames.length + _PREV_TIME]) {
 
       // Time is after last frame.
-
-      r = frames[lastFrameIndex + _FRAME_R];
-      g = frames[lastFrameIndex + _FRAME_G];
-      b = frames[lastFrameIndex + _FRAME_B];
-      a = frames[lastFrameIndex + _FRAME_A];
+      r = frames[frames.length + _PREV_R];
+      g = frames[frames.length + _PREV_G];
+      b = frames[frames.length + _PREV_B];
+      a = frames[frames.length + _PREV_A];
 
     } else {
 
       // Interpolate between the previous frame and the current frame.
 
-      int frameIndex = Animation.binarySearch(frames, time, 5);
-      if (frameIndex > frames.length - 5) throw new RangeError("");
-      if (frameIndex < 5) throw new RangeError("");
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      t = frames[frame + _PREV_TIME];
+      r = frames[frame + _PREV_R];
+      g = frames[frame + _PREV_G];
+      b = frames[frame + _PREV_B];
+      a = frames[frame + _PREV_A];
 
-      num prevFrameTime = frames[frameIndex - 5];
-      num prevFrameR    = frames[frameIndex - 4];
-      num prevFrameG    = frames[frameIndex - 3];
-      num prevFrameB    = frames[frameIndex - 2];
-      num prevFrameA    = frames[frameIndex - 1];
-      num frameTime     = frames[frameIndex - 0];
+      num ft = frames[frame + _TIME];
+      num p = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - ft) / (t - ft));
 
-      num percent = 1 - (time - frameTime) / (prevFrameTime - frameTime);
-      percent = getCurvePercent(frameIndex ~/ 5 - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
-
-      r = prevFrameR + (frames[frameIndex + _FRAME_R] - prevFrameR) * percent;
-      g = prevFrameG + (frames[frameIndex + _FRAME_G] - prevFrameG) * percent;
-      b = prevFrameB + (frames[frameIndex + _FRAME_B] - prevFrameB) * percent;
-      a = prevFrameA + (frames[frameIndex + _FRAME_A] - prevFrameA) * percent;
+      r += (frames[frame + _R] - r) * p;
+      g += (frames[frame + _G] - g) * p;
+      b += (frames[frame + _B] - b) * p;
+      a += (frames[frame + _A] - a) * p;
     }
 
     Slot slot = skeleton.slots[slotIndex];

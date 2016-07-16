@@ -36,25 +36,27 @@ class Bone implements Updatable {
   final BoneData data;
   final Skeleton skeleton;
   final Bone parent;
+  final List<Bone> children = new List<Bone>();
 
   num x = 0.0;
   num y = 0.0;
+  num rotation = 0.0;
   num scaleX = 0.0;
   num scaleY = 0.0;
-  num rotation = 0.0;
-  num appliedScaleX = 0.0;
-  num appliedScaleY = 0.0;
+  num shearX = 0.0;
+  num shearY = 0.0;
   num appliedRotation = 0.0;
 
   num _a = 1.0;
   num _b = 0.0;
   num _c = 0.0;
   num _d = 1.0;
-
   num _worldX = 0.0;
   num _worldY = 0.0;
   num _worldSignX = 0.0;
   num _worldSignY = 0.0;
+
+  bool _sorted = false;
 
   Bone(this.data, this.skeleton, this.parent) {
     if (data == null) throw new ArgumentError("data cannot be null.");
@@ -62,35 +64,34 @@ class Bone implements Updatable {
     setToSetupPose();
   }
 
+  /// Same as updateWorldTransform().
+  /// This method exists for Bone to implement Updatable.
+  ///
+  void update() {
+    updateWorldTransformWith(x, y, rotation, scaleX, scaleY, shearX, shearY);
+  }
+
   /// Computes the world SRT using the parent bone and this bone's local SRT.
 
   void updateWorldTransform() {
-    updateWorldTransformWith(x, y, rotation, scaleX, scaleY);
-  }
-
-  /// Same as updateWorldTransform(). This method exists for Bone to implement
-  /// Updatable.
-
-  void update () {
-    updateWorldTransformWith(x, y, rotation, scaleX, scaleY);
+    updateWorldTransformWith(x, y, rotation, scaleX, scaleY, shearX, shearY);
   }
 
   /// Computes the world SRT using the parent bone and the specified local SRT.
 
-  void updateWorldTransformWith(num x, num y, num rotation, num scaleX, num scaleY) {
+  void updateWorldTransformWith(
+      num x, num y, num rotation,
+      num scaleX, num scaleY, num shearX, num shearY) {
 
     this.appliedRotation = rotation;
-    this.appliedScaleX = scaleX;
-    this.appliedScaleY = scaleY;
 
     num deg2rad = math.PI / 180.0;
-    num radians = rotation * deg2rad;
-    num cos = math.cos(radians);
-    num sin = math.sin(radians);
-    num la = cos * scaleX;
-    num lb = -sin * scaleY;
-    num lc = sin * scaleX;
-    num ld = cos * scaleY;
+    num rotationX = deg2rad * (rotation + shearX);
+    num rotationY = deg2rad * (rotation + 90 + shearY);
+    num la = math.cos(rotationX) * scaleX;
+    num lb = math.cos(rotationY) * scaleY;
+    num lc = math.sin(rotationX) * scaleX;
+    num ld = math.sin(rotationY) * scaleY;
 
     if (parent == null) {
       _a = la;
@@ -130,19 +131,14 @@ class Bone implements Updatable {
 
       for (var p = parent; p != null; p = p.parent) {
 
-        radians = p.appliedRotation * deg2rad;
-        cos = math.cos(radians);
-        sin = math.sin(radians);
-
-        num ta = pa * cos + pb * sin;
-        num tb = pb * cos - pa * sin;
-        num tc = pc * cos + pd * sin;
-        num td = pd * cos - pc * sin;
-
-        pa = ta;
-        pb = tb;
-        pc = tc;
-        pd = td;
+        num cos = math.cos(deg2rad * p.appliedRotation);
+        num sin = math.sin(deg2rad * p.appliedRotation);
+        num temp = pa * cos + pb * sin;
+        pb = pb * cos - pa * sin;
+        pa = temp;
+        temp = pc * cos + pd * sin;
+        pd = pd * cos - pc * sin;
+        pc = temp;
 
         if (p.data.inheritRotation == false) break;
       }
@@ -161,23 +157,28 @@ class Bone implements Updatable {
 
       for (var p = parent; p != null; p = p.parent) {
 
-        radians = p.rotation * deg2rad;
-        cos = math.cos(radians);
-        sin = math.sin(radians);
+        num cos = math.cos(deg2rad * p.appliedRotation);
+        num sin = math.sin(deg2rad * p.appliedRotation);
+        num psx = p.scaleX;
+        num psy = p.scaleY;
+        num za = cos * psx;
+        num zb = sin * psy;
+        num zc = sin * psx;
+        num zd = cos * psy;
+        num temp = pa * za + pb * zc;
+        pb = pb * zd - pa * zb;
+        pa = temp;
+        temp = pc * za + pd * zc;
+        pd = pd * zd - pc * zb;
+        pc = temp;
 
-        num ta = p.appliedScaleX * (pa * cos + pb * sin);
-        num tb = p.appliedScaleY * (pb * cos - pa * sin);
-        num tc = p.appliedScaleX * (pc * cos + pd * sin);
-        num td = p.appliedScaleY * (pd * cos - pc * sin);
-
-        if (p.appliedScaleX < 0) radians = -radians;
-        cos = math.cos(-radians);
-        sin = math.sin(-radians);
-
-        pa = ta * cos + tb * sin;
-        pb = tb * cos - ta * sin;
-        pc = tc * cos + td * sin;
-        pd = td * cos - tc * sin;
+        if (psx >= 0) sin = -sin;
+        temp = pa * cos + pb * sin;
+        pb = pb * cos - pa * sin;
+        pa = temp;
+        temp = pc * cos + pd * sin;
+        pd = pd * cos - pc * sin;
+        pc = temp;
 
         if (p.data.inheritScale == false) break;
       }
@@ -199,9 +200,11 @@ class Bone implements Updatable {
   void setToSetupPose() {
     x = this.data.x;
     y = this.data.y;
+    rotation = this.data.rotation;
     scaleX = this.data.scaleX;
     scaleY = this.data.scaleY;
-    rotation = this.data.rotation;
+    shearX = this.data.shearX;
+    shearY = this.data.shearY;
   }
 
   num get a => _a;
@@ -218,13 +221,111 @@ class Bone implements Updatable {
   num get worldScaleX => math.sqrt(_a * _a + _b * _b) * _worldSignX;
   num get worldScaleY => math.sqrt(_c * _c + _d * _d) * _worldSignY;
 
+  num worldToLocalRotationX() {
+    Bone parent = this.parent;
+    if (parent == null) return rotation;
+    num pa = parent.a;
+    num pb = parent.b;
+    num pc = parent.c;
+    num pd = parent.d;
+    num a = this.a;
+    num c = this.c;
+    num rad2deg = 180 / math.PI;
+    return math.atan2(pa * c - pc * a, pd * a - pb * c) * rad2deg;
+  }
+
+  num worldToLocalRotationY() {
+    Bone parent = this.parent;
+    if (parent == null) return rotation;
+    num pa = parent.a;
+    num pb = parent.b;
+    num pc = parent.c;
+    num pd = parent.d;
+    num b = this.b;
+    num d = this.d;
+    num rad2deg = 180 / math.PI;
+    return math.atan2(pa * d - pc * b, pd * b - pb * d) * rad2deg;
+  }
+
+  void rotateWorld (num degrees) {
+    num a = this.a;
+    num b = this.b;
+    num c = this.c;
+	  num d = this.d;
+	  num deg2rad = math.PI / 180.0;
+    num cos = math.cos(deg2rad * degrees);
+	  num	sin = math.sin(deg2rad * degrees);
+    _a = cos * a - sin * c;
+    _b = cos * b - sin * d;
+    _c = sin * a + cos * c;
+    _d = sin * b + cos * d;
+  }
+
+  /// Computes the local transform from the world transform. 
+  /// This can be useful to perform processing on the local transform
+  /// after the world transform has been modified directly (eg, by a constraint).
+  ///
+  /// Some redundant information is lost by the world transform, such as -1,-1 scale 
+  /// versus 180 rotation. The computed local transform values may differ from the 
+  /// original values but are functionally the same.
+  
+  void updateLocalTransform() {
+
+    Bone parent = this.parent;
+    num rad2deg = 180 / math.PI;
+
+    if (parent == null) {
+      x = worldX;
+      y = worldY;
+      rotation = math.atan2(c, a) * rad2deg;
+      scaleX = math.sqrt(a * a + c * c);
+      scaleY = math.sqrt(b * b + d * d);
+      num det = a * d - b * c;
+      shearX = 0;
+      shearY = math.atan2(a * b + c * d, det) * rad2deg;
+      return;
+    }
+
+    num pa = parent.a;
+    num	pb = parent.b;
+    num pc = parent.c;
+    num pd = parent.d;
+    num pid = 1.0 / (pa * pd - pb * pc);
+    num dx = worldX - parent.worldX;
+    num dy = worldY - parent.worldY;
+    x = (dx * pd * pid - dy * pb * pid);
+    y = (dy * pa * pid - dx * pc * pid);
+    num ia = pid * pd;
+    num id = pid * pa;
+    num ib = pid * pb;
+    num ic = pid * pc;
+    num ra = ia * a - ib * c;
+    num rb = ia * b - ib * d;
+    num rc = id * c - ic * a;
+    num rd = id * d - ic * b;
+    shearX = 0;
+    scaleX = math.sqrt(ra * ra + rc * rc);
+    if (scaleX > 0.0001) {
+      num det = ra * rd - rb * rc;
+      scaleY = det / scaleX;
+      shearY = math.atan2(ra * rb + rc * rd, det) * rad2deg;
+      rotation = math.atan2(rc, ra) * rad2deg;
+    } else {
+      scaleX = 0.0;
+      scaleY = math.sqrt(rb * rb + rd * rd);
+      shearY = 0.0;
+      rotation = 90.0 - math.atan2(rd, rb) * rad2deg;
+    }
+    appliedRotation = rotation;
+  }
+
   void worldToLocal (Float32List world) {
-    num x = world[0] - _worldX;
-    num y = world[1] - _worldY;
     num a = _a;
     num b = _b;
     num c = _c;
     num d = _d;
+    num x = world[0] - _worldX;
+    num y = world[1] - _worldY;
     world[0] = (x * d - y * b) / (a * d - b * c);
     world[1] = (y * a - x * c) / (a * d - b * c);
   }

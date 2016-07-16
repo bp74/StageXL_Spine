@@ -33,6 +33,7 @@ part of stagexl_spine;
 
 class BoneData {
 
+  final int index;
   final String name;
   final BoneData parent;
 
@@ -42,10 +43,13 @@ class BoneData {
   num rotation = 0.0;
   num scaleX = 1.0;
   num scaleY = 1.0;
-  bool inheritScale = true;
+  num shearX = 0.0;
+  num shearY = 0.0;
   bool inheritRotation = true;
+  bool inheritScale = true;
 
-  BoneData(this.name, this.parent) {
+  BoneData(this.index, this.name, this.parent) {
+    if (index < 0) throw new ArgumentError("index must be >= 0");
     if (name == null) throw new ArgumentError("name cannot be null.");
   }
 

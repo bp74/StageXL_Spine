@@ -35,10 +35,11 @@ class IkConstraint implements Updatable {
 
   final List<Bone> bones = new List<Bone>();
   final IkConstraintData data;
-
   Bone target = null;
-  int bendDirection = 0;
+
   num mix = 1.0;
+  int bendDirection = 0;
+  int level = 0;
 
   IkConstraint(this.data, Skeleton skeleton) {
 
@@ -59,13 +60,14 @@ class IkConstraint implements Updatable {
     update();
   }
 
-  void update () {
+  void update() {
     switch (bones.length) {
       case 1:
         apply1(bones[0], target.worldX, target.worldY, mix);
         break;
       case 2:
-        apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
+        apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection,
+            mix);
         break;
     }
   }
@@ -77,13 +79,28 @@ class IkConstraint implements Updatable {
   /// coordinate system.
 
   static void apply1(Bone bone, num targetX, num targetY, num alpha) {
-    num parentRotation = bone.parent == null ? 0 : bone.parent.worldRotationX;
+
+    Bone pp = bone.parent;
     num rad2deg = 180 / math.PI;
-    num rotation = bone.rotation;
-    num rotationIK = math.atan2(targetY - bone.worldY, targetX - bone.worldX) * rad2deg - parentRotation;
-    if (bone.worldSignX != bone.worldSignY) rotationIK = 360 - rotationIK;
-    if (rotationIK > 180) rotationIK -= 360; else if (rotationIK < -180) rotationIK += 360;
-    bone.updateWorldTransformWith(bone.x, bone.y, rotation + (rotationIK - rotation) * alpha, bone.appliedScaleX, bone.appliedScaleY);
+    num id = 1.0 / (pp.a * pp.d - pp.b * pp.c);
+    num x = targetX - pp.worldX;
+    num y = targetY - pp.worldY;
+    num tx = (x * pp.d - y * pp.b) * id - bone.x;
+    num ty = (y * pp.a - x * pp.c) * id - bone.y;
+
+    num rotationIK = math.atan2(ty, tx) * rad2deg - bone.shearX - bone.rotation;
+    if (bone.scaleX < 0) rotationIK += 180;
+    if (rotationIK > 180) {
+      rotationIK -= 360;
+    } else if (rotationIK < -180) {
+      rotationIK += 360;
+    }
+
+    bone.updateWorldTransformWith(
+        bone.x, bone.y,
+        bone.rotation + rotationIK * alpha,
+        bone.scaleX, bone.scaleY,
+        bone.shearX, bone.shearY);
   }
 
   /// Adjusts the parent and child bone rotations so the tip of the
@@ -94,124 +111,104 @@ class IkConstraint implements Updatable {
 
   static void apply2(Bone parent, Bone child, num targetX, num targetY, int bendDir, num alpha) {
 
-    if (alpha == 0) return;
+    if (alpha == 0) {
+      child.updateWorldTransform();
+      return;
+    }
 
     num px = parent.x;
     num py = parent.y;
-    num psx = parent.appliedScaleX;
-    num psy = parent.appliedScaleY;
-
-    int o1 = 0;
-    int o2 = 0;
-    int s2 = 0;
+    num psx = parent.scaleX;
+    num psy = parent.scaleY;
+    num csx = child.scaleX;
+    num rad2deg = 180 / math.PI;
+    int os1 = 0, os2 = 0, s2 = 0;
 
     if (psx < 0) {
-      psx = -psx;
-      o1 = 180;
-      s2 = -1;
+      psx = -psx; os1 = 180; s2 = -1;
     } else {
-      o1 = 0;
-      s2 = 1;
+      os1 = 0; s2 = 1;
     }
 
     if (psy < 0) {
-      psy = -psy;
-      s2 = -s2;
-    }
-
-    num cx = child.x;
-    num cy = child.y;
-    num csx = child.appliedScaleX;
-    bool u = (psx - psy).abs() <= 0.0001;
-
-    if (!u && cy != 0) {
-      child._worldX = parent.a * cx + parent.worldX;
-      child._worldY = parent.c * cx + parent.worldY;
-      cy = 0;
+      psy = -psy; s2 = -s2;
     }
 
     if (csx < 0) {
-      csx = -csx;
-      o2 = 180;
+      csx = -csx; os2 = 180;
     } else {
-      o2 = 0;
+      os2 = 0;
+    }
+
+    num cx = child.x;
+    num cy = 0.0;
+    num cwx = 0.0;
+    num cwy = 0.0;
+    num a = parent.a;
+    num b = parent.b;
+    num c = parent.c;
+    num d = parent.d;
+
+    bool u = (psx - psy).abs() <= 0.0001;
+    if (!u) {
+      cy = 0;
+      cwx = a * cx + parent.worldX;
+      cwy = c * cx + parent.worldY;
+    } else {
+      cy = child.y;
+      cwx = a * cx + b * cy + parent.worldX;
+      cwy = c * cx + d * cy + parent.worldY;
     }
 
     Bone pp = parent.parent;
-    num tx = 0.0;
-    num ty = 0.0;
-    num dx = 0.0;
-    num dy = 0.0;
-
-    if (pp == null) {
-
-      tx = targetX - px;
-      ty = targetY - py;
-      dx = child.worldX - px;
-      dy = child.worldY - py;
-
-    } else {
-
-      num ppa = pp.a;
-      num ppb = pp.b;
-      num ppc = pp.c;
-      num ppd = pp.d;
-
-      num invDet = 1 / (ppa * ppd - ppb * ppc);
-      num wx = pp.worldX;
-      num wy = pp.worldY;
-      num twx = targetX - wx;
-      num twy = targetY - wy;
-      tx = (twx * ppd - twy * ppb) * invDet - px;
-      ty = (twy * ppa - twx * ppc) * invDet - py;
-      twx = child.worldX - wx;
-      twy = child.worldY - wy;
-      dx = (twx * ppd - twy * ppb) * invDet - px;
-      dy = (twy * ppa - twx * ppc) * invDet - py;
-    }
-
+    a = pp.a;
+    b = pp.b;
+    c = pp.c;
+    d = pp.d;
+    num id = 1.0 / (a * d - b * c);
+    num x = targetX - pp.worldX;
+    num y = targetY - pp.worldY;
+    num tx = (x * d - y * b) * id - px;
+    num ty = (y * a - x * c) * id - py;
+    x = cwx - pp.worldX;
+    y = cwy - pp.worldY;
+    num dx = (x * d - y * b) * id - px;
+    num dy = (y * a - x * c) * id - py;
     num l1 = math.sqrt(dx * dx + dy * dy);
     num l2 = child.data.length * csx;
     num a1 = 0.0;
     num a2 = 0.0;
 
-    outer:
-
-    if (u) {
-
-      l2 = l2 * psx;
+    outer: if (u) {
+      l2 *= psx;
       num cos = (tx * tx + ty * ty - l1 * l1 - l2 * l2) / (2 * l1 * l2);
       if (cos < -1) cos = -1; else if (cos > 1) cos = 1;
       a2 = math.acos(cos) * bendDir;
-      num ad = l1 + l2 * cos;
-      num o = l2 * math.sin(a2);
-      a1 = math.atan2(ty * ad - tx * o, tx * ad + ty * o);
-
+      a = l1 + l2 * cos;
+      b = l2 * math.sin(a2);
+      a1 = math.atan2(ty * a - tx * b, tx * a + ty * b);
     } else {
-
-      num a = psx * l2;
-      num b = psy * l2;
-      num ta = math.atan2(ty, tx);
+      a = psx * l2;
+      b = psy * l2;
       num aa = a * a;
       num bb = b * b;
-      num ll = l1 * l1;
       num dd = tx * tx + ty * ty;
-      num c0 = bb * ll + aa * dd - aa * bb;
+      num ta = math.atan2(ty, tx);
+      c = bb * l1 * l1 + aa * dd - aa * bb;
       num c1 = -2 * bb * l1;
       num c2 = bb - aa;
-      num d = c1 * c1 - 4 * c2 * c0;
-
+      d = c1 * c1 - 4 * c2 * c;
       if (d >= 0) {
         num q = math.sqrt(d);
         if (c1 < 0) q = -q;
         q = -(c1 + q) / 2;
         num r0 = q / c2;
-        num r1 = c0 / q;
+        num r1 = c / q;
         num r = r0.abs() < r1.abs() ? r0 : r1;
         if (r * r <= dd) {
-          num y1 = math.sqrt(dd - r * r) * bendDir;
-          a1 = ta - math.atan2(y1, r);
-          a2 = math.atan2(y1 / psy, (r - l1) / psx);
+          y = math.sqrt(dd - r * r) * bendDir;
+          a1 = ta - math.atan2(y, r);
+          a2 = math.atan2(y / psy, (r - l1) / psx);
           break outer;
         }
       }
@@ -220,37 +217,37 @@ class IkConstraint implements Updatable {
       num minDist = double.MAX_FINITE;
       num minX = 0.0;
       num minY = 0.0;
-      num maxAngle = 0;
-      num maxDist = 0;
-      num maxX = 0;
-      num maxY= 0;
-      num x = l1 + a;
-      num dist = x * x;
-      if (dist > maxDist) {
+      num maxAngle = 0.0;
+      num maxDist = 0.0;
+      num maxX = 0.0;
+      num maxY = 0.0;
+      x = l1 + a;
+      d = x * x;
+      if (d > maxDist) {
         maxAngle = 0;
-        maxDist = dist;
+        maxDist = d;
         maxX = x;
       }
       x = l1 - a;
-      dist = x * x;
-      if (dist < minDist) {
+      d = x * x;
+      if (d < minDist) {
         minAngle = math.PI;
-        minDist = dist;
+        minDist = d;
         minX = x;
       }
       num angle = math.acos(-a * l1 / (aa - bb));
       x = a * math.cos(angle) + l1;
-      num y = b * math.sin(angle);
-      dist = x * x + y * y;
-      if (dist < minDist) {
+      y = b * math.sin(angle);
+      d = x * x + y * y;
+      if (d < minDist) {
         minAngle = angle;
-        minDist = dist;
+        minDist = d;
         minX = x;
         minY = y;
       }
-      if (dist > maxDist) {
+      if (d > maxDist) {
         maxAngle = angle;
-        maxDist = dist;
+        maxDist = d;
         maxX = x;
         maxY = y;
       }
@@ -264,14 +261,13 @@ class IkConstraint implements Updatable {
     }
 
     num os = math.atan2(cy, cx) * s2;
-    num rad2deg = 180 / math.PI;
-    a1 = (a1 - os) * rad2deg + o1;
-    a2 = (a2 + os) * rad2deg * s2 + o2;
-    if (a1 > 180) a1 -= 360; else if (a1 < -180) a1 += 360;
-    if (a2 > 180) a2 -= 360; else if (a2 < -180) a2 += 360;
     num rotation = parent.rotation;
-    parent.updateWorldTransformWith(px, py, rotation + (a1 - rotation) * alpha, parent.appliedScaleX, parent.appliedScaleY);
+    a1 = (a1 - os) * rad2deg + os1 - rotation;
+    if (a1 > 180) a1 -= 360; else if (a1 < -180) a1 += 360;
+    parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, parent.scaleX, parent.scaleY, 0, 0);
     rotation = child.rotation;
-    child.updateWorldTransformWith(cx, cy, rotation + (a2 - rotation) * alpha, child.appliedScaleX, child.appliedScaleY);
+    a2 = ((a2 + os) * rad2deg - child.shearX) * s2 + os2 - rotation;
+    if (a2 > 180) a2 -= 360; else if (a2 < -180) a2 += 360;
+    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.scaleX, child.scaleY, child.shearX, child.shearY);
   }
 }

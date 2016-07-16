@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.3
- *
+ * 
  * Copyright (c) 2013-2015, Esoteric Software
  * All rights reserved.
- *
+ * 
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to use, install, execute and perform the Spine
  * Runtimes Software (the "Software") and derivative works solely for personal
@@ -16,7 +16,7 @@
  * or other intellectual property or proprietary rights notices on or in the
  * Software, including any copy thereof. Redistributions in binary or source
  * form must include this license and terms.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -30,57 +30,39 @@
  *****************************************************************************/
 
 part of stagexl_spine;
+ 
+class ShearTimeline extends TranslateTimeline {
 
-class Slot {
+	ShearTimeline (int frameCount) : super(frameCount);
 
-  final SlotData data;
-  final Bone bone;
+	@override
+  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+		if (time < frames[0]) return; // Time is before first frame.
 
-  Attachment _attachment = null;
-  num _attachmentTime = 0;
-  Float32List attachmentVertices = new Float32List(0);
+		Bone bone = skeleton.bones[boneIndex];
+		if (time >= frames[frames.length - TranslateTimeline._ENTRIES]) { // Time is after last frame.
+			bone.shearX += (bone.data.shearX + frames[frames.length + TranslateTimeline._PREV_X] - bone.shearX) * alpha;
+			bone.shearY += (bone.data.shearY + frames[frames.length + TranslateTimeline._PREV_Y] - bone.shearY) * alpha;
+			return;
+		}
 
-  Slot(this.data, this.bone) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (bone == null) throw new ArgumentError("bone cannot be null.");
-    setToSetupPose();
-  }
+		// Interpolate between the previous frame and the current frame.
 
-  Skeleton get skeleton => bone.skeleton;
+		int frame = Animation.binarySearch(frames, time, TranslateTimeline._ENTRIES);
+		num prevX = frames[frame + TranslateTimeline._PREV_X];
+		num prevY = frames[frame + TranslateTimeline._PREV_Y];
+    num prevTime = frames[frame + TranslateTimeline._PREV_TIME];
+    num frameX = frames[frame + TranslateTimeline._X];
+    num frameY = frames[frame + TranslateTimeline._Y];
+    num frameTime = frames[frame + TranslateTimeline._TIME];
 
-  Attachment get attachment => _attachment;
+		num percent = getCurvePercent(
+        frame ~/ TranslateTimeline._ENTRIES - 1,
+        1.0 - (time - frameTime) / (prevTime - frameTime));
 
-  void set attachment(Attachment attachment) {
-    if (_attachment == attachment) return;
-    _attachment = attachment;
-    _attachmentTime = bone.skeleton.time;
-    attachmentVertices = new Float32List(0);
-  }
-
-  /// Returns the time since the attachment was set.
-  num get attachmentTime => bone.skeleton.time - _attachmentTime;
-
-  void set attachmentTime(num time) {
-    _attachmentTime = bone.skeleton.time - time;
-  }
-
-  void setToSetupPose() {
-    r = data.r;
-    g = data.g;
-    b = data.b;
-    a = data.a;
-    if (data.attachmentName == null) {
-      attachment = null;
-    } else {
-      _attachment = null;
-      attachment = bone.skeleton.getAttachmentForSlotIndex(data.index, data.attachmentName);
-    }
-  }
-
-  String toString() => data.name;
+		bone.shearX += (bone.data.shearX + (prevX + (frameX - prevX) * percent) - bone.shearX) * alpha;
+		bone.shearY += (bone.data.shearY + (prevY + (frameY - prevY) * percent) - bone.shearY) * alpha;
+	}
 }
+

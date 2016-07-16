@@ -38,8 +38,7 @@ class CurveTimeline implements Timeline {
   static const num _LINEAR = 0.0;
   static const num _STEPPED = 1.0;
   static const num _BEZIER = 2.0;
-  static const int _BEZIER_SEGMENTS = 10;
-  static const int _BEZIER_SIZE = _BEZIER_SEGMENTS * 2 - 1;
+  static const int _BEZIER_SIZE = 10 * 2 - 1;
 
   final Float32List _curves; // type, x, y, ...
 
@@ -66,26 +65,17 @@ class CurveTimeline implements Timeline {
   /// cx1 and cx2 are from 0 to 1, representing the percent of time between
   /// the two keyframes. cy1 and cy2 are the percent of the difference between
   /// the keyframe's values.
-  ///
+
   void setCurve(int frameIndex, num cx1, num cy1, num cx2, num cy2) {
 
-    num subdiv1 = 1 / _BEZIER_SEGMENTS;
-    num subdiv2 = subdiv1 * subdiv1;
-    num subdiv3 = subdiv2 * subdiv1;
-    num pre1 = 3 * subdiv1;
-    num pre2 = 3 * subdiv2;
-    num pre4 = 6 * subdiv2;
-    num pre5 = 6 * subdiv3;
-    num tmp1x = -cx1 * 2 + cx2;
-    num tmp1y = -cy1 * 2 + cy2;
-    num tmp2x = (cx1 - cx2) * 3 + 1;
-    num tmp2y = (cy1 - cy2) * 3 + 1;
-    num dfx = cx1 * pre1 + tmp1x * pre2 + tmp2x * subdiv3;
-    num dfy = cy1 * pre1 + tmp1y * pre2 + tmp2y * subdiv3;
-    num ddfx = tmp1x * pre4 + tmp2x * pre5;
-    num ddfy = tmp1y * pre4 + tmp2y * pre5;
-    num dddfx = tmp2x * pre5;
-    num dddfy = tmp2y * pre5;
+    num tmpx = (-cx1 * 2 + cx2) * 0.03;
+    num tmpy = (-cy1 * 2 + cy2) * 0.03;
+    num dddfx = ((cx1 - cx2) * 3 + 1) * 0.006;
+    num dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
+    num ddfx = tmpx * 2 + dddfx;
+    num ddfy = tmpy * 2 + dddfy;
+    num dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667;
+    num dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
 
     int i = frameIndex * _BEZIER_SIZE;
     _curves[i++] = _BEZIER;
@@ -106,6 +96,9 @@ class CurveTimeline implements Timeline {
   }
 
   num getCurvePercent(int frameIndex, num percent) {
+
+    if (percent < 0.0) percent = 0.0;
+    if (percent > 1.0) percent = 1.0;
 
     int i = frameIndex * _BEZIER_SIZE;
     num type = _curves[i];

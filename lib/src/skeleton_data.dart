@@ -47,6 +47,7 @@ class SkeletonData {
   List<Animation> animations = new List<Animation>();
   List<IkConstraintData> ikConstraints = new List<IkConstraintData>();
   List<TransformConstraintData> transformConstraints = new List<TransformConstraintData>();
+  List<PathConstraintData> pathConstraints = new List<PathConstraintData>();
 
   Skin defaultSkin = null;
 
@@ -115,7 +116,28 @@ class SkeletonData {
     return transformConstraints.firstWhere((t) => t.name == constraintName, orElse: () => null);
   }
 
-  // ---
+  int findTransformConstraintIndex(String constraintName) {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    for (int i = 0; i < this.transformConstraints.length; i++) {
+      if (this.transformConstraints[i].name == constraintName) return i;
+    }
+    return -1;
+  }
+
+  // --- Path constraints.
+
+  PathConstraintData findPathConstraint(String constraintName)  {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    return this.pathConstraints.firstWhere((p) => p.name == constraintName, orElse: () => null);
+  }
+
+  int findPathConstraintIndex(String constraintName) {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    for (int i = 0; i < this.pathConstraints.length; i++) {
+      if (this.pathConstraints[i].name == constraintName) return i;
+    }
+    return -1;
+  }
 
   String toString() => name != null ? name : super.toString();
 

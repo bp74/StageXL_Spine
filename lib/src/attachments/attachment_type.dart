@@ -31,40 +31,11 @@
 
 part of stagexl_spine;
 
-class AttachmentType {
-
-  static const AttachmentType region = const AttachmentType(0, "region");
-  static const AttachmentType regionsequence = const AttachmentType(1, "regionsequence");
-  static const AttachmentType boundingbox = const AttachmentType(2, "boundingbox");
-  static const AttachmentType mesh = const AttachmentType(3, "mesh");
-  static const AttachmentType weightedmesh = const AttachmentType(4, "weightedmesh");
-  static const AttachmentType linkedmesh = const AttachmentType(5, "linkedmesh");
-  static const AttachmentType weightedlinkedmesh = const AttachmentType(6, "weightedlinkedmesh");
-
-  final int ordinal;
-  final String name;
-
-  const AttachmentType(this.ordinal, this.name);
-
-  static AttachmentType get(String name) {
-    switch (name.toLowerCase()) {
-      case "region":
-        return AttachmentType.region;
-      case "regionsequence":
-        return AttachmentType.regionsequence;
-      case "boundingbox":
-        return AttachmentType.boundingbox;
-      case "mesh":
-        return AttachmentType.mesh;
-      case "weightedmesh":
-        return AttachmentType.weightedmesh;
-      case "linkedmesh":
-        return AttachmentType.linkedmesh;
-      case "weightedlinkedmesh":
-        return AttachmentType.weightedlinkedmesh;
-      default:
-        throw new StateError("Unknwon AttachmentType: $name");
-    }
-  }
-
+enum AttachmentType {
+  region,
+  regionsequence,
+  boundingbox,
+  mesh,
+  linkedmesh,
+  path
 }

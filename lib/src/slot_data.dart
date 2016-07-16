@@ -33,6 +33,7 @@ part of stagexl_spine;
 
 class SlotData {
 
+  final int index;
   final String name;
   final BoneData boneData;
 
@@ -44,7 +45,8 @@ class SlotData {
   String attachmentName = null;
   BlendMode blendMode = BlendMode.NORMAL;
 
-  SlotData(this.name, this.boneData) {
+  SlotData(this.index, this.name, this.boneData) {
+    if (index < 0) throw new ArgumentError("index must be >= 0.");
     if (name == null) throw new ArgumentError("name cannot be null.");
     if (boneData == null) throw new ArgumentError("boneData cannot be null.");
   }

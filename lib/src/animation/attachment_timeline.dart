@@ -53,18 +53,11 @@ class AttachmentTimeline implements Timeline {
   @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < this.frames[0]) {
-      if (lastTime > time) apply(skeleton, lastTime, double.MAX_FINITE, null, 0);
-      return;
-    } else if (lastTime > time) {
-      lastTime = -1;
-    }
+    if (time < frames[0]) return; // Time is before first frame.
 
-    int frameIndex = time >= this.frames[this.frames.length - 1]
-      ? this.frames.length - 1
-      : Animation.binarySearch1(this.frames, time) - 1;
-
-    if (this.frames[frameIndex] < lastTime) return;
+    int frameIndex = (time >= frames.last)
+      ? frames.length - 1 // Time is after last frame.
+      : Animation.binarySearch(frames, time, 1) - 1;
 
     String attachmentName = attachmentNames[frameIndex];
     skeleton.slots[slotIndex].attachment = (attachmentName != null)

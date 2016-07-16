@@ -37,13 +37,13 @@ abstract class AttachmentLoader {
   /// @return May be null to not load an attachment.
   RegionAttachment newRegionAttachment(Skin skin, String name, String path);
 
-  /** @return May be null to not load an attachment. */
+  /// @return May be null to not load an attachment.
   MeshAttachment newMeshAttachment(Skin skin, String name, String path);
 
-  /** @return May be null to not load an attachment. */
-  WeightedMeshAttachment newWeightedMeshAttachment(Skin skin, String name, String path);
-
-  /** @return May be null to not load an attachment. */
+  /// @return May be null to not load an attachment.
   BoundingBoxAttachment newBoundingBoxAttachment(Skin skin, String name);
+
+  /// @return May be null to not load an attachment.
+  PathAttachment newPathAttachment(Skin skin, String name);
 
 }

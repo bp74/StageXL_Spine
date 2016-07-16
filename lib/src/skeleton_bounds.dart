@@ -48,8 +48,6 @@ class SkeletonBounds {
   void update(Skeleton skeleton, bool updateAabb) {
 
     List<Slot> slots = skeleton.slots;
-    num x = skeleton.x;
-    num y = skeleton.y;
 
     for(int i = 0; i < verticesList.length; i++) {
       _byteBuffers.add(verticesList[i].buffer);
@@ -67,7 +65,7 @@ class SkeletonBounds {
 
         BoundingBoxAttachment boundingBox = attachment;
         Float32List vertices = null;
-        int verticesLength = boundingBox.vertices.length;
+        int verticesLength = boundingBox.worldVerticesLength;
         int byteBufferLength = verticesLength << 2;
 
         for(int i = 0; i < _byteBuffers.length; i++) {
@@ -80,7 +78,7 @@ class SkeletonBounds {
         }
 
         if (vertices == null) vertices = new Float32List(verticesLength);
-        boundingBox.computeWorldVertices(x, y, slot.bone, vertices);
+        boundingBox.computeWorldVertices(slot, vertices);
 
         boundingBoxes.add(boundingBox);
         verticesList.add(vertices);

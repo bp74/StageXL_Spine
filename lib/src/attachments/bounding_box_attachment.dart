@@ -31,27 +31,10 @@
 
 part of stagexl_spine;
 
-class BoundingBoxAttachment extends Attachment {
+class BoundingBoxAttachment extends VertexAttachment {
 
   Float32List vertices = new Float32List(0);
 
   BoundingBoxAttachment(String name) : super(name);
-
-  void computeWorldVertices(num x, num y, Bone bone, Float32List worldVertices) {
-
-    num ba = bone.a;
-    num bb = bone.b;
-    num bc = bone.c;
-    num bd = bone.d;
-    num bx = bone.worldX + x;
-    num by = bone.worldY + y;
-
-    for (int i = 0; i < this.vertices.length; i += 2) {
-      num px = this.vertices[i + 0];
-      num py = this.vertices[i + 1];
-      worldVertices[i + 0] = 0.0 + px * ba + py * bb + bx;
-      worldVertices[i + 1] = 0.0 - px * bc - py * bd - by;
-    }
-  }
 
 }

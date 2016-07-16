@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.3
- *
+ * 
  * Copyright (c) 2013-2015, Esoteric Software
  * All rights reserved.
- *
+ * 
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to use, install, execute and perform the Spine
  * Runtimes Software (the "Software") and derivative works solely for personal
@@ -16,7 +16,7 @@
  * or other intellectual property or proprietary rights notices on or in the
  * Software, including any copy thereof. Redistributions in binary or source
  * form must include this license and terms.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -31,56 +31,35 @@
 
 part of stagexl_spine;
 
-class Slot {
+class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 
-  final SlotData data;
-  final Bone bone;
+	PathConstraintSpacingTimeline (int frameCount) : super(frameCount);
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+	@override
+  void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha){
 
-  Attachment _attachment = null;
-  num _attachmentTime = 0;
-  Float32List attachmentVertices = new Float32List(0);
+    if (time < frames[0]) return; // Time is before first frame.
 
-  Slot(this.data, this.bone) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (bone == null) throw new ArgumentError("bone cannot be null.");
-    setToSetupPose();
-  }
+    PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
 
-  Skeleton get skeleton => bone.skeleton;
-
-  Attachment get attachment => _attachment;
-
-  void set attachment(Attachment attachment) {
-    if (_attachment == attachment) return;
-    _attachment = attachment;
-    _attachmentTime = bone.skeleton.time;
-    attachmentVertices = new Float32List(0);
-  }
-
-  /// Returns the time since the attachment was set.
-  num get attachmentTime => bone.skeleton.time - _attachmentTime;
-
-  void set attachmentTime(num time) {
-    _attachmentTime = bone.skeleton.time - time;
-  }
-
-  void setToSetupPose() {
-    r = data.r;
-    g = data.g;
-    b = data.b;
-    a = data.a;
-    if (data.attachmentName == null) {
-      attachment = null;
-    } else {
-      _attachment = null;
-      attachment = bone.skeleton.getAttachmentForSlotIndex(data.index, data.attachmentName);
+    if (time >= frames[frames.length - PathConstraintPositionTimeline._ENTRIES]) { // Time is after last frame.
+      int i = frames.length;
+      constraint.spacing += (frames[i + PathConstraintPositionTimeline._PREV_VALUE] - constraint.spacing) * alpha;
+      return;
     }
-  }
 
-  String toString() => data.name;
+		// Interpolate between the previous frame and the current frame.
+
+    int frame = Animation.binarySearch(frames, time, PathConstraintPositionTimeline._ENTRIES);
+    num prevTime = frames[frame + PathConstraintPositionTimeline._PREV_VALUE];
+		num prevValue = frames[frame + PathConstraintPositionTimeline._PREV_VALUE];
+		num frameTime = frames[frame + PathConstraintPositionTimeline._TIME];
+    num frameValue = frames[frame + PathConstraintPositionTimeline._VALUE];
+
+		num percent = getCurvePercent(
+        frame ~/ PathConstraintPositionTimeline._ENTRIES - 1,
+        1.0 - (time - frameTime) / (prevTime - frameTime));
+
+		constraint.spacing += (prevValue + (frameValue - prevValue) * percent - constraint.spacing) * alpha;
+	}
 }

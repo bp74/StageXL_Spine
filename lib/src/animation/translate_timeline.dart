@@ -33,9 +33,18 @@ part of stagexl_spine;
 
 class TranslateTimeline extends CurveTimeline {
 
-  static const int _PREV_FRAME_TIME = -3;
-  static const int _FRAME_X = 1;
-  static const int _FRAME_Y = 2;
+  static const int _ENTRIES = 3;
+  static const int _PREV_TIME = -3;
+  static const int _PREV_X = -2;
+  static const int _PREV_Y = -1;
+  static const int _TIME = 0;
+  static const int _X = 1;
+  static const int _Y = 2;
+
+  // TODO: remove
+  final int _PREV_FRAME_TIME = -3;
+  final int _FRAME_X = 1;
+  final int _FRAME_Y = 2;
 
   final Float32List frames; // time, value, value, ...
   int boneIndex = 0;

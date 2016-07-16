@@ -31,50 +31,47 @@
 
 part of stagexl_spine;
 
-class FfdTimeline extends CurveTimeline {
+class DeformTimeline extends CurveTimeline {
 
   final Float32List frames;
   final List<Float32List> frameVertices;
-  Attachment attachment = null;
-  int slotIndex = 0;
 
-  FfdTimeline(int frameCount)
-      : super(frameCount),
-        frames = new Float32List(frameCount),
-        frameVertices = new List<Float32List>(frameCount);
+  int slotIndex = 0;
+  VertexAttachment attachment = null;
+
+  DeformTimeline (int frameCount)
+    : frames = new Float32List(frameCount),
+      frameVertices = new List<Float32List>(frameCount),
+      super(frameCount);
 
   /// Sets the time and value of the specified keyframe.
-  ///
+
   void setFrame(int frameIndex, num time, Float32List vertices) {
-    frames[frameIndex] = time.toDouble();
+    frames[frameIndex] = time;
     frameVertices[frameIndex] = vertices;
   }
 
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  @override
+  void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    var slot = skeleton.slots[slotIndex];
-    var slotAttachment = slot.attachment;
+    Slot slot = skeleton.slots[slotIndex];
+    VertexAttachment slotAttachment = slot.attachment as VertexAttachment;
+    if (slotAttachment == null || !slotAttachment.applyDeform(attachment)) return;
 
-    if (slotAttachment is FfdAttachment) {
-      if (slotAttachment.applyFFD(attachment) == false) return;
-    }
+    Float32List frames = this.frames;
+    if (time < frames[0]) return; // Time is before first frame.
 
-    var frames = this.frames;
-    if (frames[0] >= time) return; // Time is before first frame.
-
-    var frameVertices = this.frameVertices;
+    List<Float32List> frameVertices = this.frameVertices;
     int vertexCount = frameVertices[0].length;
 
-    var vertices = slot.attachmentVertices;
+    Float32List vertices = slot.attachmentVertices;
     if (vertices.length != vertexCount) {
-      vertices = slot.attachmentVertices = new Float32List(vertexCount);
       alpha = 1; // Don't mix from uninitialized slot vertices.
+      vertices = slot.attachmentVertices = new Float32List(vertexCount);
     }
 
     if (time >= frames[frames.length - 1]) { // Time is after last frame.
-
-      Float32List lastVertices = frameVertices[frames.length - 1];
-
+      Float32List lastVertices = frameVertices.last;
       if (alpha < 1) {
         for (int i = 0; i < vertexCount; i++) {
           vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
@@ -84,19 +81,17 @@ class FfdTimeline extends CurveTimeline {
           vertices[i] = lastVertices[i];
         }
       }
-
       return;
     }
 
     // Interpolate between the previous frame and the current frame.
-
-    int frameIndex = Animation.binarySearch1(frames, time);
-    num frameTime = frames[frameIndex];
-    num percent = 1 - (time - frameTime) / (frames[frameIndex - 1] - frameTime);
-    percent = getCurvePercent(frameIndex - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
-
-    Float32List prevVertices = frameVertices[frameIndex - 1];
-    Float32List nextVertices = frameVertices[frameIndex];
+    int frame = Animation.binarySearch1(frames, time);
+    Float32List prevVertices = frameVertices[frame - 1];
+    Float32List nextVertices = frameVertices[frame];
+    var prevTime = frames[frame - 1];
+    num frameTime = frames[frame];
+    num percent = getCurvePercent(
+        frame - 1, 1 - (time - frameTime) / (prevTime - frameTime));
 
     if (alpha < 1) {
       for (int i = 0; i < vertexCount; i++) {
@@ -112,3 +107,4 @@ class FfdTimeline extends CurveTimeline {
   }
 
 }
+

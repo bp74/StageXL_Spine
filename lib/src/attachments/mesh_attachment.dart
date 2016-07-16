@@ -31,24 +31,29 @@
 
 part of stagexl_spine;
 
-class MeshAttachment extends FfdAttachment implements _RenderAttachment {
+class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
   final String path;
   final BitmapData bitmapData;
 
-  num width = 0.0, height = 0.0;
-  num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+  Float32List worldVertices;
+  Float32List regionUVs;
+  Int16List triangles;
+  Int16List edges;
+
+  num r = 1.0;
+  num g = 1.0;
+  num b = 1.0;
+  num a = 1.0;
+
   int hullLength = 0;
-  int vertexLength = 0;
+  bool inheritDeform = false;
+  num width = 0.0;
+  num height = 0.0;
 
-  bool inheritFFD = false;
-  MeshAttachment _parentMesh = null;
-
-  Int16List edges = null;
-  Int16List ixList = null;
-  Float32List vxList = null;
-  Float32List vertices = null;
-  Float32List uvs = null;
+  Int16List _ixList;
+  Float32List _vxList;
+  MeshAttachment _parentMesh;
 
   MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
@@ -59,30 +64,27 @@ class MeshAttachment extends FfdAttachment implements _RenderAttachment {
   set parentMesh(MeshAttachment parentMesh) {
     _parentMesh = parentMesh;
     if (parentMesh != null) {
+      bones = parentMesh.bones;
+      vertices = parentMesh.vertices;
+      worldVerticesLength = parentMesh.worldVerticesLength;
+      regionUVs = parentMesh.regionUVs;
+      triangles = parentMesh.triangles;
       hullLength = parentMesh.hullLength;
       edges = parentMesh.edges;
       width = parentMesh.width;
       height = parentMesh.height;
-      update(parentMesh.ixList, parentMesh.vertices, parentMesh.uvs);
     }
   }
 
   bool applyFFD(Attachment sourceAttachment) {
     if (sourceAttachment == this) return true;
-    if (sourceAttachment == _parentMesh && inheritFFD) return true;
+    if (sourceAttachment == _parentMesh && inheritDeform) return true;
     return false;
   }
 
   //---------------------------------------------------------------------------
 
-  void update(Int16List triangles, Float32List vertices, Float32List uvs) {
-
-    this.uvs = uvs;
-    this.vertices = vertices;
-    this.vertexLength = vertices.length;
-
-    this.ixList = triangles;
-    this.vxList = new Float32List(vertices.length * 2);
+  void updateUVs()  {
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;
@@ -92,40 +94,37 @@ class MeshAttachment extends FfdAttachment implements _RenderAttachment {
     var mx = matrix.tx;
     var my = matrix.ty;
 
-    for (int i = 0, o = 0; i < uvs.length - 1; i += 2, o+= 4) {
-      var u = uvs[i + 0];
-      var v = uvs[i + 1];
-      this.vxList[o + 2] = u * ma + v * mc + mx;
-      this.vxList[o + 3] = u * mb + v * md + my;
+    _ixList = this.triangles;
+    _vxList = new Float32List(regionUVs.length * 2);
+
+    for (int i = 0, o = 0; i < regionUVs.length - 1; i += 2, o += 4) {
+      var u = regionUVs[i + 0];
+      var v = regionUVs[i + 1];
+      _vxList[o + 2] = u * ma + v * mc + mx;
+      _vxList[o + 3] = u * mb + v * md + my;
     }
   }
 
   //---------------------------------------------------------------------------
 
+  Int16List get ixList => _ixList;
+
   Float32List getVertexList(num posX, num posY, Slot slot) {
 
-    var vertices = this.vertices;
-    var vxList = this.vxList;
-    var bone = slot.bone;
+    // TODO: make this more efficient!
 
-    var ba = bone.a;
-    var bb = bone.b;
-    var bc = bone.c;
-    var bd = bone.d;
-    var bx = bone.worldX + posX;
-    var by = bone.worldY + posY;
-
-    if (slot.attachmentVertices.length == vertices.length) {
-      vertices = slot.attachmentVertices;
+    if (worldVertices == null || worldVertices.length < worldVerticesLength) {
+      worldVertices = new Float32List(worldVerticesLength);
     }
 
-    for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {
-      var x = vertices[i + 0];
-      var y = vertices[i + 1];
-      vxList[o + 0] = 0.0 + x * ba + y * bb + bx;
-      vxList[o + 1] = 0.0 - x * bc - y * bd - by;
+    this.computeWorldVertices(slot, worldVertices);
+
+    for (int i = 0, o = 0; i <= worldVertices.length - 2; i += 2, o += 4) {
+      _vxList[o + 0] = posX + worldVertices[i + 0];
+      _vxList[o + 1] = posY + worldVertices[i + 1];
     }
 
-    return vxList;
+    return _vxList;
   }
+
 }

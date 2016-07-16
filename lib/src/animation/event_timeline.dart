@@ -66,26 +66,23 @@ class EventTimeline implements Timeline {
 
     if (time < frames[0]) return; // Time is before first frame.
 
-    int frameIndex;
+    int frame = 0;
 
     if (lastTime < frames[0]) {
-
-      frameIndex = 0;
-
+      frame = 0;
     } else {
-
-      frameIndex = Animation.binarySearch1(frames, lastTime);
-      num frame = frames[frameIndex];
-
-      while (frameIndex > 0) { // Fire multiple events with the same frame.
-        if (frames[frameIndex - 1] != frame) break;
-        frameIndex--;
+      frame = Animation.binarySearch1(frames, lastTime);
+      num frameTime = frames[frame];
+      while (frame > 0) {
+        // Fire multiple events with the same frame.
+        if (frames[frame - 1] != frameTime) break;
+        frame--;
       }
     }
 
-    while(frameIndex < frameCount && time >= frames[frameIndex]) {
-      firedEvents.add(events[frameIndex]);
-      frameIndex++;
+    while(frame < frameCount && time >= frames[frame]) {
+      firedEvents.add(events[frame]);
+      frame++;
     }
   }
 }

@@ -38,7 +38,9 @@ class Skeleton {
   final List<Slot> slots = new List<Slot>();
   final List<Slot> drawOrder = new List<Slot>();
   final List<IkConstraint> ikConstraints = new List<IkConstraint>();
+  final List<IkConstraint> ikConstraintsSorted = new List<IkConstraint>();
   final List<TransformConstraint> transformConstraints = new List<TransformConstraint>();
+  final List<PathConstraint> pathConstraints = new List<PathConstraint>();
   final List<Updatable> _updateCache = new List<Updatable>();
 
   Skin _skin = null;
@@ -56,57 +58,195 @@ class Skeleton {
     if (data == null) throw new ArgumentError("data cannot be null.");
 
     for (BoneData boneData in data.bones) {
-      Bone parent = boneData.parent == null
-          ? null : this.bones[this.data.bones.indexOf(boneData.parent)];
-      this.bones.add(new Bone(boneData, this, parent));
+      if (boneData.parent == null) {
+        Bone bone = new Bone(boneData, this, null);
+        bones.add(bone);
+      } else {
+        Bone parent = bones[boneData.parent.index];
+        Bone bone = new Bone(boneData, this, parent);
+        parent.children.add(bone);
+        bones.add(bone);
+      }
     }
 
     for (SlotData slotData in data.slots) {
-      Bone bone = this.bones[data.bones.indexOf(slotData.boneData)];
+      Bone bone = this.bones[slotData.boneData.index];
       Slot slot = new Slot(slotData, bone);
       this.slots.add(slot);
       this.drawOrder.add(slot);
     }
 
     for (IkConstraintData ikConstraintData in data.ikConstraints) {
-      IkConstraint ikConstraint = new IkConstraint(ikConstraintData, this);
+      var ikConstraint = new IkConstraint(ikConstraintData, this);
       ikConstraints.add(ikConstraint);
     }
 
-    for (TransformConstraintData transformConstraintData in data.transformConstraints) {
-      TransformConstraint transformConstraint = new TransformConstraint(transformConstraintData, this);
+    for (TransformConstraintData transformConstraintData
+        in data.transformConstraints) {
+      var transformConstraint =
+          new TransformConstraint(transformConstraintData, this);
       transformConstraints.add(transformConstraint);
+    }
+
+    for (PathConstraintData pathConstraintData in data.pathConstraints) {
+      var pathConstraint = new PathConstraint(pathConstraintData, this);
+      pathConstraints.add(pathConstraint);
     }
 
     updateCache();
   }
 
-  /// Caches information about bones and constraints. Must be called if bones
-  /// or constraints are added or removed.
+  /// Caches information about bones and constraints.
+  /// Must be called if bones, constraints, or weighted path attachments are
+  /// added or removed.
 
   void updateCache() {
+    List<Updatable> updateCache = _updateCache;
+    updateCache.clear();
 
-    _updateCache.clear();
+    List<Bone> bones = this.bones;
+    for (int i = 0; i < bones.length; i++) {
+      bones[i]._sorted = false;
+    }
 
-    for (Bone bone in bones) {
-      _updateCache.add(bone);
-      for (var ikConstraint in ikConstraints) {
-        if (bone == ikConstraint.bones.last) {
-          _updateCache.add(ikConstraint);
-          break;
-        }
+    // IK first, lowest hierarchy depth first.
+    List<IkConstraint> ikConstraints = this.ikConstraintsSorted;
+    ikConstraints.clear();
+    for (IkConstraint c in this.ikConstraints) {
+      ikConstraints.add(c);
+    }
+
+    for (int i = 0; i < ikConstraints.length; i++) {
+      IkConstraint ik = ikConstraints[i];
+      Bone bone = ik.bones[0].parent;
+      int level = 0;
+      for (; bone != null; level++) {
+        bone = bone.parent;
+      }
+      ik.level = level;
+    }
+
+    for (int i = 1; i < ikConstraints.length; i++) {
+      IkConstraint ik = ikConstraints[i];
+      int level = ik.level;
+      int ii = i - 1;
+      for (; ii >= 0; ii--) {
+        IkConstraint other = ikConstraints[ii];
+        if (other.level < level) break;
+        ikConstraints[ii + 1] = other;
+      }
+      ikConstraints[ii + 1] = ik;
+    }
+    for (int i = 0; i < ikConstraints.length; i++) {
+      IkConstraint ikConstraint = ikConstraints[i];
+      Bone target = ikConstraint.target;
+      _sortBone(target);
+
+      List<Bone> constrained = ikConstraint.bones;
+      Bone parent = constrained[0];
+      _sortBone(parent);
+
+      updateCache.add(ikConstraint);
+
+      _sortReset(parent.children);
+      constrained.last._sorted = true;
+    }
+
+    List<PathConstraint> pathConstraints = this.pathConstraints;
+    for (int i = 0; i < pathConstraints.length; i++) {
+      PathConstraint pathConstraint = pathConstraints[i];
+
+      Slot slot = pathConstraint.target;
+      int slotIndex = slot.data.index;
+      Bone slotBone = slot.bone;
+      if (skin != null)
+        _sortPathConstraintAttachment(skin, slotIndex, slotBone);
+      if (data.defaultSkin != null && data.defaultSkin != skin) {
+        _sortPathConstraintAttachment(data.defaultSkin, slotIndex, slotBone);
+      }
+
+      for (int ii = 0; ii < data.skins.length; ii++) {
+        _sortPathConstraintAttachment(data.skins[ii], slotIndex, slotBone);
+      }
+
+      PathAttachment attachment = slot.attachment as PathAttachment;
+      if (attachment != null)
+        _sortPathConstraintAttachment2(attachment, slotBone);
+
+      List<Bone> constrained = pathConstraint.bones;
+
+      for (int ii = 0; ii < constrained.length; ii++) {
+        _sortBone(constrained[ii]);
+      }
+
+      updateCache.add(pathConstraint);
+
+      for (int ii = 0; ii < constrained.length; ii++) {
+        _sortReset(constrained[ii].children);
+      }
+
+      for (int ii = 0; ii < constrained.length; ii++) {
+        constrained[ii]._sorted = true;
       }
     }
 
-    for (var transformConstraint in transformConstraints) {
-      for (int i = _updateCache.length - 1; i >= 0; i--) {
-        var updatable = _updateCache[i];
-        if (updatable == transformConstraint.bone ||
-            updatable == transformConstraint.target) {
-          _updateCache.insert(i + 1, transformConstraint);
-          break;
-        }
+    List<TransformConstraint> transformConstraints = this.transformConstraints;
+    for (int i = 0; i < transformConstraints.length; i++) {
+      TransformConstraint transformConstraint = transformConstraints[i];
+      _sortBone(transformConstraint.target);
+      List<Bone> constrained = transformConstraint.bones;
+      for (int ii = 0; ii < constrained.length; ii++) {
+        _sortBone(constrained[ii]);
       }
+      updateCache.add(transformConstraint);
+      for (int ii = 0; ii < constrained.length; ii++) {
+        _sortReset(constrained[ii].children);
+      }
+      for (int ii = 0; ii < constrained.length; ii++) {
+        constrained[ii]._sorted = true;
+      }
+    }
+
+    for (int i = 0, n = bones.length; i < n; i++) {
+      _sortBone(bones[i]);
+    }
+  }
+
+  void _sortPathConstraintAttachment(Skin skin, int slotIndex, Bone slotBone) {
+    var dict = skin.attachments[slotIndex];
+    if (dict == null) return;
+    for (Attachment value in dict.values) {
+      _sortPathConstraintAttachment2(value, slotBone);
+    }
+  }
+
+  void _sortPathConstraintAttachment2(Attachment attachment, Bone slotBone) {
+    if (attachment is! PathAttachment) return;
+    PathAttachment pathAttachment = attachment;
+    Int16List pathBones = pathAttachment.bones;
+    if (pathBones == null) {
+      _sortBone(slotBone);
+    } else {
+      List<Bone> bones = this.bones;
+      for (int boneIndex in pathBones) {
+        _sortBone(bones[boneIndex]);
+      }
+    }
+  }
+
+  void _sortBone(Bone bone) {
+    if (bone._sorted) return;
+    Bone parent = bone.parent;
+    if (parent != null) _sortBone(parent);
+    bone._sorted = true;
+    _updateCache.add(bone);
+  }
+
+  void _sortReset(List<Bone> bones) {
+    for (int i = 0; i < bones.length; i++) {
+      Bone bone = bones[i];
+      if (bone._sorted) _sortReset(bone.children);
+      bone._sorted = false;
     }
   }
 
@@ -128,7 +268,6 @@ class Skeleton {
   /// Sets the bones and constraints to their setup pose values.
 
   void setBonesToSetupPose() {
-
     for (Bone bone in bones) {
       bone.setToSetupPose();
     }
@@ -139,9 +278,17 @@ class Skeleton {
     }
 
     for (TransformConstraint transformConstraint in transformConstraints) {
+      transformConstraint.rotateMix = transformConstraint.data.rotateMix;
       transformConstraint.translateMix = transformConstraint.data.translateMix;
-      transformConstraint.x = transformConstraint.data.x;
-      transformConstraint.y = transformConstraint.data.y;
+      transformConstraint.scaleMix = transformConstraint.data.scaleMix;
+      transformConstraint.shearMix = transformConstraint.data.shearMix;
+    }
+
+    for (PathConstraint pathConstraint in pathConstraints) {
+      pathConstraint.position = pathConstraint.data.position;
+      pathConstraint.spacing = pathConstraint.data.spacing;
+      pathConstraint.rotateMix = pathConstraint.data.rotateMix;
+      pathConstraint.translateMix = pathConstraint.data.translateMix;
     }
   }
 
@@ -159,7 +306,9 @@ class Skeleton {
 
   Bone findBone(String boneName) {
     if (boneName == null) throw new ArgumentError("boneName cannot be null.");
-    return this.bones.firstWhere((b) => b.data.name == boneName, orElse: () => null);
+    return this
+        .bones
+        .firstWhere((b) => b.data.name == boneName, orElse: () => null);
   }
 
   int findBoneIndex(String boneName) {
@@ -172,7 +321,9 @@ class Skeleton {
 
   Slot findSlot(String slotName) {
     if (slotName == null) throw new ArgumentError("slotName cannot be null.");
-    return this.slots.firstWhere((s) => s.data.name == slotName, orElse: () => null);
+    return this
+        .slots
+        .firstWhere((s) => s.data.name == slotName, orElse: () => null);
   }
 
   int findSlotIndex(String slotName) {
@@ -215,9 +366,9 @@ class Skeleton {
     _skin = newSkin;
   }
 
-
   Attachment getAttachmentForSlotName(String slotName, String attachmentName) {
-    return getAttachmentForSlotIndex(data.findSlotIndex(slotName), attachmentName);
+    return getAttachmentForSlotIndex(
+        data.findSlotIndex(slotName), attachmentName);
   }
 
   Attachment getAttachmentForSlotIndex(int slotIndex, String attachmentName) {
@@ -235,7 +386,6 @@ class Skeleton {
   }
 
   void setAttachment(String slotName, String attachmentName) {
-
     if (slotName == null) {
       throw new ArgumentError("slotName cannot be null.");
     }
@@ -247,7 +397,8 @@ class Skeleton {
         if (attachmentName != null) {
           attachment = getAttachmentForSlotIndex(i, attachmentName);
           if (attachment == null) {
-            throw new ArgumentError("Attachment not found: $attachmentName, for slot: $slotName");
+            throw new ArgumentError(
+                "Attachment not found: $attachmentName, for slot: $slotName");
           }
         }
         slot.attachment = attachment;
@@ -258,7 +409,7 @@ class Skeleton {
     throw new ArgumentError("Slot not found: $slotName");
   }
 
-  IkConstraint findIkConstraint (String constraintName) {
+  IkConstraint findIkConstraint(String constraintName) {
     if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
     for (IkConstraint ikConstraint in ikConstraints) {
       if (ikConstraint.data.name == constraintName) return ikConstraint;
@@ -270,6 +421,14 @@ class Skeleton {
     if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
     for (TransformConstraint transformConstraint in transformConstraints) {
       if (transformConstraint.data.name == constraintName) return transformConstraint;
+    }
+    return null;
+  }
+
+  PathConstraint findPathConstraint(String constraintName)  {
+    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    for (PathConstraint pathConstraint in pathConstraints) {
+      if (pathConstraint.data.name == constraintName) return pathConstraint;
     }
     return null;
   }

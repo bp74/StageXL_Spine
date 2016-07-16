@@ -1,10 +1,10 @@
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.3
- *
+ * 
  * Copyright (c) 2013-2015, Esoteric Software
  * All rights reserved.
- *
+ * 
  * You are granted a perpetual, non-exclusive, non-sublicensable and
  * non-transferable license to use, install, execute and perform the Spine
  * Runtimes Software (the "Software") and derivative works solely for personal
@@ -16,7 +16,7 @@
  * or other intellectual property or proprietary rights notices on or in the
  * Software, including any copy thereof. Redistributions in binary or source
  * form must include this license and terms.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -31,56 +31,28 @@
 
 part of stagexl_spine;
 
-class Slot {
+class PathConstraintData {
 
-  final SlotData data;
-  final Bone bone;
+	final String name;
+	final List<BoneData> bones = new List<BoneData>();
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+  SlotData target;
+  PositionMode positionMode;
+  SpacingMode spacingMode;
+  RotateMode rotateMode;
 
-  Attachment _attachment = null;
-  num _attachmentTime = 0;
-  Float32List attachmentVertices = new Float32List(0);
+	num offsetRotation = 0.0;
+	num position = 0.0;
+  num spacing = 0.0;
+  num rotateMix = 0.0;
+  num translateMix = 0.0;
 
-  Slot(this.data, this.bone) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (bone == null) throw new ArgumentError("bone cannot be null.");
-    setToSetupPose();
-  }
+	PathConstraintData (this.name) {
+		if (name == null) throw new ArgumentError("name cannot be null.");
+	}
 
-  Skeleton get skeleton => bone.skeleton;
+  @override
+	String toString() => name;
 
-  Attachment get attachment => _attachment;
-
-  void set attachment(Attachment attachment) {
-    if (_attachment == attachment) return;
-    _attachment = attachment;
-    _attachmentTime = bone.skeleton.time;
-    attachmentVertices = new Float32List(0);
-  }
-
-  /// Returns the time since the attachment was set.
-  num get attachmentTime => bone.skeleton.time - _attachmentTime;
-
-  void set attachmentTime(num time) {
-    _attachmentTime = bone.skeleton.time - time;
-  }
-
-  void setToSetupPose() {
-    r = data.r;
-    g = data.g;
-    b = data.b;
-    a = data.a;
-    if (data.attachmentName == null) {
-      attachment = null;
-    } else {
-      _attachment = null;
-      attachment = bone.skeleton.getAttachmentForSlotIndex(data.index, data.attachmentName);
-    }
-  }
-
-  String toString() => data.name;
 }
+

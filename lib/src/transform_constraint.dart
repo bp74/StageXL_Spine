@@ -34,20 +34,30 @@ part of stagexl_spine;
 class TransformConstraint implements Updatable {
 
   final TransformConstraintData data;
+  final List<Bone> bones = new List<Bone>();
 
-  Bone bone = null;
   Bone target = null;
   num translateMix = 0.0;
-  num x = 0.0;
-  num y = 0.0;
+  num rotateMix = 0.0;
+  num scaleMix = 0.0;
+  num shearMix = 0.0;
+
+  final Float32List _temp = new Float32List(2);
 
   TransformConstraint (this.data, Skeleton skeleton) {
+
     if (data == null) throw new ArgumentError("data cannot be null.");
     if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+
     translateMix = data.translateMix;
-    x = data.x;
-    y = data.y;
-    bone = skeleton.findBone(data.bone.name);
+    rotateMix = data.rotateMix;
+    scaleMix = data.scaleMix;
+    shearMix = data.shearMix;
+
+    for (BoneData boneData in data.bones) {
+      bones.add(skeleton.findBone(boneData.name));
+    }
+
     target = skeleton.findBone(data.target.name);
   }
 
@@ -56,13 +66,72 @@ class TransformConstraint implements Updatable {
   }
 
   void update () {
-    if (translateMix > 0) {
-      var local = new Float32List(2);
-      local[0] = x;
-      local[1] = y;
-      target.localToWorld(local);
-      bone._worldX += (local[0] - bone._worldX) * translateMix;
-      bone._worldY += (local[1] - bone._worldY) * translateMix;
+
+    num rotateMix = this.rotateMix;
+    num translateMix = this.translateMix;
+    num scaleMix = this.scaleMix;
+    num shearMix = this.shearMix;
+    num deg2rad = math.PI / 180.0;
+
+    Bone target = this.target;
+
+    num ta = target.a;
+    num tb = target.b;
+    num tc = target.c;
+    num td = target.d;
+
+    List<Bone> bones = this.bones;
+    for (int i = 0; i < bones.length; i++) {
+      var bone = bones[i];
+
+      if (rotateMix > 0) {
+        num a = bone.a;
+        num b = bone.b;
+        num c = bone.c;
+        num d = bone.d;
+        num r = math.atan2(tc, ta) - math.atan2(c, a) + data.offsetRotation * deg2rad;
+        if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
+        r *= rotateMix;
+        num cos = math.cos(r);
+        num sin = math.sin(r);
+        bone._a = cos * a - sin * c;
+        bone._b = cos * b - sin * d;
+        bone._c = sin * a + cos * c;
+        bone._d = sin * b + cos * d;
+      }
+
+      if (translateMix > 0) {
+        _temp[0] = data.offsetX;
+        _temp[1] = data.offsetY;
+        target.localToWorld(_temp);
+        bone._worldX += (_temp[0] - bone.worldX) * translateMix;
+        bone._worldY += (_temp[1] - bone.worldY) * translateMix;
+      }
+
+      if (scaleMix > 0) {
+        num bs = math.sqrt(bone.a * bone.a + bone.c * bone.c);
+        num ts = math.sqrt(ta * ta + tc * tc);
+        num s = bs > 0.00001 ? (bs + (ts - bs + data.offsetScaleX) * scaleMix) / bs : 0;
+        bone._a *= s;
+        bone._c *= s;
+        bs = math.sqrt(bone.b * bone.b + bone.d * bone.d);
+        ts = math.sqrt(tb * tb + td * td);
+        s = bs > 0.00001 ? (bs + (ts - bs + data.offsetScaleY) * scaleMix) / bs : 0;
+        bone._b *= s;
+        bone._d *= s;
+      }
+
+      if (shearMix > 0) {
+        num b = bone.b;
+        num d = bone.d;
+        num by = math.atan2(d, b);
+        num r = math.atan2(td, tb) - math.atan2(tc, ta) - (by - math.atan2(bone.c, bone.a));
+        if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
+        r = by + (r + data.offsetShearY * deg2rad) * shearMix;
+        num s = math.sqrt(b * b + d * d);
+        bone._b = math.cos(r) * s;
+        bone._d = math.sin(r) * s;
+      }
     }
   }
 
