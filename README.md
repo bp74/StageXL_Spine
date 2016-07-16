@@ -19,7 +19,7 @@ Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)
 
 ## Spine Runtime
 
-Based on the spine-as3 runtime (2016-06-17)  
+Based on the spine-as3 runtime (2016-07-16)  
 This runtime supports the export format and features of Spine v3.4.    
 
 <https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
