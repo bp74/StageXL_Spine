@@ -43,8 +43,8 @@ class RotateTimeline extends CurveTimeline {
   int boneIndex = 0;
 
   RotateTimeline(int frameCount)
-      : super(frameCount),
-        frames = new Float32List(frameCount * _ENTRIES);
+      : frames = new Float32List(frameCount * _ENTRIES),
+        super(frameCount);
 
   /// Sets the time and angle of the specified keyframe.
 

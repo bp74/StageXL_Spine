@@ -44,8 +44,9 @@ class IkConstraintTimeline extends CurveTimeline {
   final Float32List frames;  // time, mix, bendDirection, ...
   int ikConstraintIndex = 0;
 
-  IkConstraintTimeline(int frameCount) : super(frameCount),
-    frames = new Float32List(frameCount * _ENTRIES);
+  IkConstraintTimeline(int frameCount)
+      : frames = new Float32List(frameCount * _ENTRIES),
+        super(frameCount);
 
   /// Sets the time, mix and bend direction of the specified keyframe.
 

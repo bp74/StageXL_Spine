@@ -45,7 +45,7 @@ class PathConstraintPositionTimeline extends CurveTimeline {
 
 	PathConstraintPositionTimeline (int frameCount)
       : frames = new Float32List(frameCount * _ENTRIES),
-		  super(frameCount);
+        super(frameCount);
 
 	/// Sets the time and value of the specified keyframe.
 

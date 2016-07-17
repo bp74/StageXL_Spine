@@ -45,8 +45,8 @@ class TranslateTimeline extends CurveTimeline {
   int boneIndex = 0;
 
   TranslateTimeline(int frameCount)
-      : super(frameCount),
-        frames = new Float32List(frameCount * 3);
+      : frames = new Float32List(frameCount * 3),
+        super(frameCount);
 
   /// Sets the time and value of the specified keyframe.
 

@@ -49,8 +49,8 @@ class ColorTimeline extends CurveTimeline {
   int slotIndex = 0;
 
   ColorTimeline(int frameCount)
-      : super(frameCount),
-        frames = new Float32List(frameCount * 5);
+      : frames = new Float32List(frameCount * 5),
+        super(frameCount);
 
   /// Sets the time and value of the specified keyframe.
   ///

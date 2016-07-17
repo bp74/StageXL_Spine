@@ -31,7 +31,6 @@
 
 part of stagexl_spine;
 
-
 abstract class AttachmentLoader {
 
   /// @return May be null to not load an attachment.
