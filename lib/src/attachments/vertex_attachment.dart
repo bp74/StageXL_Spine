@@ -60,87 +60,61 @@ class VertexAttachment extends Attachment {
       Slot slot, int start, int count,
       Float32List worldVertices, int offset) {
 
-    count += offset;
     Skeleton skeleton = slot.skeleton;
-    num x = skeleton.x, y = skeleton.y;
-    Float32List deformArray = slot.attachmentVertices;
+    List<Bone> skeletonBones = skeleton.bones;
+    Float32List deform = slot.attachmentVertices;
     Float32List vertices = this.vertices;
     Int16List bones = this.bones;
 
-    int v = 0, w = 0, n = 0, i = 0, skip = 0, b = 0, f = 0;
-    num vx = 0.0, vy = 0.0;
-    num wx = 0.0, wy = 0.0;
-    num weight = 0.0;
-    Bone bone;
+    bool df = deform.length > 0;
+    int vi = 0; // vertices index
+    int di = 0; // deform index
+    int bi = 0; // bones index
 
     if (bones == null) {
-      if (deformArray.length > 0) vertices = deformArray;
-      bone = slot.bone;
-      x += bone.worldX;
-      y += bone.worldY;
-      num ba = bone.a;
-      num bb = bone.b;
-      num bc = bone.c;
-      num bd = bone.d;
-      v = start;
-      for (w = offset; w < count; v += 2, w += 2) {
-        vx = vertices[v + 0];
-        vy = vertices[v + 1];
-        worldVertices[w + 0] = vx * ba + vy * bb + x;
-        worldVertices[w + 1] = vx * bc + vy * bd + y;
-      }
-      return;
-    }
 
-    v = 0;
-    skip = 0;
-    for (i = 0; i < start; i += 2) {
-      n = bones[v];
-      v += n + 1;
-      skip += n;
-    }
+      vi = start;
+      vertices = df ? deform : vertices;
 
-    List<Bone> skeletonBones = skeleton.bones;
+      Bone bone = slot.bone;
+      num x = bone.worldX + skeleton.x;
+      num y = bone.worldY + skeleton.y;
+      num a = bone.a;
+      num b = bone.b;
+      num c = bone.c;
+      num d = bone.d;
 
-    if (deformArray.length == 0) {
-      b = skip * 3;
-      for (w = offset; w < count; w += 2) {
-        wx = x;
-        wy = y;
-        n = bones[v++];
-        n += v;
-        for (; v < n; v++, b += 3) {
-          bone = skeletonBones[bones[v]];
-          vx = vertices[b + 0];
-          vy = vertices[b + 1];
-          weight = vertices[b + 2];
-          wx += (vx * bone.a + vy * bone.b + bone.worldX) * weight;
-          wy += (vx * bone.c + vy * bone.d + bone.worldY) * weight;
-        }
-        worldVertices[w + 0] = wx;
-        worldVertices[w + 1] = wy;
+      for (int wi = offset; wi < offset + count; vi += 2, wi += 2) {
+        num vx = vertices[vi + 0];
+        num vy = vertices[vi + 1];
+        worldVertices[wi + 0] = vx * a + vy * b + x;
+        worldVertices[wi + 1] = vx * c + vy * d + y;
       }
 
     } else {
 
-      Float32List deform = deformArray;
-      b = skip * 3;
-      f = skip << 1;
-      for (w = offset; w < count; w += 2) {
-        wx = x;
-        wy = y;
-        n = bones[v++];
-        n += v;
-        for (; v < n; v++, b += 3, f += 2) {
-          bone = skeletonBones[bones[v]];
-          vx = vertices[b + 0] + deform[f + 0];
-          vy = vertices[b + 1] + deform[f + 1];
-          weight = vertices[b + 2];
-          wx += (vx * bone.a + vy * bone.b + bone.worldX) * weight;
-          wy += (vx * bone.c + vy * bone.d + bone.worldY) * weight;
+      for (int i = 0; i < start; i += 2) {
+        int boneCount = bones[bi];
+        bi += boneCount + 1;
+        vi += boneCount * 3;
+        di += boneCount * 2;
+      }
+
+      for (int wi = offset; wi < offset + count; wi += 2) {
+        num x = skeleton.x;
+        num y = skeleton.y;
+        int boneCount = bones[bi++];
+        int boneFinal = bi + boneCount;
+        for (; bi < boneFinal; bi += 1, vi += 3, di += 2) {
+          Bone bone = skeletonBones[bones[bi]];
+          num vx = df ? vertices[vi + 0] + deform[di + 0] : vertices[vi + 0];
+          num vy = df ? vertices[vi + 1] + deform[di + 1] : vertices[vi + 1];
+          num vw = vertices[vi + 2];
+          x += (vx * bone.a + vy * bone.b + bone.worldX) * vw;
+          y += (vx * bone.c + vy * bone.d + bone.worldY) * vw;
         }
-        worldVertices[w + 0] = wx;
-        worldVertices[w + 1] = wy;
+        worldVertices[wi + 0] = x;
+        worldVertices[wi + 1] = y;
       }
     }
   }
