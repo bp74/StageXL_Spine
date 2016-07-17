@@ -38,31 +38,39 @@ class ScaleTimeline extends TranslateTimeline {
   @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
 
-    Bone bone = skeleton.bones[boneIndex];
+      // Time is before first frame.
 
-    if (time >= frames[frames.length - TranslateTimeline._ENTRIES]) { // Time is after last frame.
-      bone.scaleX += (bone.data.scaleX * frames[frames.length + TranslateTimeline._PREV_X] - bone.scaleX) * alpha;
-      bone.scaleY += (bone.data.scaleY * frames[frames.length + TranslateTimeline._PREV_Y] - bone.scaleY) * alpha;
-      return;
+    } else if (time >= frames[frames.length + TranslateTimeline._PREV_TIME]) {
+
+      // Time is after last frame.
+
+      Bone bone = skeleton.bones[boneIndex];
+      num prevX = frames[frames.length + TranslateTimeline._PREV_X];
+      num prevY = frames[frames.length + TranslateTimeline._PREV_Y];
+      bone.scaleX += (bone.data.scaleX * prevX - bone.scaleX) * alpha;
+      bone.scaleY += (bone.data.scaleY * prevY - bone.scaleY) * alpha;
+
+    } else {
+
+      // Interpolate between the previous frame and the current frame.
+
+      Bone bone = skeleton.bones[boneIndex];
+      int frame = Animation.binarySearch(frames, time, TranslateTimeline._ENTRIES);
+      num prevTime = frames[frame + TranslateTimeline._PREV_TIME];
+      num prevX = frames[frame + TranslateTimeline._PREV_X];
+      num prevY = frames[frame + TranslateTimeline._PREV_Y];
+      num frameTime = frames[frame + TranslateTimeline._TIME];
+      num frameX = frames[frame + TranslateTimeline._X];
+      num frameY = frames[frame + TranslateTimeline._Y];
+
+      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+      num percent = getCurvePercent(frame ~/ TranslateTimeline._ENTRIES - 1, between);
+
+      bone.scaleX += (bone.data.scaleX * (prevX + (frameX - prevX) * percent) - bone.scaleX) * alpha;
+      bone.scaleY += (bone.data.scaleY * (prevY + (frameY - prevY) * percent) - bone.scaleY) * alpha;
+
     }
-
-    // Interpolate between the previous frame and the current frame.
-
-    int frame = Animation.binarySearch(frames, time, TranslateTimeline._ENTRIES);
-    num prevTime = frames[frame + TranslateTimeline._PREV_TIME];
-    num prevX = frames[frame + TranslateTimeline._PREV_X];
-    num prevY = frames[frame + TranslateTimeline._PREV_Y];
-    num frameTime = frames[frame + TranslateTimeline._TIME];
-
-    num percent = getCurvePercent(
-        frame ~/ TranslateTimeline._ENTRIES - 1,
-        1.0 - (time - frameTime) / (prevTime - frameTime));
-
-    num x = frames[frame + TranslateTimeline._X];
-    num y = frames[frame + TranslateTimeline._Y];
-    bone.scaleX += (bone.data.scaleX * (prevX + (x - prevX) * percent) - bone.scaleX) * alpha;
-    bone.scaleY += (bone.data.scaleY * (prevY + (y - prevY) * percent) - bone.scaleY) * alpha;
   }
 }

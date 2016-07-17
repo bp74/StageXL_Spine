@@ -61,32 +61,38 @@ class PathConstraintMixTimeline extends CurveTimeline {
 	@override
   void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
 
-    PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+      // Time is before first frame.
 
-		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
-			int i = frames.length;
-			constraint.rotateMix += (frames[i + _PREV_ROTATE] - constraint.rotateMix) * alpha;
-			constraint.translateMix += (frames[i + _PREV_TRANSLATE] - constraint.translateMix) * alpha;
-			return;
-		}
+		} else if (time >= frames[frames.length + _PREV_TIME]) {
 
-		// Interpolate between the previous frame and the current frame.
+      // Time is after last frame.
 
-		int frame = Animation.binarySearch(frames, time, _ENTRIES);
-    num prevTime = frames[frame + _PREV_TIME];
-		num prevRotate = frames[frame + _PREV_ROTATE];
-		num prevTranslate = frames[frame + _PREV_TRANSLATE];
-    num frameTime = frames[frame + _TIME];
-    num frameRotate = frames[frame + _ROTATE];
-    num frameTranslate = frames[frame + _TRANSLATE];
+      PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+      num prevRotate = frames[frames.length + _PREV_ROTATE];
+      num prevTranslate = frames[frames.length + _PREV_TRANSLATE];
+      constraint.rotateMix += (prevRotate - constraint.rotateMix) * alpha;
+			constraint.translateMix += (prevTranslate - constraint.translateMix) * alpha;
 
-		num percent = getCurvePercent(
-        frame ~/ _ENTRIES - 1,
-        1.0 - (time - frameTime) / (prevTime - frameTime));
+		} else {
 
-		constraint.rotateMix += (prevRotate + (frameRotate - prevRotate) * percent - constraint.rotateMix) * alpha;
-		constraint.translateMix += (prevTranslate + (frameTranslate - prevTranslate) * percent - constraint.translateMix) * alpha;
+      // Interpolate between the previous frame and the current frame.
+
+      PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      num prevTime = frames[frame + _PREV_TIME];
+      num prevRotate = frames[frame + _PREV_ROTATE];
+      num prevTranslate = frames[frame + _PREV_TRANSLATE];
+      num frameTime = frames[frame + _TIME];
+      num frameRotate = frames[frame + _ROTATE];
+      num frameTranslate = frames[frame + _TRANSLATE];
+
+      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+
+      constraint.rotateMix += (prevRotate + (frameRotate - prevRotate) * percent - constraint.rotateMix) * alpha;
+      constraint.translateMix += (prevTranslate + (frameTranslate - prevTranslate) * percent - constraint.translateMix) * alpha;
+    }
 	}
 }

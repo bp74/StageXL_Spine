@@ -60,30 +60,38 @@ class TranslateTimeline extends CurveTimeline {
   @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
 
-    Bone bone = skeleton.bones[boneIndex];
+      // Time is before first frame.
 
-    if (time >= frames[frames.length - 3]) { // Time is after last frame.
-      bone.x += (bone.data.x + frames[frames.length - 2] - bone.x) * alpha;
-      bone.y += (bone.data.y + frames[frames.length - 1] - bone.y) * alpha;
-      return;
+    } else if (time >= frames[frames.length + _PREV_TIME]) {
+
+      // Time is after last frame.
+
+      Bone bone = skeleton.bones[boneIndex];
+      num prevX = frames[frames.length + _PREV_X];
+      num prevY = frames[frames.length + _PREV_Y];
+      bone.x += (bone.data.x + prevX - bone.x) * alpha;
+      bone.y += (bone.data.y + prevY - bone.y) * alpha;
+
+    } else {
+
+      // Interpolate between the previous frame and the current frame.
+
+      Bone bone = skeleton.bones[boneIndex];
+      int frameIndex = Animation.binarySearch(frames, time, 3);
+      num prevTime = frames[frameIndex + _PREV_TIME];
+      num prevX = frames[frameIndex + _PREV_X];
+      num prevY = frames[frameIndex + _PREV_Y];
+      num frameTime = frames[frameIndex + _TIME];
+      num frameX = frames[frameIndex + _X];
+      num frameY = frames[frameIndex + _Y];
+
+      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+      num percent = getCurvePercent(frameIndex ~/ _ENTRIES - 1, between);
+
+      bone.x += (bone.data.x + prevX + (frameX - prevX) * percent - bone.x) * alpha;
+      bone.y += (bone.data.y + prevY + (frameY - prevY) * percent - bone.y) * alpha;
     }
-
-    // Interpolate between the previous frame and the current frame.
-    int frameIndex = Animation.binarySearch(frames, time, 3);
-    num prevTime = frames[frameIndex + _PREV_TIME];
-    num prevX = frames[frameIndex - 2];
-    num prevY = frames[frameIndex - 1];
-    num frameTime = frames[frameIndex];
-    num frameX = frames[frameIndex + _X];
-    num frameY = frames[frameIndex + _Y];
-
-    num percent = getCurvePercent(
-        frameIndex ~/ 3 - 1,
-        1.0 - (time - frameTime) / (prevTime - frameTime));
-
-    bone.x += (bone.data.x + prevX + (frameX - prevX) * percent - bone.x) * alpha;
-    bone.y += (bone.data.y + prevY + (frameY - prevY) * percent - bone.y) * alpha;
   }
 }

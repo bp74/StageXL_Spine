@@ -38,28 +38,33 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 	@override
   void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha){
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
 
-    PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+      // Time is before first frame.
 
-    if (time >= frames[frames.length - PathConstraintPositionTimeline._ENTRIES]) { // Time is after last frame.
-      int i = frames.length;
-      constraint.spacing += (frames[i + PathConstraintPositionTimeline._PREV_VALUE] - constraint.spacing) * alpha;
-      return;
+    } else if (time >= frames[frames.length + PathConstraintPositionTimeline._PREV_TIME]) {
+
+      // Time is after last frame.
+
+      PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+      num prevValue = frames[frames.length + PathConstraintPositionTimeline._PREV_VALUE];
+      constraint.spacing += (prevValue - constraint.spacing) * alpha;
+
+    } else {
+
+      // Interpolate between the previous frame and the current frame.
+
+      PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+      int frame = Animation.binarySearch(frames, time, PathConstraintPositionTimeline._ENTRIES);
+      num prevTime = frames[frame + PathConstraintPositionTimeline._PREV_TIME];
+      num prevValue = frames[frame + PathConstraintPositionTimeline._PREV_VALUE];
+      num frameTime = frames[frame + PathConstraintPositionTimeline._TIME];
+      num frameValue = frames[frame + PathConstraintPositionTimeline._VALUE];
+
+      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+      num percent = getCurvePercent( frame ~/ PathConstraintPositionTimeline._ENTRIES - 1, between);
+
+      constraint.spacing += (prevValue + (frameValue - prevValue) * percent - constraint.spacing) * alpha;
     }
-
-		// Interpolate between the previous frame and the current frame.
-
-    int frame = Animation.binarySearch(frames, time, PathConstraintPositionTimeline._ENTRIES);
-    num prevTime = frames[frame + PathConstraintPositionTimeline._PREV_TIME];
-		num prevValue = frames[frame + PathConstraintPositionTimeline._PREV_VALUE];
-		num frameTime = frames[frame + PathConstraintPositionTimeline._TIME];
-    num frameValue = frames[frame + PathConstraintPositionTimeline._VALUE];
-
-		num percent = getCurvePercent(
-        frame ~/ PathConstraintPositionTimeline._ENTRIES - 1,
-        1.0 - (time - frameTime) / (prevTime - frameTime));
-
-		constraint.spacing += (prevValue + (frameValue - prevValue) * percent - constraint.spacing) * alpha;
 	}
 }

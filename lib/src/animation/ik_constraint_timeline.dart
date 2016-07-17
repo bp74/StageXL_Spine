@@ -59,29 +59,37 @@ class IkConstraintTimeline extends CurveTimeline {
   @override
   void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
 
-    IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
+      // Time is before first frame.
 
-    if (time >= frames[frames.length - _ENTRIES]) {
+    } else if (time >= frames[frames.length + _PREV_TIME]) {
+
       // Time is after last frame.
-      constraint.mix += (frames[frames.length + _PREV_MIX] - constraint.mix) * alpha;
-      constraint.bendDirection = frames[frames.length + _PREV_BEND_DIRECTION].round();
-      return;
+
+      IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
+      num prevMix = frames[frames.length + _PREV_MIX];
+      num prevBendDirection = frames[frames.length + _PREV_BEND_DIRECTION];
+      constraint.mix += (prevMix - constraint.mix) * alpha;
+      constraint.bendDirection = prevBendDirection.round();
+
+    } else {
+
+      // Interpolate between the previous frame and the current frame.
+
+      IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      num prevTime = frames[frame + _PREV_TIME];
+      num prevMix = frames[frame + _PREV_MIX];
+      num prevBendDirection = frames[frames.length + _PREV_BEND_DIRECTION];
+      num frameTime = frames[frame + _TIME];
+      num frameMix = frames[frame + _MIX];
+
+      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+
+      constraint.mix += (prevMix + (frameMix - prevMix) * percent - constraint.mix) * alpha;
+      constraint.bendDirection = prevBendDirection.toInt();
     }
-
-    // Interpolate between the previous frame and the current frame.
-
-    int frame = Animation.binarySearch(frames, time, _ENTRIES);
-    num prevTime = frames[frame + _PREV_TIME];
-    num prevMix = frames[frame + _PREV_MIX];
-    num frameTime = frames[frame + _TIME];
-    num frameMix = frames[frame + _MIX];
-    num percent = getCurvePercent(
-        frame ~/ _ENTRIES - 1,
-        1.0 - (time - frameTime) / (prevTime - frameTime));
-
-    constraint.mix += (prevMix + (frameMix - prevMix) * percent - constraint.mix) * alpha;
-    constraint.bendDirection = frames[frame + _PREV_BEND_DIRECTION].toInt();
   }
 }

@@ -21,9 +21,9 @@ Future main() async {
   // load "raptor" skeleton resources
 
   var resourceManager = new ResourceManager();
-  var format = TextureAtlasFormat.LIBGDX;
+  var libgdx = TextureAtlasFormat.LIBGDX;
   resourceManager.addTextFile("vine", "spine/vine.json");
-  resourceManager.addTextureAtlas("vine", "spine/vine.atlas", format);
+  resourceManager.addTextureAtlas("vine", "spine/vine.atlas", libgdx);
   await resourceManager.load();
 
   // load Spine skeleton

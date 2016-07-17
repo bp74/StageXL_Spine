@@ -57,32 +57,41 @@ class RotateTimeline extends CurveTimeline {
   @override
   void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
 
-    Bone bone = skeleton.bones[boneIndex];
+      // Time is before first frame.
 
-    if (time >= frames[frames.length - 2]) { // Time is after last frame.
+    } else if (time >= frames[frames.length + _PREV_TIME]) {
+
+      // Time is after last frame.
+
+      Bone bone = skeleton.bones[boneIndex];
       num amount = bone.data.rotation + frames[frames.length +_PREV_ROTATION] - bone.rotation;
       while (amount > 180) amount -= 360;
       while (amount < -180) amount += 360;
       bone.rotation += amount * alpha;
-      return;
+
+    } else {
+
+      // Interpolate between the previous frame and the current frame.
+
+      Bone bone = skeleton.bones[boneIndex];
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      num prevTime = frames[frame + _PREV_TIME];
+      num prevRotation = frames[frame + _PREV_ROTATION];
+      num frameTime = frames[frame + _TIME];
+      num frameRotation = frames[frame + _ROTATION] - prevRotation;
+
+      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+
+      while (frameRotation > 180) frameRotation -= 360;
+      while (frameRotation < -180) frameRotation += 360;
+      frameRotation = bone.data.rotation + (prevRotation + frameRotation * percent) - bone.rotation;
+      while (frameRotation > 180) frameRotation -= 360;
+      while (frameRotation < -180) frameRotation += 360;
+
+      bone.rotation += frameRotation * alpha;
     }
-
-    // Interpolate between the previous frame and the current frame.
-
-    int frame = Animation.binarySearch(frames, time, _ENTRIES);
-    num prevTime = frames[frame + _PREV_TIME];
-    num prevRotation = frames[frame + _PREV_ROTATION];
-    num frameTime = frames[frame + _TIME];
-    num percent = getCurvePercent((frame >> 1) - 1, 1.0 - (time - frameTime) / (prevTime - frameTime));
-
-    num amount = frames[frame + _ROTATION] - prevRotation;
-    while (amount > 180) amount -= 360;
-    while (amount < -180) amount += 360;
-    amount = bone.data.rotation + (prevRotation + amount * percent) - bone.rotation;
-    while (amount > 180) amount -= 360;
-    while (amount < -180) amount += 360;
-    bone.rotation += amount * alpha;
   }
 }
