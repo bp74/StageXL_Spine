@@ -261,7 +261,7 @@ class PathConstraint implements Updatable {
         // Determine curve containing position.
         for (;; curve++) {
           num length = lengths[curve];
-          if (p > length) continue;
+          if (p > length + 0.0001) continue;
           if (curve == 0)
             p /= length;
           else {
@@ -276,8 +276,9 @@ class PathConstraint implements Updatable {
           if (closed && curve == curveCount) {
             path.computeWorldVertices2(target, verticesLength - 4, 4, world, 0);
             path.computeWorldVertices2(target, 0, 4, world, 4);
-          } else
+          } else {
             path.computeWorldVertices2(target, curve * 6 + 2, 8, world, 0);
+          }
         }
 
         _addCurvePosition(p,
