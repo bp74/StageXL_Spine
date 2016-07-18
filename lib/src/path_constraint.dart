@@ -261,7 +261,7 @@ class PathConstraint implements Updatable {
         // Determine curve containing position.
         for (;; curve++) {
           num length = lengths[curve];
-          if (p > length + 0.0001) continue;
+          if (p > length && curve < lengths.length - 1) continue;
           if (curve == 0)
             p /= length;
           else {
@@ -392,7 +392,7 @@ class PathConstraint implements Updatable {
 
       for (;; curve++) {
         num length = curves[curve];
-        if (p > length + 0.0001) continue;
+        if (p > length && curve < curves.length - 1) continue;
         if (curve == 0)
           p /= length;
         else {
@@ -453,7 +453,7 @@ class PathConstraint implements Updatable {
 
       for (;; segment++) {
         num length = segments[segment];
-        if (p > length + 0.0001) continue;
+        if (p > length && segment < segments.length - 1) continue;
         if (segment == 0) {
           p /= length;
         } else {
