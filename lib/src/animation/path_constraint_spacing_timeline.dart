@@ -47,14 +47,14 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
 
-		num spacing = 0;
+		double spacing = 0.0;
 		if (time >= frames[frames.length - _ENTRIES]) {
       // Time is after last frame.
       spacing = frames[frames.length + _PREV_VALUE];
@@ -62,8 +62,8 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 			// Interpolate between the previous frame and the current frame.
 			int frame = Animation.binarySearch(frames, time, _ENTRIES);
 			spacing = frames[frame + _PREV_VALUE];
-			num frameTime = frames[frame];
-			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			double frameTime = frames[frame];
+			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 			spacing += (frames[frame + _VALUE] - spacing) * percent;
 		}
 

@@ -53,7 +53,7 @@ class PathConstraintPositionTimeline extends CurveTimeline {
 
 	/// Sets the time and value of the specified keyframe.
 
-  void setFrame (int frameIndex, num time, num value) {
+  void setFrame (int frameIndex, double time, double value) {
 		frameIndex *= _ENTRIES;
 		frames[frameIndex + _TIME] = time;
 		frames[frameIndex + _VALUE] = value;
@@ -61,14 +61,14 @@ class PathConstraintPositionTimeline extends CurveTimeline {
 
 	@override
   void apply(
-			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-			num alpha, bool setupPose, bool mixingOut) {
+			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+			double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
 
-		num position = 0;
+		double position = 0.0;
 
 		if (time >= frames[frames.length - _ENTRIES]) {
       // Time is after last frame.
@@ -77,8 +77,8 @@ class PathConstraintPositionTimeline extends CurveTimeline {
 			// Interpolate between the previous frame and the current frame.
 			int frame = Animation.binarySearch(frames, time, _ENTRIES);
 			position = frames[frame + _PREV_VALUE];
-			num frameTime = frames[frame];
-			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			double frameTime = frames[frame];
+			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 			position += (frames[frame + _VALUE] - position) * percent;
 		}
 

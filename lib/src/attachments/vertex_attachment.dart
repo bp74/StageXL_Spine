@@ -76,16 +76,16 @@ class VertexAttachment extends Attachment {
       vertices = df ? deform : vertices;
 
       Bone bone = slot.bone;
-      num x = bone.worldX;
-      num y = bone.worldY;
-      num a = bone.a;
-      num b = bone.b;
-      num c = bone.c;
-      num d = bone.d;
+      double x = bone.worldX;
+      double y = bone.worldY;
+      double a = bone.a;
+      double b = bone.b;
+      double c = bone.c;
+      double d = bone.d;
 
       for (int wi = offset; wi < offset + count; vi += 2, wi += 2) {
-        num vx = vertices[vi + 0];
-        num vy = vertices[vi + 1];
+        double vx = vertices[vi + 0];
+        double vy = vertices[vi + 1];
         worldVertices[wi + 0] = vx * a + vy * b + x;
         worldVertices[wi + 1] = vx * c + vy * d + y;
       }
@@ -100,15 +100,15 @@ class VertexAttachment extends Attachment {
       }
 
       for (int wi = offset; wi < offset + count; wi += 2) {
-        num x = 0.0;
-        num y = 0.0;
+        double x = 0.0;
+        double y = 0.0;
         int boneCount = bones[bi++];
         int boneFinal = bi + boneCount;
         for (; bi < boneFinal; bi += 1, vi += 3, di += 2) {
           Bone bone = skeletonBones[bones[bi]];
-          num vx = df ? vertices[vi + 0] + deform[di + 0] : vertices[vi + 0];
-          num vy = df ? vertices[vi + 1] + deform[di + 1] : vertices[vi + 1];
-          num vw = vertices[vi + 2];
+          double vx = df ? vertices[vi + 0] + deform[di + 0] : vertices[vi + 0];
+          double vy = df ? vertices[vi + 1] + deform[di + 1] : vertices[vi + 1];
+          double vw = vertices[vi + 2];
           x += (vx * bone.a + vy * bone.b + bone.worldX) * vw;
           y += (vx * bone.c + vy * bone.d + bone.worldY) * vw;
         }

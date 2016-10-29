@@ -13,6 +13,7 @@ part 'src/event.dart';
 part 'src/event_data.dart';
 part 'src/ik_constraint.dart';
 part 'src/ik_constraint_data.dart';
+part 'src/math_util.dart';
 part 'src/path_constraint.dart';
 part 'src/path_constraint_data.dart';
 part 'src/position_mode.dart';

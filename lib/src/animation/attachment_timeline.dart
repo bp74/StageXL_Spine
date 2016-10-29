@@ -49,15 +49,15 @@ class AttachmentTimeline implements Timeline {
 
   /// Sets the time and value of the specified keyframe.
   ///
-  void setFrame(int frameIndex, num time, String attachmentName) {
+  void setFrame(int frameIndex, double time, String attachmentName) {
     frames[frameIndex] = time.toDouble();
     attachmentNames[frameIndex] = attachmentName;
   }
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     String attachmentName;
 

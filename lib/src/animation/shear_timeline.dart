@@ -49,15 +49,15 @@ class ShearTimeline extends TranslateTimeline {
 
 	@override
   void apply(
-			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-			num alpha, bool setupPose, bool mixingOut) {
+			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+			double alpha, bool setupPose, bool mixingOut) {
 
     Float32List frames = this.frames;
 		if (time < frames[0]) return; // Time is before first frame.
 
 		Bone bone = skeleton.bones[boneIndex];
 
-		num x = 0, y = 0;
+		double x = 0.0, y = 0.0;
 		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
 			x = frames[frames.length + _PREV_X];
 			y = frames[frames.length + _PREV_Y];
@@ -66,8 +66,8 @@ class ShearTimeline extends TranslateTimeline {
 			int frame = Animation.binarySearch(frames, time, _ENTRIES);
 			x = frames[frame + _PREV_X];
 			y = frames[frame + _PREV_Y];
-			num frameTime = frames[frame];
-			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			double frameTime = frames[frame];
+			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 			x = x + (frames[frame + _X] - x) * percent;
 			y = y + (frames[frame + _Y] - y) * percent;
 		}

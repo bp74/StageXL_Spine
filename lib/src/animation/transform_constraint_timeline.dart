@@ -59,7 +59,7 @@ class TransformConstraintTimeline extends CurveTimeline {
 
 	/// Sets the time and mixes of the specified keyframe.
 
-  void setFrame (int frameIndex, num time, num rotateMix, num translateMix, num scaleMix, num shearMix) {
+  void setFrame (int frameIndex, double time, double rotateMix, double translateMix, double scaleMix, double shearMix) {
 		frameIndex *= _ENTRIES;
 		frames[frameIndex + _TIME] = time;
 		frames[frameIndex + _ROTATE] = rotateMix;
@@ -70,15 +70,15 @@ class TransformConstraintTimeline extends CurveTimeline {
 
 	@override
   void apply(
-			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-			num alpha, bool setupPose, bool mixingOut) {
+			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+			double alpha, bool setupPose, bool mixingOut) {
 
     Float32List frames = this.frames;
 		if (time < frames[0]) return; // Time is before first frame.
 
     TransformConstraint constraint = skeleton.transformConstraints[transformConstraintIndex];
 
-		num rotate = 0, translate = 0, scale = 0, shear = 0;
+		double rotate = 0.0, translate = 0.0, scale = 0.0, shear = 0.0;
 		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
 			int i = frames.length;
 			rotate = frames[i + _PREV_ROTATE];
@@ -92,8 +92,8 @@ class TransformConstraintTimeline extends CurveTimeline {
 			translate = frames[frame + _PREV_TRANSLATE];
 			scale = frames[frame + _PREV_SCALE];
 			shear = frames[frame + _PREV_SHEAR];
-			num frameTime = frames[frame];
-			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			double frameTime = frames[frame];
+			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 
 			rotate += (frames[frame + _ROTATE] - rotate) * percent;
 			translate += (frames[frame + _TRANSLATE] - translate) * percent;

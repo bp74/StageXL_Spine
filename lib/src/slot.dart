@@ -35,13 +35,13 @@ class Slot {
   final SlotData data;
   final Bone bone;
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+  double r = 1.0;
+  double g = 1.0;
+  double b = 1.0;
+  double a = 1.0;
 
   Attachment _attachment = null;
-  num _attachmentTime = 0;
+  double _attachmentTime = 0.0;
   Float32List attachmentVertices = new Float32List(0);
 
   Slot(this.data, this.bone) {
@@ -62,9 +62,9 @@ class Slot {
   }
 
   /// Returns the time since the attachment was set.
-  num get attachmentTime => bone.skeleton.time - _attachmentTime;
+  double get attachmentTime => bone.skeleton.time - _attachmentTime;
 
-  void set attachmentTime(num time) {
+  void set attachmentTime(double time) {
     _attachmentTime = bone.skeleton.time - time;
   }
 

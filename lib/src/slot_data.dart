@@ -36,10 +36,10 @@ class SlotData {
   final String name;
   final BoneData boneData;
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+  double r = 1.0;
+  double g = 1.0;
+  double b = 1.0;
+  double a = 1.0;
 
   String attachmentName = null;
   BlendMode blendMode = BlendMode.NORMAL;

@@ -406,7 +406,7 @@ class SkeletonLoader {
   void _readAnimation (Map map, String name, SkeletonData skeletonData) {
 
     List<Timeline> timelines = new List<Timeline>();
-    num duration = 0;
+    double duration = 0.0;
 
     //-------------------------------------
 
@@ -428,12 +428,12 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            num time = _getDouble(valueMap, "time", 0.0);
+            double time = _getDouble(valueMap, "time", 0.0);
             String color = _getString(valueMap, "color", "FFFFFFFF");
-            num r = _toColor(color, 0);
-            num g = _toColor(color, 1);
-            num b = _toColor(color, 2);
-            num a = _toColor(color, 3);
+            double r = _toColor(color, 0);
+            double g = _toColor(color, 1);
+            double b = _toColor(color, 2);
+            double a = _toColor(color, 3);
             colorTimeline.setFrame(frameIndex, time, r, g, b, a);
             _readCurve(valueMap, colorTimeline, frameIndex);
             frameIndex++;
@@ -449,7 +449,7 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            num time = _getDouble(valueMap, "time", 0.0);
+            double time = _getDouble(valueMap, "time", 0.0);
             String name = _getString(valueMap, "name", null);
             attachmentTimeline.setFrame(frameIndex++, time, name);
           }
@@ -511,9 +511,9 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            num x = _getDouble(valueMap, "x", 0.0);
-            num y = _getDouble(valueMap, "y", 0.0);
-            num time = _getDouble(valueMap, "time", 0.0);
+            double x = _getDouble(valueMap, "x", 0.0);
+            double y = _getDouble(valueMap, "y", 0.0);
+            double time = _getDouble(valueMap, "time", 0.0);
             translateTimeline.setFrame(frameIndex, time, x, y);
             _readCurve(valueMap, translateTimeline, frameIndex);
             frameIndex++;
@@ -541,8 +541,8 @@ class SkeletonLoader {
       ikTimeline.ikConstraintIndex = skeletonData.ikConstraints.indexOf(ikConstraint);
       int frameIndex = 0;
       for (Map valueMap in valueMaps) {
-        num time = _getDouble(valueMap, "time", 0.0);
-        num mix = _getDouble(valueMap, "mix", 1.0);
+        double time = _getDouble(valueMap, "time", 0.0);
+        double mix = _getDouble(valueMap, "mix", 1.0);
         int bendDirection = _getBool(valueMap, "bendPositive", true) ? 1 : -1;
         ikTimeline.setFrame(frameIndex, time, mix, bendDirection);
         _readCurve(valueMap, ikTimeline, frameIndex);
@@ -563,11 +563,11 @@ class SkeletonLoader {
       transformTimeline.transformConstraintIndex = skeletonData.transformConstraints.indexOf(transformConstraint);
       int frameIndex = 0;
       for (Map valueMap in valueMaps) {
-        num rotateMix = _getDouble(valueMap, "rotateMix", 1.0);
-        num translateMix = _getDouble(valueMap, "translateMix", 1.0);
-        num scaleMix = _getDouble(valueMap, "scaleMix", 1.0);
-        num shearMix = _getDouble(valueMap, "shearMix", 1.0);
-        num time = _getDouble(valueMap, "time", 0.0);
+        double rotateMix = _getDouble(valueMap, "rotateMix", 1.0);
+        double translateMix = _getDouble(valueMap, "translateMix", 1.0);
+        double scaleMix = _getDouble(valueMap, "scaleMix", 1.0);
+        double shearMix = _getDouble(valueMap, "shearMix", 1.0);
+        double time = _getDouble(valueMap, "time", 0.0);
         transformTimeline.setFrame(frameIndex, time, rotateMix, translateMix, scaleMix, shearMix);
         _readCurve(valueMap, transformTimeline, frameIndex);
         frameIndex++;
@@ -604,8 +604,8 @@ class SkeletonLoader {
           int frameIndex = 0;
 
           for (Map valueMap in valueMaps) {
-            num value = _getDouble(valueMap, timelineName, 0.0);
-            num time = _getDouble(valueMap, "time", 0.0);
+            double value = _getDouble(valueMap, timelineName, 0.0);
+            double time = _getDouble(valueMap, "time", 0.0);
             pathTimeline.setFrame(frameIndex, time, value);
             _readCurve(valueMap, pathTimeline, frameIndex);
             frameIndex++;
@@ -621,9 +621,9 @@ class SkeletonLoader {
           int frameIndex = 0;
 
           for (Map valueMap in valueMaps) {
-            num rotateMix = _getDouble(valueMap, "rotateMix", 1.0);
-            num translateMix = _getDouble(valueMap, "translateMix", 1.0);
-            num time = _getDouble(valueMap, "time", 0.0);
+            double rotateMix = _getDouble(valueMap, "rotateMix", 1.0);
+            double translateMix = _getDouble(valueMap, "translateMix", 1.0);
+            double time = _getDouble(valueMap, "time", 0.0);
             pathMixTimeline.setFrame(frameIndex, time, rotateMix, translateMix);
             _readCurve(valueMap, pathMixTimeline, frameIndex);
             frameIndex++;
@@ -706,7 +706,7 @@ class SkeletonLoader {
 
       for (Map drawOrderMap in drawOrderValues) {
 
-        num time = _getDouble(drawOrderMap, "time", 0.0);
+        double time = _getDouble(drawOrderMap, "time", 0.0);
         Int16List drawOrder = null;
 
         if (drawOrderMap.containsKey("offsets")) {
@@ -791,7 +791,7 @@ class SkeletonLoader {
     }
   }
 
-  num _toColor(String hexString, int colorIndex) {
+  double _toColor(String hexString, int colorIndex) {
     if (hexString.length != 8) {
       throw new ArgumentError("Color hexidecimal length must be 8, recieved: $hexString");
     }

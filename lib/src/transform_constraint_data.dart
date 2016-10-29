@@ -38,16 +38,16 @@ class TransformConstraintData {
   BoneData target = null;
 
   int order = 0;
-  num translateMix = 0.0;
-  num rotateMix = 0.0;
-  num scaleMix = 0.0;
-  num shearMix = 0.0;
-  num offsetRotation = 0.0;
-  num offsetX = 0.0;
-  num offsetY = 0.0;
-  num offsetScaleX = 0.0;
-  num offsetScaleY = 0.0;
-  num offsetShearY = 0.0;
+  double translateMix = 0.0;
+  double rotateMix = 0.0;
+  double scaleMix = 0.0;
+  double shearMix = 0.0;
+  double offsetRotation = 0.0;
+  double offsetX = 0.0;
+  double offsetY = 0.0;
+  double offsetScaleX = 0.0;
+  double offsetScaleY = 0.0;
+  double offsetShearY = 0.0;
 
   TransformConstraintData(this.name) {
     if (name == null) throw new ArgumentError("name cannot be null.");

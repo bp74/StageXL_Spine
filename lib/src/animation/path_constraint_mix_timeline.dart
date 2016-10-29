@@ -55,7 +55,7 @@ class PathConstraintMixTimeline extends CurveTimeline {
 
 	/// Sets the time and mixes of the specified keyframe.
 
-  void setFrame(int frameIndex, num time, num rotateMix, num translateMix) {
+  void setFrame(int frameIndex, double time, double rotateMix, double translateMix) {
 		frameIndex *= _ENTRIES;
 		frames[frameIndex + _TIME] = time;
 		frames[frameIndex + _ROTATE] = rotateMix;
@@ -64,14 +64,14 @@ class PathConstraintMixTimeline extends CurveTimeline {
 
 	@override
   void apply(
-			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-			num alpha, bool setupPose, bool mixingOut) {
+			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+			double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
 
-		num rotate = 0, translate = 0;
+		double rotate = 0.0, translate = 0.0;
 
 		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
 			rotate = frames[frames.length + _PREV_ROTATE];
@@ -81,8 +81,8 @@ class PathConstraintMixTimeline extends CurveTimeline {
 			int frame = Animation.binarySearch(frames, time, _ENTRIES);
 			rotate = frames[frame + _PREV_ROTATE];
 			translate = frames[frame + _PREV_TRANSLATE];
-			num frameTime = frames[frame];
-			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			double frameTime = frames[frame];
+			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 			rotate += (frames[frame + _ROTATE] - rotate) * percent;
 			translate += (frames[frame + _TRANSLATE] - translate) * percent;
 		}

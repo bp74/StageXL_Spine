@@ -49,15 +49,15 @@ class DrawOrderTimeline implements Timeline {
 
   /// Sets the time and value of the specified keyframe.
 
-  void setFrame(int frameIndex, num time, Int16List drawOrder) {
+  void setFrame(int frameIndex, double time, Int16List drawOrder) {
     frames[frameIndex] = time.toDouble();
     drawOrders[frameIndex] = drawOrder;
   }
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     if (mixingOut && setupPose) {
       for (int ii = 0; ii < skeleton.slots.length; ii++) {

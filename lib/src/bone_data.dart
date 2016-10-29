@@ -36,14 +36,14 @@ class BoneData {
   final String name;
   final BoneData parent;
 
-  num length = 0.0;
-  num x = 0.0;
-  num y = 0.0;
-  num rotation = 0.0;
-  num scaleX = 1.0;
-  num scaleY = 1.0;
-  num shearX = 0.0;
-  num shearY = 0.0;
+  double length = 0.0;
+  double x = 0.0;
+  double y = 0.0;
+  double rotation = 0.0;
+  double scaleX = 1.0;
+  double scaleY = 1.0;
+  double shearX = 0.0;
+  double shearY = 0.0;
   TransformMode transformMode = TransformMode.normal;
 
   BoneData(this.index, this.name, this.parent) {

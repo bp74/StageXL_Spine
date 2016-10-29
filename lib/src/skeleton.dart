@@ -44,14 +44,14 @@ class Skeleton {
 
   Skin _skin = null;
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+  double r = 1.0;
+  double g = 1.0;
+  double b = 1.0;
+  double a = 1.0;
 
-  num time = 0.0;
-  num x = 0;
-  num y = 0;
+  double time = 0.0;
+  double x = 0.0;
+  double y = 0.0;
 
   Skeleton(this.data) {
     if (data == null) throw new ArgumentError("data cannot be null.");
@@ -458,7 +458,7 @@ class Skeleton {
     return null;
   }
 
-  void update(num delta) {
+  void update(double delta) {
     time += delta;
   }
 

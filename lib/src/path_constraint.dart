@@ -40,10 +40,10 @@ class PathConstraint implements Constraint {
   final List<Bone> bones = new List<Bone>();
 
   Slot target;
-  num position = 0.0;
-  num spacing = 0.0;
-  num rotateMix = 0.0;
-  num translateMix = 0.0;
+  double position = 0.0;
+  double spacing = 0.0;
+  double rotateMix = 0.0;
+  double translateMix = 0.0;
 
   Float32List _spaces = new Float32List(0);
   Float32List _positions = new Float32List(0);
@@ -77,9 +77,9 @@ class PathConstraint implements Constraint {
     if (target.attachment is! PathAttachment) return;
     PathAttachment attachment = target.attachment;
 
-    num deg2rad = math.PI / 180.0;
-    num rotateMix = this.rotateMix;
-    num translateMix = this.translateMix;
+    double deg2rad = math.PI / 180.0;
+    double rotateMix = this.rotateMix;
+    double translateMix = this.translateMix;
     bool translate = translateMix > 0;
     bool rotate = rotateMix > 0;
     if (!translate && !rotate) return;
@@ -97,7 +97,7 @@ class PathConstraint implements Constraint {
     if (_spaces.length != spacesCount) _spaces = new Float32List(spacesCount);
     Float32List spaces = _spaces;
     Float32List lengths = null;
-    num spacing = this.spacing;
+    double spacing = this.spacing;
 
     if (scale || lengthSpacing) {
       if (scale) {
@@ -107,9 +107,9 @@ class PathConstraint implements Constraint {
 
       for (int i = 0; i < spacesCount - 1;) {
         Bone bone = bones[i];
-        num length = bone.data.length;
-        num x = length * bone.a;
-        num y = length * bone.c;
+        double length = bone.data.length;
+        double x = length * bone.a;
+        double y = length * bone.c;
         length = math.sqrt(x * x + y * y);
         if (scale) lengths[i] = length;
         spaces[++i] = lengthSpacing ? math.max(0.0, length + spacing) : spacing;
@@ -125,9 +125,9 @@ class PathConstraint implements Constraint {
         data.positionMode == PositionMode.percent,
         spacingMode == SpacingMode.percent);
 
-    num boneX = positions[0];
-    num boneY = positions[1];
-    num offsetRotation = data.offsetRotation;
+    double boneX = positions[0];
+    double boneY = positions[1];
+    double offsetRotation = data.offsetRotation;
     bool tip = rotateMode == RotateMode.chain && offsetRotation == 0;
     int p = 3;
 
@@ -135,15 +135,15 @@ class PathConstraint implements Constraint {
       Bone bone = bones[i];
       bone._worldX += (boneX - bone.worldX) * translateMix;
       bone._worldY += (boneY - bone.worldY) * translateMix;
-      num x = positions[p + 0];
-      num y = positions[p + 1];
-      num dx = x - boneX;
-      num dy = y - boneY;
+      double x = positions[p + 0];
+      double y = positions[p + 1];
+      double dx = x - boneX;
+      double dy = y - boneY;
 
       if (scale) {
-        num length = lengths[i];
+        double length = lengths[i];
         if (length != 0) {
-          num s = (math.sqrt(dx * dx + dy * dy) / length - 1) * rotateMix + 1;
+          double s = (math.sqrt(dx * dx + dy * dy) / length - 1) * rotateMix + 1;
           bone._a *= s;
           bone._c *= s;
         }
@@ -153,13 +153,13 @@ class PathConstraint implements Constraint {
       boneY = y;
 
       if (rotate) {
-        num a = bone.a;
-        num b = bone.b;
-        num c = bone.c;
-        num d = bone.d;
-        num r = 0.0;
-        num cos = 0.0;
-        num sin = 0.0;
+        double a = bone.a;
+        double b = bone.b;
+        double c = bone.c;
+        double d = bone.d;
+        double r = 0.0;
+        double cos = 0.0;
+        double sin = 0.0;
 
         if (tangents) {
           r = positions[p - 1];
@@ -174,7 +174,7 @@ class PathConstraint implements Constraint {
         if (tip) {
           cos = math.cos(r);
           sin = math.sin(r);
-          num length = bone.data.length;
+          double length = bone.data.length;
           boneX += (length * (cos * a - sin * c) - dx) * rotateMix;
           boneY += (length * (sin * a + cos * c) - dy) * rotateMix;
         }
@@ -201,7 +201,7 @@ class PathConstraint implements Constraint {
       bool tangents, bool percentPosition, bool percentSpacing) {
 
     Slot target = this.target;
-    num position = this.position;
+    double position = this.position;
     Float32List spaces = _spaces;
 
     int positionCount = spacesCount * 3 + 2;
@@ -219,7 +219,7 @@ class PathConstraint implements Constraint {
     if (!path.constantSpeed) {
       Float32List lengths = path.lengths;
       curveCount -= closed ? 1 : 2;
-      num pathLength = lengths[curveCount];
+      double pathLength = lengths[curveCount];
       if (percentPosition) position *= pathLength;
       if (percentSpacing) {
         for (int i = 0; i < spacesCount; i++)
@@ -231,9 +231,9 @@ class PathConstraint implements Constraint {
       int o = 0, curve = 0;
 
       for (int i = 0; i < spacesCount; i++, o += 3) {
-        num space = spaces[i];
+        double space = spaces[i];
         position += space;
-        num p = position;
+        double p = position;
 
         if (closed) {
           p %= pathLength;
@@ -257,12 +257,12 @@ class PathConstraint implements Constraint {
 
         // Determine curve containing position.
         for (;; curve++) {
-          num length = lengths[curve];
+          double length = lengths[curve];
           if (p > length && curve < lengths.length - 1) continue;
           if (curve == 0)
             p /= length;
           else {
-            num prev = lengths[curve - 1];
+            double prev = lengths[curve - 1];
             p = (p - prev) / (length - prev);
           }
           break;
@@ -309,15 +309,15 @@ class PathConstraint implements Constraint {
     if (_curves.length != curveCount) _curves = new Float32List(curveCount);
 
     Float32List curves = _curves;
-    num pathLength = 0.0;
-    num x1 = world[0], y1 = world[1];
-    num cx1 = 0.0, cy1 = 0.0;
-    num cx2 = 0.0, cy2 = 0.0;
-    num x2 = 0.0, y2 = 0.0;
-    num tmpx = 0.0, tmpy = 0.0;
-    num dddfx = 0.0, dddfy = 0.0;
-    num ddfx = 0.0, ddfy = 0.0;
-    num dfx = 0.0, dfy = 0.0;
+    double pathLength = 0.0;
+    double x1 = world[0], y1 = world[1];
+    double cx1 = 0.0, cy1 = 0.0;
+    double cx2 = 0.0, cy2 = 0.0;
+    double x2 = 0.0, y2 = 0.0;
+    double tmpx = 0.0, tmpy = 0.0;
+    double dddfx = 0.0, dddfy = 0.0;
+    double ddfx = 0.0, ddfy = 0.0;
+    double dfx = 0.0, dfy = 0.0;
     int w = 2;
 
     for (int i = 0; i < curveCount; i++, w += 6) {
@@ -363,15 +363,15 @@ class PathConstraint implements Constraint {
     }
 
     Float32List segments = _segments;
-    num curveLength = 0.0;
+    double curveLength = 0.0;
     int segment = 0;
     int o = 0;
     int curve = 0;
 
     for (int i = 0; i < spacesCount; i++, o += 3) {
-      num space = spaces[i];
+      double space = spaces[i];
       position += space;
-      num p = position;
+      double p = position;
 
       if (closed) {
         p %= pathLength;
@@ -388,12 +388,12 @@ class PathConstraint implements Constraint {
       // Determine curve containing position.
 
       for (;; curve++) {
-        num length = curves[curve];
+        double length = curves[curve];
         if (p > length && curve < curves.length - 1) continue;
         if (curve == 0)
           p /= length;
         else {
-          num prev = curves[curve - 1];
+          double prev = curves[curve - 1];
           p = (p - prev) / (length - prev);
         }
         break;
@@ -449,12 +449,12 @@ class PathConstraint implements Constraint {
       p *= curveLength;
 
       for (;; segment++) {
-        num length = segments[segment];
+        double length = segments[segment];
         if (p > length && segment < segments.length - 1) continue;
         if (segment == 0) {
           p /= length;
         } else {
-          num prev = segments[segment - 1];
+          double prev = segments[segment - 1];
           p = segment + (p - prev) / (length - prev);
         }
         break;
@@ -467,44 +467,44 @@ class PathConstraint implements Constraint {
     return out;
   }
 
-  void _addBeforePosition(num p, Float32List temp, int i, Float32List out, int o) {
-    num x1 = temp[i + 0];
-    num y1 = temp[i + 1];
-    num dx = temp[i + 2] - x1;
-    num dy = temp[i + 3] - y1;
-    num r = math.atan2(dy, dx);
+  void _addBeforePosition(double p, Float32List temp, int i, Float32List out, int o) {
+    double x1 = temp[i + 0];
+    double y1 = temp[i + 1];
+    double dx = temp[i + 2] - x1;
+    double dy = temp[i + 3] - y1;
+    double r = math.atan2(dy, dx);
     out[o + 0] = x1 + p * math.cos(r);
     out[o + 1] = y1 + p * math.sin(r);
     out[o + 2] = r;
   }
 
-  void _addAfterPosition(num p, Float32List temp, int i, Float32List out, int o) {
-    num x1 = temp[i + 2];
-    num y1 = temp[i + 3];
-    num dx = x1 - temp[i];
-    num dy = y1 - temp[i + 1];
-    num r = math.atan2(dy, dx);
+  void _addAfterPosition(double p, Float32List temp, int i, Float32List out, int o) {
+    double x1 = temp[i + 2];
+    double y1 = temp[i + 3];
+    double dx = x1 - temp[i];
+    double dy = y1 - temp[i + 1];
+    double r = math.atan2(dy, dx);
     out[o + 0] = x1 + p * math.cos(r);
     out[o + 1] = y1 + p * math.sin(r);
     out[o + 2] = r;
   }
 
-  void _addCurvePosition(num p,
-      num x1, num y1, num cx1, num cy1, num cx2, num cy2, num x2, num y2,
+  void _addCurvePosition(double p,
+      double x1, double y1, double cx1, double cy1, double cx2, double cy2, double x2, double y2,
       Float32List out, int o, bool tangents) {
 
     if (p == 0 || p.isNaN) p = 0.0001;
-    num tt = p * p;
-    num ttt = tt * p;
-    num u = 1.0 - p;
-    num uu = u * u;
-    num uuu = uu * u;
-    num ut = u * p;
-    num ut3 = ut * 3;
-    num uut3 = u * ut3;
-    num utt3 = ut3 * p;
-    num x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt;
-    num y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
+    double tt = p * p;
+    double ttt = tt * p;
+    double u = 1.0 - p;
+    double uu = u * u;
+    double uuu = uu * u;
+    double ut = u * p;
+    double ut3 = ut * 3;
+    double uut3 = u * ut3;
+    double utt3 = ut3 * p;
+    double x = x1 * uuu + cx1 * uut3 + cx2 * utt3 + x2 * ttt;
+    double y = y1 * uuu + cy1 * uut3 + cy2 * utt3 + y2 * ttt;
     out[o + 0] = x;
     out[o + 1] = y;
 

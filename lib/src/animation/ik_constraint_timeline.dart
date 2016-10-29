@@ -55,7 +55,7 @@ class IkConstraintTimeline extends CurveTimeline {
 
   /// Sets the time, mix and bend direction of the specified keyframe.
 
-  void setFrame (int frameIndex, num time, num mix, int bendDirection) {
+  void setFrame (int frameIndex, double time, double mix, int bendDirection) {
     frameIndex *= _ENTRIES;
     frames[frameIndex + _TIME] = time;
     frames[frameIndex + _MIX] = mix;
@@ -64,8 +64,8 @@ class IkConstraintTimeline extends CurveTimeline {
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
@@ -83,9 +83,9 @@ class IkConstraintTimeline extends CurveTimeline {
     } else {
       // Interpolate between the previous frame and the current frame.
       int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      num mix = frames[frame + _PREV_MIX];
-      num frameTime = frames[frame];
-      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+      double mix = frames[frame + _PREV_MIX];
+      double frameTime = frames[frame];
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
       if (setupPose) {
         constraint.mix = constraint.data.mix + (mix + (frames[frame + _MIX] - mix) * percent - constraint.data.mix) * alpha;
         constraint.bendDirection = mixingOut ? constraint.data.bendDirection : frames[frame + _PREV_BEND_DIRECTION].toInt();

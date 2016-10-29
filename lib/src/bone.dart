@@ -37,29 +37,29 @@ class Bone implements Updatable {
   final Bone parent;
   final List<Bone> children = new List<Bone>();
 
-  num x = 0.0;
-  num y = 0.0;
-  num rotation = 0.0;
-  num scaleX = 0.0;
-  num scaleY = 0.0;
-  num shearX = 0.0;
-  num shearY = 0.0;
+  double x = 0.0;
+  double y = 0.0;
+  double rotation = 0.0;
+  double scaleX = 0.0;
+  double scaleY = 0.0;
+  double shearX = 0.0;
+  double shearY = 0.0;
 
-  num ax = 0.0;
-  num ay = 0.0;
-  num arotation = 0.0;
-  num ascaleX = 0.0;
-  num ascaleY = 0.0;
-  num ashearX = 0.0;
-  num ashearY = 0.0;
+  double ax = 0.0;
+  double ay = 0.0;
+  double arotation = 0.0;
+  double ascaleX = 0.0;
+  double ascaleY = 0.0;
+  double ashearX = 0.0;
+  double ashearY = 0.0;
   bool appliedValid = false;
 
-  num _a = 1.0;
-  num _b = 0.0;
-  num _c = 0.0;
-  num _d = 1.0;
-  num _worldX = 0.0;
-  num _worldY = 0.0;
+  double _a = 1.0;
+  double _b = 0.0;
+  double _c = 0.0;
+  double _d = 1.0;
+  double _worldX = 0.0;
+  double _worldY = 0.0;
 
   bool _sorted = false;
 
@@ -84,125 +84,117 @@ class Bone implements Updatable {
 
 	/// Computes the world SRT using the parent bone and the specified local SRT.
 	void updateWorldTransformWith (
-      num x, num y, num rotation,
-      num scaleX, num scaleY, num shearX, num shearY) {
+      double x, double y, double rotation,
+      double scaleX, double scaleY, double shearX, double shearY) {
 
     ax = x;
-		ay = y;
-		arotation = rotation;
-		ascaleX = scaleX;
-		ascaleY = scaleY;
-		ashearX = shearX;
-		ashearY = shearY;
-		appliedValid = true;
+    ay = y;
+    arotation = rotation;
+    ascaleX = scaleX;
+    ascaleY = scaleY;
+    ashearX = shearX;
+    ashearY = shearY;
+    appliedValid = true;
 
-    num deg2rad = math.PI / 180.0;
-    num rad2deg = 180.0 / math.PI;
-		num rotationY = 0.0, la = 0.0, lb = 0.0, lc = 0.0, ld = 0.0;
-		num sin = 0.0, cos = 0.0;
-		num s = 0.0;
-		
-		Bone parent = this.parent;
-		if (parent == null) { // Root bone.
-			rotationY = rotation + 90 + shearY;
-			la = math.cos(deg2rad * (rotation + shearX)) * scaleX;
-			lb = math.cos(deg2rad * rotationY) * scaleY;
-			lc = math.sin(deg2rad * (rotation + shearX)) * scaleX;
-			ld = math.sin(deg2rad * rotationY) * scaleY;
-      Skeleton  skeleton = this.skeleton;
-			_a = la;
-			_b = lb;
-			_c = lc;
-			_d = ld;
-			_worldX = x + skeleton.x;
-			_worldY = y + skeleton.y;	
-			return;
-		}
+    double la = 0.0, lb = 0.0, lc = 0.0, ld = 0.0;
+    double sin = 0.0, cos = 0.0;
+    double s = 0.0;
 
-  num pa = parent._a;
-  num pb = parent._b;
-  num pc = parent._c;
-  num pd = parent._d;
-
-  _worldX = pa * x + pb * y + parent._worldX;
-  _worldY = pc * x + pd * y + parent._worldY;
-
-  switch (this.data.transformMode) {
-
-    case TransformMode.normal:
-      rotationY = rotation + 90 + shearY;
-      la = math.cos(deg2rad * (rotation + shearX)) * scaleX;
-      lb = math.cos(deg2rad * rotationY) * scaleY;
-      lc = math.sin(deg2rad * (rotation + shearX)) * scaleX;
-      ld = math.sin(deg2rad * rotationY) * scaleY;
-      _a = pa * la + pb * lc;
-      _b = pa * lb + pb * ld;
-      _c = pc * la + pd * lc;
-      _d = pc * lb + pd * ld;
+    Bone parent = this.parent;
+    if (parent == null) { // Root bone.
+      la = scaleX * _cosDeg(rotation + shearX);
+      lb = scaleY * _cosDeg(rotation + 90.0 + shearY);
+      lc = scaleX * _sinDeg(rotation + shearX);
+      ld = scaleY * _sinDeg(rotation + 90.0 + shearY);
+      _a = la;
+      _b = lb;
+      _c = lc;
+      _d = ld;
+      _worldX = x + this.skeleton.x;
+      _worldY = y + this.skeleton.y;
       return;
+    }
 
-    case TransformMode.onlyTranslation:
-      rotationY = rotation + 90 + shearY;
-      _a = math.cos(deg2rad * (rotation + shearX)) * scaleX;
-      _b = math.cos(deg2rad * rotationY) * scaleY;
-      _c = math.sin(deg2rad * (rotation + shearX)) * scaleX;
-      _d = math.sin(deg2rad * rotationY) * scaleY;
-      break;
+    double pa = parent._a;
+    double pb = parent._b;
+    double pc = parent._c;
+    double pd = parent._d;
 
-    case TransformMode.noRotationOrReflection:
-      s = pa * pa + pc * pc;
-      num prx = 0.0;
-      if (s > 0.0001) {
-        s = (pa * pd - pb * pc).abs() / s;
-        pb = pc * s;
-        pd = pa * s;
-        prx = math.atan2(pc, pa) * rad2deg;
-      } else {
-        pa = 0;
-        pc = 0;
-        prx = 90 - math.atan2(pd, pb) * rad2deg;
-      }
-      num rx = rotation + shearX - prx;
-      num ry = rotation + shearY - prx + 90;
-      la = math.cos(deg2rad * rx) * scaleX;
-      lb = math.cos(deg2rad * ry) * scaleY;
-      lc = math.sin(deg2rad * rx) * scaleX;
-      ld = math.sin(deg2rad * ry) * scaleY;
-      _a = pa * la - pb * lc;
-      _b = pa * lb - pb * ld;
-      _c = pc * la + pd * lc;
-      _d = pc * lb + pd * ld;
-      break;
+    _worldX = pa * x + pb * y + parent._worldX;
+    _worldY = pc * x + pd * y + parent._worldY;
 
-    case TransformMode.noScale:
-    case TransformMode.noScaleOrReflection:
-      cos = math.cos(deg2rad * rotation);
-      sin = math.sin(deg2rad * rotation);
-      num za = pa * cos + pb * sin;
-      num zc = pc * cos + pd * sin;
-      s = math.sqrt(za * za + zc * zc);
-      if (s > 0.00001) s = 1 / s;
-      za *= s;
-      zc *= s;
-      s = math.sqrt(za * za + zc * zc);
-      num r = math.PI / 2 + math.atan2(zc, za);
-      num zb = math.cos(r) * s;
-      num zd = math.sin(r) * s;
-      la = math.cos(deg2rad * shearX) * scaleX;
-      lb = math.cos(deg2rad * (90 + shearY)) * scaleY;
-      lc = math.sin(deg2rad * shearX) * scaleX;
-      ld = math.sin(deg2rad * (90 + shearY)) * scaleY;
-      _a = za * la + zb * lc;
-      _b = za * lb + zb * ld;
-      _c = zc * la + zd * lc;
-      _d = zc * lb + zd * ld;
+    switch (this.data.transformMode) {
+      case TransformMode.normal:
+        la = scaleX * _cosDeg(rotation + shearX);
+        lb = scaleY * _cosDeg(rotation + 90 + shearY);
+        lc = scaleX * _sinDeg(rotation + shearX);
+        ld = scaleY * _sinDeg(rotation + 90 + shearY);
+        _a = pa * la + pb * lc;
+        _b = pa * lb + pb * ld;
+        _c = pc * la + pd * lc;
+        _d = pc * lb + pd * ld;
+        return;
 
-      if (this.data.transformMode != TransformMode.noScaleOrReflection ? pa * pd - pb * pc < 0 : false) {
-        _b = -_b;
-        _d = -_d;
-      }
+      case TransformMode.onlyTranslation:
+        _a = scaleX * _cosDeg(rotation + shearX);
+        _b = scaleY * _cosDeg(rotation + 90 + shearY);
+        _c = scaleX * _sinDeg(rotation + shearX);
+        _d = scaleY * _sinDeg(rotation + 90 + shearY);
+        break;
 
-      return;
+      case TransformMode.noRotationOrReflection:
+        s = pa * pa + pc * pc;
+        double prx = 0.0;
+        if (s > 0.0001) {
+          s = (pa * pd - pb * pc).abs() / s;
+          pb = pc * s;
+          pd = pa * s;
+          prx = _toDeg(math.atan2(pc, pa));
+        } else {
+          pa = 0.0;
+          pc = 0.0;
+          prx = 90.0 - _toDeg(math.atan2(pd, pb));
+        }
+        double rx = rotation + shearX - prx;
+        double ry = rotation + shearY - prx + 90;
+        la = scaleX * _cosDeg(rx);
+        lb = scaleY * _cosDeg(ry);
+        lc = scaleX * _sinDeg(rx);
+        ld = scaleY * _sinDeg(ry);
+        _a = pa * la - pb * lc;
+        _b = pa * lb - pb * ld;
+        _c = pc * la + pd * lc;
+        _d = pc * lb + pd * ld;
+        break;
+
+      case TransformMode.noScale:
+      case TransformMode.noScaleOrReflection:
+        cos = _cosDeg(rotation);
+        sin = _sinDeg(rotation);
+        double za = pa * cos + pb * sin;
+        double zc = pc * cos + pd * sin;
+        s = math.sqrt(za * za + zc * zc);
+        if (s > 0.00001) s = 1 / s;
+        za *= s;
+        zc *= s;
+        s = math.sqrt(za * za + zc * zc);
+        double r = math.PI / 2 + math.atan2(zc, za);
+        double zb = math.cos(r) * s;
+        double zd = math.sin(r) * s;
+        la = scaleX * _cosDeg(shearX);
+        lb = scaleY * _cosDeg(90.0 + shearY);
+        lc = scaleX * _sinDeg(shearX);
+        ld = scaleY * _sinDeg(90.0 + shearY);
+        _a = za * la + zb * lc;
+        _b = za * lb + zb * ld;
+        _c = zc * la + zd * lc;
+        _d = zc * lb + zd * ld;
+
+        if (this.data.transformMode != TransformMode.noScaleOrReflection ? pa * pd - pb * pc < 0 : false) {
+          _b = -_b;
+          _d = -_d;
+        }
+        break;
     }
 	}
 
@@ -216,52 +208,45 @@ class Bone implements Updatable {
     shearY = this.data.shearY;
   }
 
-  num get a => _a;
-  num get b => _b;
-  num get c => _c;
-  num get d => _d;
-  num get worldX => _worldX;
-  num get worldY => _worldY;
+  double get a => _a;
+  double get b => _b;
+  double get c => _c;
+  double get d => _d;
+  double get worldX => _worldX;
+  double get worldY => _worldY;
 
-  num get worldRotationX => math.atan2(_c, _a) * 180 / math.PI;
-  num get worldRotationY => math.atan2(_d, _b) * 180 / math.PI;
-  num get worldScaleX => math.sqrt(_a * _a + _c * _c);
-  num get worldScaleY => math.sqrt(_b * _b + _d * _d);
+  double get worldRotationX => _toDeg(math.atan2(_c, _a));
+  double get worldRotationY => _toDeg(math.atan2(_d, _b));
+  double get worldScaleX => math.sqrt(_a * _a + _c * _c);
+  double get worldScaleY => math.sqrt(_b * _b + _d * _d);
 
-  num worldToLocalRotationX() {
+  double worldToLocalRotationX() {
     Bone parent = this.parent;
     if (parent == null) return arotation;
-    num pa = parent.a;
-    num pb = parent.b;
-    num pc = parent.c;
-    num pd = parent.d;
-    num a = this.a;
-    num c = this.c;
-    num rad2deg = 180 / math.PI;
-    return math.atan2(pa * c - pc * a, pd * a - pb * c) * rad2deg;
+    double pa = parent.a;
+    double pb = parent.b;
+    double pc = parent.c;
+    double pd = parent.d;
+    return _toDeg(math.atan2(pa * c - pc * a, pd * a - pb * c));
   }
 
-  num worldToLocalRotationY() {
+  double worldToLocalRotationY() {
     Bone parent = this.parent;
     if (parent == null) return arotation;
-    num pa = parent.a;
-    num pb = parent.b;
-    num pc = parent.c;
-    num pd = parent.d;
-    num b = this.b;
-    num d = this.d;
-    num rad2deg = 180 / math.PI;
-    return math.atan2(pa * d - pc * b, pd * b - pb * d) * rad2deg;
+    double pa = parent.a;
+    double pb = parent.b;
+    double pc = parent.c;
+    double pd = parent.d;
+    return _toDeg(math.atan2(pa * d - pc * b, pd * b - pb * d));
   }
 
-  void rotateWorld (num degrees) {
-    num a = this.a;
-    num b = this.b;
-    num c = this.c;
-	  num d = this.d;
-	  num deg2rad = math.PI / 180.0;
-    num cos = math.cos(deg2rad * degrees);
-	  num	sin = math.sin(deg2rad * degrees);
+  void rotateWorld (double degrees) {
+    double a = this.a;
+    double b = this.b;
+    double c = this.c;
+	  double d = this.d;
+    double cos = _cosDeg(degrees);
+    double	sin = _sinDeg(degrees);
     _a = cos * a - sin * c;
     _b = cos * b - sin * d;
     _c = sin * a + cos * c;
@@ -280,66 +265,68 @@ class Bone implements Updatable {
 
     this.appliedValid = true;
 		Bone parent = this.parent;
-    num rad2deg = 180.0 / math.PI;
 
     if (parent == null) {
       this.ax = worldX;
       this.ay = worldY;
-      this.arotation = math.atan2(c, a) * rad2deg;
+      this.arotation = _toDeg(math.atan2(c, a));
       this.ascaleX = math.sqrt(a * a + c * c);
       this.ascaleY = math.sqrt(b * b + d * d);
       this.ashearX = 0.0;
-      this.ashearY = math.atan2(a * b + c * d, a * d - b * c) * rad2deg;
+      this.ashearY = _toDeg(math.atan2(a * b + c * d, a * d - b * c));
 			return;
 		}
 
-		num pa = parent.a;
-    num pb = parent.b;
-    num pc = parent.c;
-    num pd = parent.d;
-		num pid = 1.0 / (pa * pd - pb * pc);
+		double pa = parent.a;
+    double pb = parent.b;
+    double pc = parent.c;
+    double pd = parent.d;
+    double pid = 1.0 / (pa * pd - pb * pc);
 
-    num dx = worldX - parent.worldX;
-    num dy = worldY - parent.worldY;
+    double dx = worldX - parent.worldX;
+    double dy = worldY - parent.worldY;
     this.ax = (dx * pd * pid - dy * pb * pid);
     this.ay = (dy * pa * pid - dx * pc * pid);
-		num ia = pid * pd;
-		num id = pid * pa;
-		num ib = pid * pb;
-		num ic = pid * pc;
-		num ra = ia * a - ib * c;
-		num rb = ia * b - ib * d;
-		num rc = id * c - ic * a;
-		num rd = id * d - ic * b;
-		this.ashearX = 0;
+
+    double ia = pid * pd;
+    double id = pid * pa;
+    double ib = pid * pb;
+    double ic = pid * pc;
+    double ra = ia * a - ib * c;
+    double rb = ia * b - ib * d;
+    double rc = id * c - ic * a;
+    double rd = id * d - ic * b;
+
+		this.ashearX = 0.0;
     this.ascaleX = math.sqrt(ra * ra + rc * rc);
+
 		if (this.scaleX > 0.0001) {
-			num det = ra * rd - rb * rc;
+      double det = ra * rd - rb * rc;
 			this.ascaleY = det /ascaleX;
-      this.ashearY = math.atan2(ra * rb + rc * rd, det) * rad2deg;
-      this.arotation = math.atan2(rc, ra) * rad2deg;
+      this.ashearY = _toDeg(math.atan2(ra * rb + rc * rd, det));
+      this.arotation = _toDeg(math.atan2(rc, ra));
 		} else {
 			this.ascaleX = 0.0;
       this.ascaleY = math.sqrt(rb * rb + rd * rd);
       this.ashearY = 0.0;
-      this.arotation = 90.0 - math.atan2(rd, rb) * rad2deg;
+      this.arotation = 90.0 - _toDeg(math.atan2(rd, rb));
 		}
 	}
 	
   void worldToLocal (Float32List world) {
-    num a = _a;
-    num b = _b;
-    num c = _c;
-    num d = _d;
-    num x = world[0] - _worldX;
-    num y = world[1] - _worldY;
+    double a = _a;
+    double b = _b;
+    double c = _c;
+    double d = _d;
+    double x = world[0] - _worldX;
+    double y = world[1] - _worldY;
     world[0] = (x * d - y * b) / (a * d - b * c);
     world[1] = (y * a - x * c) / (a * d - b * c);
   }
 
   void localToWorld (Float32List local) {
-    num localX = local[0];
-    num localY = local[1];
+    double localX = local[0];
+    double localY = local[1];
     local[0] = localX * _a + localY * _b + _worldX;
     local[1] = localX * _c + localY * _d + _worldY;
   }

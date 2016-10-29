@@ -35,11 +35,11 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
   final String path;
   final BitmapData bitmapData;
 
-  num rotation = 0.0;
-  num x = 0.0, y = 0.0;
-  num scaleX = 1.0, scaleY = 1.0;
-  num width = 0.0, height = 0.0;
-  num r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+  double rotation = 0.0;
+  double x = 0.0, y = 0.0;
+  double scaleX = 1.0, scaleY = 1.0;
+  double width = 0.0, height = 0.0;
+  double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
   Matrix matrix = new Matrix.fromIdentity();
 
   Int16List ixList = null;
@@ -84,7 +84,7 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   //---------------------------------------------------------------------------
 
-  Float32List getVertexList(num posX, num posY, Slot slot) {
+  Float32List getVertexList(double posX, double posY, Slot slot) {
 
     var vertices = this.vertices;
     var vxList = this.vxList;

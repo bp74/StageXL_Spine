@@ -36,10 +36,10 @@ class TransformConstraint implements Constraint {
   final List<Bone> bones = new List<Bone>();
 
   Bone target = null;
-  num translateMix = 0.0;
-  num rotateMix = 0.0;
-  num scaleMix = 0.0;
-  num shearMix = 0.0;
+  double translateMix = 0.0;
+  double rotateMix = 0.0;
+  double scaleMix = 0.0;
+  double shearMix = 0.0;
 
   final Float32List _temp = new Float32List(2);
 
@@ -66,18 +66,18 @@ class TransformConstraint implements Constraint {
 
   void update () {
 
-    num rotateMix = this.rotateMix;
-    num translateMix = this.translateMix;
-    num scaleMix = this.scaleMix;
-    num shearMix = this.shearMix;
-    num deg2rad = math.PI / 180.0;
+    double rotateMix = this.rotateMix;
+    double translateMix = this.translateMix;
+    double scaleMix = this.scaleMix;
+    double shearMix = this.shearMix;
+    double deg2rad = math.PI / 180.0;
 
     Bone target = this.target;
 
-    num ta = target.a;
-    num tb = target.b;
-    num tc = target.c;
-    num td = target.d;
+    double ta = target.a;
+    double tb = target.b;
+    double tc = target.c;
+    double td = target.d;
 
     List<Bone> bones = this.bones;
     for (int i = 0; i < bones.length; i++) {
@@ -85,15 +85,15 @@ class TransformConstraint implements Constraint {
       var modified = false;
 
       if (rotateMix != 0) {
-        num a = bone.a;
-        num b = bone.b;
-        num c = bone.c;
-        num d = bone.d;
-        num r = math.atan2(tc, ta) - math.atan2(c, a) + data.offsetRotation * deg2rad;
+        double a = bone.a;
+        double b = bone.b;
+        double c = bone.c;
+        double d = bone.d;
+        double r = math.atan2(tc, ta) - math.atan2(c, a) + data.offsetRotation * deg2rad;
         if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
         r *= rotateMix;
-        num cos = math.cos(r);
-        num sin = math.sin(r);
+        double cos = math.cos(r);
+        double sin = math.sin(r);
         bone._a = cos * a - sin * c;
         bone._b = cos * b - sin * d;
         bone._c = sin * a + cos * c;
@@ -111,8 +111,8 @@ class TransformConstraint implements Constraint {
       }
 
       if (scaleMix > 0) {
-        num s = math.sqrt(bone.a * bone.a + bone.c * bone.c);
-        num ts = math.sqrt(ta * ta + tc * tc);
+        double s = math.sqrt(bone.a * bone.a + bone.c * bone.c);
+        double ts = math.sqrt(ta * ta + tc * tc);
         if (s > 0.00001) s = (s + (ts - s + data.offsetScaleX) * scaleMix) / s;
         bone._a *= s;
         bone._c *= s;
@@ -125,13 +125,13 @@ class TransformConstraint implements Constraint {
       }
 
       if (shearMix > 0) {
-        num b = bone.b;
-        num d = bone.d;
-        num by = math.atan2(d, b);
-        num r = math.atan2(td, tb) - math.atan2(tc, ta) - (by - math.atan2(bone.c, bone.a));
+        double b = bone.b;
+        double d = bone.d;
+        double by = math.atan2(d, b);
+        double r = math.atan2(td, tb) - math.atan2(tc, ta) - (by - math.atan2(bone.c, bone.a));
         if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
         r = by + (r + data.offsetShearY * deg2rad) * shearMix;
-        num s = math.sqrt(b * b + d * d);
+        double s = math.sqrt(b * b + d * d);
         bone._b = math.cos(r) * s;
         bone._d = math.sin(r) * s;
         modified = true;

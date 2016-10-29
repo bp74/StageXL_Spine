@@ -56,15 +56,15 @@ class EventTimeline implements Timeline {
   /// Fires events for frames > lastTime and <= time.
   ///
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     if (firedEvents == null) return;
 
     if (lastTime > time) {
       // Fire events after last time for looped animations.
       apply(skeleton, lastTime, double.MAX_FINITE, firedEvents, alpha, setupPose, mixingOut);
-      lastTime = -1;
+      lastTime = -1.0;
     } else if (lastTime >= frames[frameCount - 1]) {
       // Last time is after last frame.
       return;
@@ -78,7 +78,7 @@ class EventTimeline implements Timeline {
       frame = 0;
     } else {
       frame = Animation.binarySearch1(frames, lastTime);
-      num frameTime = frames[frame];
+      double frameTime = frames[frame];
       while (frame > 0) {
         // Fire multiple events with the same frame.
         if (frames[frame - 1] != frameTime) break;

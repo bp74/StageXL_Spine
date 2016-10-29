@@ -32,11 +32,11 @@ part of stagexl_spine;
 
 class Event {
 
-  final num time;
+  final double time;
   final EventData data;
 
   int intValue = null;
-  num floatValue = null;
+  double floatValue = null;
   String stringValue = null;
 
   Event(this.time, this.data) {

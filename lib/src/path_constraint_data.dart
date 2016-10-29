@@ -41,11 +41,11 @@ class PathConstraintData {
   RotateMode rotateMode;
 
   int order = 0;
-	num offsetRotation = 0.0;
-	num position = 0.0;
-  num spacing = 0.0;
-  num rotateMix = 0.0;
-  num translateMix = 0.0;
+	double offsetRotation = 0.0;
+	double position = 0.0;
+  double spacing = 0.0;
+  double rotateMix = 0.0;
+  double translateMix = 0.0;
 
 	PathConstraintData (this.name) {
 		if (name == null) throw new ArgumentError("name cannot be null.");

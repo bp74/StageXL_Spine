@@ -34,7 +34,7 @@ class Animation {
 
   final String name;
   final List<Timeline> timelines;
-  final num duration;
+  final double duration;
 
   Animation(this.name, this.timelines, this.duration) {
     if (name == null) throw new ArgumentError("name cannot be null.");
@@ -44,8 +44,8 @@ class Animation {
   /// Poses the skeleton at the specified time for this animation.
   ///
   void apply(
-      Skeleton skeleton, num lastTime, num time, bool loop,
-      List<Event> events, num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, bool loop,
+      List<Event> events, double alpha, bool setupPose, bool mixingOut) {
 
     if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
 
@@ -60,7 +60,7 @@ class Animation {
   }
 
   /// target: After the first and before the last entry.
-  static int binarySearch(Float32List values, num target, int step) {
+  static int binarySearch(Float32List values, double target, int step) {
 
     int low = 0;
     int high = values.length ~/ step - 2;
@@ -82,7 +82,7 @@ class Animation {
     }
   }
 
-  static int binarySearch1(Float32List values, num target) {
+  static int binarySearch1(Float32List values, double target) {
 
     int low = 0;
     int high = values.length - 2;
@@ -100,7 +100,7 @@ class Animation {
     }
   }
 
-  static int linearSearch(Float32List values, num target, int step) {
+  static int linearSearch(Float32List values, double target, int step) {
     for (int i = 0; i <= values.length - step; i += step) {
       if (values[i] > target) return i;
     }

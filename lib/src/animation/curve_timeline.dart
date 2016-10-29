@@ -34,9 +34,9 @@ part of stagexl_spine;
 ///
 class CurveTimeline implements Timeline {
 
-  static const num _LINEAR = 0.0;
-  static const num _STEPPED = 1.0;
-  static const num _BEZIER = 2.0;
+  static const double _LINEAR = 0.0;
+  static const double _STEPPED = 1.0;
+  static const double _BEZIER = 2.0;
   static const int _BEZIER_SIZE = 10 * 2 - 1;
 
   final Float32List _curves; // type, x, y, ...
@@ -46,8 +46,8 @@ class CurveTimeline implements Timeline {
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
   }
 
   @override
@@ -70,22 +70,22 @@ class CurveTimeline implements Timeline {
   /// the two keyframes. cy1 and cy2 are the percent of the difference between
   /// the keyframe's values.
 
-  void setCurve(int frameIndex, num cx1, num cy1, num cx2, num cy2) {
+  void setCurve(int frameIndex, double cx1, double cy1, double cx2, double cy2) {
 
-    num tmpx = (-cx1 * 2 + cx2) * 0.03;
-    num tmpy = (-cy1 * 2 + cy2) * 0.03;
-    num dddfx = ((cx1 - cx2) * 3 + 1) * 0.006;
-    num dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
-    num ddfx = tmpx * 2 + dddfx;
-    num ddfy = tmpy * 2 + dddfy;
-    num dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667;
-    num dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
+    double tmpx = (-cx1 * 2 + cx2) * 0.03;
+    double tmpy = (-cy1 * 2 + cy2) * 0.03;
+    double dddfx = ((cx1 - cx2) * 3 + 1) * 0.006;
+    double dddfy = ((cy1 - cy2) * 3 + 1) * 0.006;
+    double ddfx = tmpx * 2 + dddfx;
+    double ddfy = tmpy * 2 + dddfy;
+    double dfx = cx1 * 0.3 + tmpx + dddfx * 0.16666667;
+    double dfy = cy1 * 0.3 + tmpy + dddfy * 0.16666667;
 
     int i = frameIndex * _BEZIER_SIZE;
     _curves[i++] = _BEZIER;
 
-    num x = dfx;
-    num y = dfy;
+    double x = dfx;
+    double y = dfy;
 
     for (int n = i + _BEZIER_SIZE - 1; i < n; i += 2) {
       _curves[i + 0] = x;
@@ -99,28 +99,28 @@ class CurveTimeline implements Timeline {
     }
   }
 
-  num getCurvePercent(int frameIndex, num percent) {
+  double getCurvePercent(int frameIndex, double percent) {
 
     if (percent < 0.0) percent = 0.0;
     if (percent > 1.0) percent = 1.0;
 
     int i = frameIndex * _BEZIER_SIZE;
-    num type = _curves[i];
+    double type = _curves[i];
     if (type == _LINEAR) return percent;
-    if (type == _STEPPED) return 0;
+    if (type == _STEPPED) return 0.0;
     i++;
 
-    num x = 0.0;
+    double x = 0.0;
     for (int start = i, n = i + _BEZIER_SIZE - 1; i < n; i += 2) {
       x = _curves[i];
       if (x >= percent) {
-        num prevX = (i == start) ? 0.0 : _curves[i - 2];
-        num prevY = (i == start) ? 0.0 : _curves[i - 1];
+        double prevX = (i == start) ? 0.0 : _curves[i - 2];
+        double prevY = (i == start) ? 0.0 : _curves[i - 1];
         return prevY + (_curves[i + 1] - prevY) * (percent - prevX) / (x - prevX);
       }
     }
 
-    num y = _curves[i - 1];
+    double y = _curves[i - 1];
     return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
   }
 }

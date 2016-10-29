@@ -58,7 +58,7 @@ class ColorTimeline extends CurveTimeline {
 
   /// Sets the time and value of the specified keyframe.
   ///
-  void setFrame(int frameIndex, num time, num r, num g, num b, num a) {
+  void setFrame(int frameIndex, double time, double r, double g, double b, double a) {
     frameIndex *= _ENTRIES;
     frames[frameIndex + _TIME] = time.toDouble();
     frames[frameIndex + _R] = r.toDouble();
@@ -69,13 +69,13 @@ class ColorTimeline extends CurveTimeline {
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     List<num> frames = this.frames;
     if (time < frames[0 + _TIME]) return; // Time is before first frame.
 
-    num r = 0.0, g = 0.0, b = 0.0, a = 0.0, t = 0.0;
+    double r = 0.0, g = 0.0, b = 0.0, a = 0.0, t = 0.0;
 
     if (time >= frames[frames.length + _PREV_TIME]) {
 
@@ -96,8 +96,8 @@ class ColorTimeline extends CurveTimeline {
       b = frames[frame + _PREV_B];
       a = frames[frame + _PREV_A];
 
-      num ft = frames[frame + _TIME];
-      num p = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - ft) / (t - ft));
+      double ft = frames[frame + _TIME];
+      double p = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - ft) / (t - ft));
 
       r += (frames[frame + _R] - r) * p;
       g += (frames[frame + _G] - g) * p;

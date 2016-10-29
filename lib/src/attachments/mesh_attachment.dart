@@ -40,15 +40,15 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
   Int16List triangles;
   Int16List edges;
 
-  num r = 1.0;
-  num g = 1.0;
-  num b = 1.0;
-  num a = 1.0;
+  double r = 1.0;
+  double g = 1.0;
+  double b = 1.0;
+  double a = 1.0;
 
   int hullLength = 0;
   bool inheritDeform = false;
-  num width = 0.0;
-  num height = 0.0;
+  double width = 0.0;
+  double height = 0.0;
 
   Int16List _ixList;
   Float32List _vxList;
@@ -108,7 +108,7 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
   Int16List get ixList => _ixList;
 
-  Float32List getVertexList(num posX, num posY, Slot slot) {
+  Float32List getVertexList(double posX, double posY, Slot slot) {
 
     // TODO: make this more efficient!
 

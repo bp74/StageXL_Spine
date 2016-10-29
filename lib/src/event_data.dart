@@ -35,7 +35,7 @@ class EventData {
   final String name;
 
   int intValue = 0;
-  num floatValue = 0.0;
+  double floatValue = 0.0;
   String stringValue = "";
 
   EventData(this.name) {

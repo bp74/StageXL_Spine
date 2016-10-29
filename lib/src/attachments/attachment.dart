@@ -46,9 +46,9 @@ class Attachment {
 abstract class _RenderAttachment {
   Int16List get ixList;
   BitmapData get bitmapData;
-  num get r;
-  num get g;
-  num get b;
-  num get a;
-  Float32List getVertexList(num posX, num posY, Slot slot);
+  double get r;
+  double get g;
+  double get b;
+  double get a;
+  Float32List getVertexList(double posX, double posY, Slot slot);
 }

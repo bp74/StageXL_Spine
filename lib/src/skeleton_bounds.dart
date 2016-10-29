@@ -36,13 +36,13 @@ class SkeletonBounds {
   final List<Float32List> verticesList = new List<Float32List>();
   final List<ByteBuffer> _byteBuffers = new List<ByteBuffer>();
 
-  num minX = 0.0;
-  num minY = 0.0;
-  num maxX = 0.0;
-  num maxY = 0.0;
+  double minX = 0.0;
+  double minY = 0.0;
+  double maxX = 0.0;
+  double maxY = 0.0;
 
-  num get width => maxX - minX;
-  num get height => maxY - minY;
+  double get width => maxX - minX;
+  double get height => maxY - minY;
 
   void update(Skeleton skeleton, bool updateAabb) {
 
@@ -94,16 +94,16 @@ class SkeletonBounds {
 
   void aabbCompute() {
 
-    num minX = double.INFINITY;
-    num minY = double.INFINITY;
-    num maxX = double.NEGATIVE_INFINITY;
-    num maxY = double.NEGATIVE_INFINITY;
+    double minX = double.INFINITY;
+    double minY = double.INFINITY;
+    double maxX = double.NEGATIVE_INFINITY;
+    double maxY = double.NEGATIVE_INFINITY;
 
     for (int i = 0; i < verticesList.length; i++) {
       Float32List polygon = verticesList[i];
       for (int ii = 0; ii < polygon.length - 1; ii += 2) {
-        num x = polygon[ii + 0];
-        num y = polygon[ii + 1];
+        double x = polygon[ii + 0];
+        double y = polygon[ii + 1];
         if (minX > x) minX = x;
         if (maxX < x) maxX = x;
         if (minY > y) minY = y;
@@ -120,26 +120,26 @@ class SkeletonBounds {
 
   /// Returns true if the axis aligned bounding box contains the point.
   ///
-  bool aabbContainsPoint(num x, num y) {
+  bool aabbContainsPoint(double x, double y) {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
   /// Returns true if the axis aligned bounding box intersects the line segment.
   ///
-  bool aabbIntersectsSegment(num x1, num y1, num x2, num y2) {
+  bool aabbIntersectsSegment(double x1, double y1, double x2, double y2) {
 
     if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) ||
         (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY)) return false;
 
-    num m = (y2 - y1) / (x2 - x1);
+    double m = (y2 - y1) / (x2 - x1);
 
-    num y = m * (minX - x1) + y1;
+    double y = m * (minX - x1) + y1;
     if (y > minY && y < maxY) return true;
 
     y = m * (maxX - x1) + y1;
     if (y > minY && y < maxY) return true;
 
-    num x = (minY - y1) / m + x1;
+    double x = (minY - y1) / m + x1;
     if (x > minX && x < maxX) return true;
 
     x = (maxY - y1) / m + x1;
@@ -159,7 +159,7 @@ class SkeletonBounds {
   /// or null. When doing many checks, it is usually more efficient to only
   /// call this method if [aabbContainsPoint] returns true.
   ///
-  BoundingBoxAttachment containsPoint(num x, num y) {
+  BoundingBoxAttachment containsPoint(double x, double y) {
 
     for (int i = 0; i < verticesList.length; i++) {
       BoundingBoxAttachment boundingBox = boundingBoxes[i];
@@ -174,7 +174,7 @@ class SkeletonBounds {
   /// segment, or null. When doing many checks, it is usually more efficient
   /// to only call this method if [aabbIntersectsSegment] returns true.
   ///
-  BoundingBoxAttachment intersectsSegment(num x1, num y1, num x2, num y2) {
+  BoundingBoxAttachment intersectsSegment(double x1, double y1, double x2, double y2) {
 
     for (int i = 0; i < verticesList.length; i++) {
       BoundingBoxAttachment boundingBox = boundingBoxes[i];
@@ -192,17 +192,17 @@ class SkeletonBounds {
 
   //-----------------------------------------------------------------------------------------------
 
-  bool _containsPoint(Float32List vertices, num x, num y) {
+  bool _containsPoint(Float32List vertices, double x, double y) {
 
     bool inside = false;
     int prevIndex = vertices.length - 2;
 
     for (int i = 0; i < vertices.length - 1; i += 2) {
 
-      num vertexX = vertices[i + 0];
-      num vertexY = vertices[i + 1];
-      num prevX = vertices[prevIndex + 0];
-      num prevY = vertices[prevIndex + 1];
+      double vertexX = vertices[i + 0];
+      double vertexY = vertices[i + 1];
+      double prevX = vertices[prevIndex + 0];
+      double prevY = vertices[prevIndex + 1];
 
       if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y)) {
         if (vertexX + (y - vertexY) / (prevY - vertexY) * (prevX - vertexX) < x) {
@@ -216,30 +216,30 @@ class SkeletonBounds {
     return inside;
   }
 
-  bool _intersectsSegment(Float32List vertices, num x1, num y1, num x2, num y2) {
+  bool _intersectsSegment(Float32List vertices, double x1, double y1, double x2, double y2) {
 
-    num width12 = x1 - x2;
-    num height12 = y1 - y2;
-    num det1 = x1 * y2 - y1 * x2;
+    double width12 = x1 - x2;
+    double height12 = y1 - y2;
+    double det1 = x1 * y2 - y1 * x2;
 
-    num x3 = vertices[vertices.length - 2];
-    num y3 = vertices[vertices.length - 1];
+    double x3 = vertices[vertices.length - 2];
+    double y3 = vertices[vertices.length - 1];
 
     for (int i = 0; i < vertices.length - 1; i += 2) {
 
-      num x4 = vertices[i + 0];
-      num y4 = vertices[i + 1];
+      double x4 = vertices[i + 0];
+      double y4 = vertices[i + 1];
 
-      num det2 = x3 * y4 - y3 * x4;
-      num width34 = x3 - x4;
-      num height34 = y3 - y4;
-      num det3 = width12 * height34 - height12 * width34;
+      double det2 = x3 * y4 - y3 * x4;
+      double width34 = x3 - x4;
+      double height34 = y3 - y4;
+      double det3 = width12 * height34 - height12 * width34;
 
-      num x = (det1 * width34 - width12 * det2) / det3;
+      double x = (det1 * width34 - width12 * det2) / det3;
       if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) &&
           ((x >= x1 && x <= x2) || (x >= x2 && x <= x1))) {
 
-        num y = (det1 * height34 - height12 * det2) / det3;
+        double y = (det1 * height34 - height12 * det2) / det3;
         if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) &&
             ((y >= y1 && y <= y2) || (y >= y2 && y <= y1))) return true;
       }

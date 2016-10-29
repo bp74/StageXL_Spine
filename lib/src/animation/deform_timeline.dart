@@ -50,15 +50,15 @@ class DeformTimeline extends CurveTimeline {
 
   /// Sets the time and value of the specified keyframe.
 
-  void setFrame(int frameIndex, num time, Float32List vertices) {
+  void setFrame(int frameIndex, double time, Float32List vertices) {
     frames[frameIndex] = time;
     frameVertices[frameIndex] = vertices;
   }
 
   @override
   void apply(
-      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
-      num alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
+      double alpha, bool setupPose, bool mixingOut) {
 
     Slot slot = skeleton.slots[slotIndex];
     Attachment slotAttachment = slot.attachment;
@@ -73,12 +73,12 @@ class DeformTimeline extends CurveTimeline {
     int vertexCount = frameVertices[0].length;
 
     Float32List verticesArray = slot.attachmentVertices;
-    if (verticesArray.length != vertexCount) alpha = 1; // Don't mix from uninitialized slot vertices.
+    if (verticesArray.length != vertexCount) alpha = 1.0; // Don't mix from uninitialized slot vertices.
     verticesArray.length = vertexCount;
     Float32List vertices = verticesArray;
 
     List<num> setupVertices;
-    num setup = 0, prev = 0;
+    double setup = 0.0, prev = 0.0;
 
     if (time >= frames[frames.length - 1]) { // Time is after last frame.
       Float32List lastVertices = frameVertices[frames.length - 1];
@@ -114,8 +114,8 @@ class DeformTimeline extends CurveTimeline {
     int frame = Animation.binarySearch1(frames, time);
     Float32List prevVertices = frameVertices[frame - 1];
     Float32List nextVertices = frameVertices[frame];
-    num frameTime = frames[frame];
-    num percent = getCurvePercent(frame - 1, 1 - (time - frameTime) / (frames[frame - 1] - frameTime));
+    double frameTime = frames[frame];
+    double percent = getCurvePercent(frame - 1, 1 - (time - frameTime) / (frames[frame - 1] - frameTime));
 
     if (alpha == 1) {
       // Vertex positions or deform offsets, no alpha.
