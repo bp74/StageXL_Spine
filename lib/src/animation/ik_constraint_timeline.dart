@@ -47,6 +47,12 @@ class IkConstraintTimeline extends CurveTimeline {
       : frames = new Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
+
+  @override
+  int getPropertyId() {
+    return (TimelineType.ikConstraint.ordinal << 24) + ikConstraintIndex;
+  }
+
   /// Sets the time, mix and bend direction of the specified keyframe.
 
   void setFrame (int frameIndex, num time, num mix, int bendDirection) {
@@ -57,39 +63,36 @@ class IkConstraintTimeline extends CurveTimeline {
   }
 
   @override
-  void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+      num alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) {
+    if (time < frames[0]) return; // Time is before first frame.
 
-      // Time is before first frame.
+    IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
 
-    } else if (time >= frames[frames.length + _PREV_TIME]) {
-
+    if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
-
-      IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
-      num prevMix = frames[frames.length + _PREV_MIX];
-      num prevBendDirection = frames[frames.length + _PREV_BEND_DIRECTION];
-      constraint.mix += (prevMix - constraint.mix) * alpha;
-      constraint.bendDirection = prevBendDirection.round();
-
+      if (setupPose) {
+        constraint.mix = constraint.data.mix + (frames[frames.length + _PREV_MIX] - constraint.data.mix) * alpha;
+        constraint.bendDirection = mixingOut ? constraint.data.bendDirection : frames[frames.length + _PREV_BEND_DIRECTION].toInt();
+      } else {
+        constraint.mix += (frames[frames.length + _PREV_MIX] - constraint.mix) * alpha;
+        if (!mixingOut) constraint.bendDirection = frames[frames.length + _PREV_BEND_DIRECTION].toInt();
+      }
     } else {
-
       // Interpolate between the previous frame and the current frame.
-
-      IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
       int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      num prevTime = frames[frame + _PREV_TIME];
-      num prevMix = frames[frame + _PREV_MIX];
-      num prevBendDirection = frames[frames.length + _PREV_BEND_DIRECTION];
-      num frameTime = frames[frame + _TIME];
-      num frameMix = frames[frame + _MIX];
-
-      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
-
-      constraint.mix += (prevMix + (frameMix - prevMix) * percent - constraint.mix) * alpha;
-      constraint.bendDirection = prevBendDirection.toInt();
+      num mix = frames[frame + _PREV_MIX];
+      num frameTime = frames[frame];
+      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+      if (setupPose) {
+        constraint.mix = constraint.data.mix + (mix + (frames[frame + _MIX] - mix) * percent - constraint.data.mix) * alpha;
+        constraint.bendDirection = mixingOut ? constraint.data.bendDirection : frames[frame + _PREV_BEND_DIRECTION].toInt();
+      } else {
+        constraint.mix += (mix + (frames[frame + _MIX] - mix) * percent - constraint.mix) * alpha;
+        if (!mixingOut) constraint.bendDirection = frames[frame + _PREV_BEND_DIRECTION].toInt();
+      }
     }
   }
 }

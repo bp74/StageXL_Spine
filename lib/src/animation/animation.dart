@@ -43,7 +43,9 @@ class Animation {
 
   /// Poses the skeleton at the specified time for this animation.
   ///
-  void apply(Skeleton skeleton, num lastTime, num time, bool loop, List<Event> events) {
+  void apply(
+      Skeleton skeleton, num lastTime, num time, bool loop,
+      List<Event> events, num alpha, bool setupPose, bool mixingOut) {
 
     if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
 
@@ -53,26 +55,7 @@ class Animation {
     }
 
     for (int i = 0; i < timelines.length; i++) {
-      timelines[i].apply(skeleton, lastTime, time, events, 1);
-    }
-  }
-
-  /// Poses the skeleton at the specified time for this animation mixed
-  /// with the current pose.
-  ///
-  /// alpha: The amount of this animation that affects the current pose.
-  ///
-  void mix(Skeleton skeleton, num lastTime, num time, bool loop, List<Event> events, num alpha) {
-
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
-
-    if (loop && duration != 0) {
-      time %= duration;
-      if (lastTime > 0) lastTime %= duration;
-    }
-
-    for (int i = 0; i < timelines.length; i++) {
-      timelines[i].apply(skeleton, lastTime, time, events, alpha);
+      timelines[i].apply(skeleton, lastTime, time, events, alpha, setupPose, mixingOut);
     }
   }
 
@@ -100,10 +83,11 @@ class Animation {
   }
 
   static int binarySearch1(Float32List values, num target) {
+
     int low = 0;
     int high = values.length - 2;
     if (high == 0) return 1;
-    
+
     int current = high >> 1;
     while (true) {
       if (values[current + 1] <= target) {
@@ -115,7 +99,7 @@ class Animation {
       current = (low + high) >> 1;
     }
   }
-  
+
   static int linearSearch(Float32List values, num target, int step) {
     for (int i = 0; i <= values.length - step; i += step) {
       if (values[i] > target) return i;
@@ -124,5 +108,4 @@ class Animation {
   }
 
   String toString() => name;
-
 }

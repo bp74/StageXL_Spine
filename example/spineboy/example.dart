@@ -78,26 +78,23 @@ Future main() async {
 
   // register track events
 
-  skeletonAnimation.state.onTrackStart.listen((TrackEntryStartArgs t) {
-    var trackEntry = skeletonAnimation.state.getCurrent(t.trackIndex);
-    print("${t.trackIndex} start: ${trackEntry}");
+
+  skeletonAnimation.state.onTrackStart.listen((TrackEntryStartEvent e) {
+    print("${e.trackEntry.trackIndex} start: ${e.trackEntry}");
   });
 
-  skeletonAnimation.state.onTrackEnd.listen((TrackEntryEndArgs t) {
-    var trackEntry = skeletonAnimation.state.getCurrent(t.trackIndex);
-    print("${t.trackIndex} end: ${trackEntry}");
+  skeletonAnimation.state.onTrackEnd.listen((TrackEntryEndEvent e) {
+    print("${e.trackEntry.trackIndex} end: ${e.trackEntry}");
   });
 
-  skeletonAnimation.state.onTrackComplete.listen((TrackEntryCompleteArgs t) {
-    var trackEntry = skeletonAnimation.state.getCurrent(t.trackIndex);
-    print("${t.trackIndex} complete: ${trackEntry}, ${t.count}");
+  skeletonAnimation.state.onTrackComplete.listen((TrackEntryCompleteEvent e) {
+    print("${e.trackEntry.trackIndex} complete: ${e.trackEntry}");
   });
 
-  skeletonAnimation.state.onTrackEvent.listen((TrackEntryEventArgs t) {
-    var trackEntry = skeletonAnimation.state.getCurrent(t.trackIndex);
-    var event = t.event;
-    print("${t.trackIndex} event: ${trackEntry}, "
-        "${event.data.name}: ${event.intValue}, ${event.floatValue}, ${event.stringValue}");
+  skeletonAnimation.state.onTrackEvent.listen((TrackEntryEventEvent e) {
+    var ev = e.event;
+    var text = "${ev.data.name}: ${ev.intValue}, ${ev.floatValue}, ${ev.stringValue}";
+    print("${e.trackEntry.trackIndex} event: ${e.trackEntry}, $text");
   });
 
   // Test other animations defined in this Spine animation

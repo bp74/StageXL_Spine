@@ -45,6 +45,11 @@ class RotateTimeline extends CurveTimeline {
       : frames = new Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
+  @override
+  int getPropertyId() {
+    return (TimelineType.rotate.ordinal << 24) + boneIndex;
+  }
+
   /// Sets the time and angle of the specified keyframe.
 
   void setFrame(int frameIndex, num time, num degrees) {
@@ -54,43 +59,44 @@ class RotateTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+			num alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) {
+    Float32List frames = this.frames;
+		if (time < frames[0]) return; // Time is before first frame.
 
-      // Time is before first frame.
+		Bone bone = skeleton.bones[boneIndex];
+		num r = 0;
 
-    } else if (time >= frames[frames.length + _PREV_TIME]) {
-
+		if (time >= frames[frames.length - _ENTRIES]) {
       // Time is after last frame.
+			if (setupPose) {
+        bone.rotation = bone.data.rotation + frames[frames.length + _PREV_ROTATION] * alpha;
+      } else {
+				r = bone.data.rotation + frames[frames.length + _PREV_ROTATION] - bone.rotation;
+				r -= (16384 - (16384.499999999996 - r / 360).toInt()) * 360; // Wrap within -180 and 180.
+				bone.rotation += r * alpha;
+			}
+			return;
+		}
 
-      Bone bone = skeleton.bones[boneIndex];
-      num amount = bone.data.rotation + frames[frames.length +_PREV_ROTATION] - bone.rotation;
-      while (amount > 180) amount -= 360;
-      while (amount < -180) amount += 360;
-      bone.rotation += amount * alpha;
+		// Interpolate between the previous frame and the current frame.
+		int frame = Animation.binarySearch(frames, time, _ENTRIES);
+		num prevRotation = frames[frame + _PREV_ROTATION];
+		num frameTime = frames[frame];
+		num percent = getCurvePercent((frame >> 1) - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 
-    } else {
-
-      // Interpolate between the previous frame and the current frame.
-
-      Bone bone = skeleton.bones[boneIndex];
-      int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      num prevTime = frames[frame + _PREV_TIME];
-      num prevRotation = frames[frame + _PREV_ROTATION];
-      num frameTime = frames[frame + _TIME];
-      num frameRotation = frames[frame + _ROTATION] - prevRotation;
-
-      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
-
-      while (frameRotation > 180) frameRotation -= 360;
-      while (frameRotation < -180) frameRotation += 360;
-      frameRotation = bone.data.rotation + (prevRotation + frameRotation * percent) - bone.rotation;
-      while (frameRotation > 180) frameRotation -= 360;
-      while (frameRotation < -180) frameRotation += 360;
-
-      bone.rotation += frameRotation * alpha;
-    }
-  }
+		r = frames[frame + _ROTATION] - prevRotation;
+		r -= (16384 - (16384.499999999996 - r / 360).toInt()) * 360;
+		r = prevRotation + r * percent;
+		if (setupPose) {
+			r -= (16384 - (16384.499999999996 - r / 360).toInt()) * 360;
+			bone.rotation = bone.data.rotation + r * alpha;
+		} else {
+			r = bone.data.rotation + r - bone.rotation;
+			r -= (16384 - (16384.499999999996 - r / 360).toInt()) * 360;
+			bone.rotation += r * alpha;
+		}
+	}
 }

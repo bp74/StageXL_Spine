@@ -46,6 +46,11 @@ class PathConstraintPositionTimeline extends CurveTimeline {
       : frames = new Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
+  @override
+  int getPropertyId() {
+    return (TimelineType.pathConstraintPosition.ordinal << 24) + pathConstraintIndex;
+  }
+
 	/// Sets the time and value of the specified keyframe.
 
   void setFrame (int frameIndex, num time, num value) {
@@ -55,34 +60,32 @@ class PathConstraintPositionTimeline extends CurveTimeline {
 	}
 
 	@override
-  void apply (Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+			num alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) {
-			// Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-    } else if (time >= frames[frames.length + _PREV_TIME]) {
+    PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
 
+		num position = 0;
+
+		if (time >= frames[frames.length - _ENTRIES]) {
       // Time is after last frame.
+      position = frames[frames.length + _PREV_VALUE];
+    } else {
+			// Interpolate between the previous frame and the current frame.
+			int frame = Animation.binarySearch(frames, time, _ENTRIES);
+			position = frames[frame + _PREV_VALUE];
+			num frameTime = frames[frame];
+			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			position += (frames[frame + _VALUE] - position) * percent;
+		}
 
-      PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
-      num prevValue = frames[frames.length + _PREV_VALUE];
-			constraint.position += (prevValue - constraint.position) * alpha;
-
-		} else {
-
-      // Interpolate between the previous frame and the current frame.
-
-      PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
-      int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      num prevTime = frames[frame + _PREV_TIME];
-      num prevValue = frames[frame + _PREV_VALUE];
-      num frameTime = frames[frame + _TIME];
-      num frameValue = frames[frame + _VALUE];
-
-      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
-
-      constraint.position += (prevValue + (frameValue - prevValue) * percent - constraint.position) * alpha;
+		if (setupPose) {
+      constraint.position = constraint.data.position + (position - constraint.data.position) * alpha;
+    } else {
+      constraint.position += (position - constraint.position) * alpha;
     }
 	}
 }

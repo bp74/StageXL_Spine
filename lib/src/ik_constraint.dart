@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class IkConstraint implements Updatable {
+class IkConstraint implements Constraint {
 
   final List<Bone> bones = new List<Bone>();
   final IkConstraintData data;
@@ -38,7 +38,6 @@ class IkConstraint implements Updatable {
 
   num mix = 1.0;
   int bendDirection = 0;
-  int level = 0;
 
   IkConstraint(this.data, Skeleton skeleton) {
 
@@ -65,42 +64,34 @@ class IkConstraint implements Updatable {
         apply1(bones[0], target.worldX, target.worldY, mix);
         break;
       case 2:
-        apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection,
-            mix);
+        apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
         break;
     }
   }
 
+  int getOrder() => this.data.order;
+
   String toString() => data.name;
 
-  /// Adjusts the bone rotation so the tip is as close to the target
-  /// position as possible. The target is specified in the world
-  /// coordinate system.
-
-  static void apply1(Bone bone, num targetX, num targetY, num alpha) {
-
-    Bone pp = bone.parent;
-    num rad2deg = 180 / math.PI;
-    num id = 1.0 / (pp.a * pp.d - pp.b * pp.c);
-    num x = targetX - pp.worldX;
-    num y = targetY - pp.worldY;
-    num tx = (x * pp.d - y * pp.b) * id - bone.x;
-    num ty = (y * pp.a - x * pp.c) * id - bone.y;
-
-    num rotationIK = math.atan2(ty, tx) * rad2deg - bone.shearX - bone.rotation;
-    if (bone.scaleX < 0) rotationIK += 180;
-    if (rotationIK > 180) {
-      rotationIK -= 360;
-    } else if (rotationIK < -180) {
-      rotationIK += 360;
-    }
-
-    bone.updateWorldTransformWith(
-        bone.x, bone.y,
-        bone.rotation + rotationIK * alpha,
-        bone.scaleX, bone.scaleY,
-        bone.shearX, bone.shearY);
-  }
+	/// Adjusts the bone rotation so the tip is as close to the target position
+  /// as possible. The target is specified in the world coordinate system.
+	static void apply1 (Bone bone, num targetX, num targetY, num alpha) {
+		if (!bone.appliedValid) bone.updateAppliedTransform();
+		Bone p = bone.parent;
+    num rad2deg = 180.0 / math.PI;
+		num id = 1.0 / (p.a * p.d - p.b * p.c);
+		num x = targetX - p.worldX;
+    num y = targetY - p.worldY;
+		num tx = (x * p.d - y * p.b) * id - bone.ax;
+    num ty = (y * p.a - x * p.c) * id - bone.ay;
+		num rotationIK = math.atan2(ty, tx) * rad2deg - bone.ashearX - bone.arotation;
+		if (bone.ascaleX < 0.0) rotationIK += 180.0;
+		if (rotationIK > 180.0) rotationIK -= 360.0;
+		if (rotationIK < -180.0) rotationIK += 360.0;
+		bone.updateWorldTransformWith(
+        bone.ax, bone.ay, bone.arotation + rotationIK * alpha,
+        bone.ascaleX, bone.ascaleY, bone.ashearX, bone.ashearY);
+	}
 
   /// Adjusts the parent and child bone rotations so the tip of the
   /// child is as close to the target position as possible. The target
@@ -114,12 +105,14 @@ class IkConstraint implements Updatable {
       child.updateWorldTransform();
       return;
     }
+    if (!parent.appliedValid) parent.updateAppliedTransform();
+    if (!child.appliedValid) child.updateAppliedTransform();
 
-    num px = parent.x;
-    num py = parent.y;
-    num psx = parent.scaleX;
-    num psy = parent.scaleY;
-    num csx = child.scaleX;
+    num px = parent.ax;
+    num py = parent.ay;
+    num psx = parent.ascaleX;
+    num psy = parent.ascaleY;
+    num csx = child.ascaleX;
     num rad2deg = 180 / math.PI;
     int os1 = 0, os2 = 0, s2 = 0;
 
@@ -139,7 +132,7 @@ class IkConstraint implements Updatable {
       os2 = 0;
     }
 
-    num cx = child.x;
+    num cx = child.ax;
     num cy = 0.0;
     num cwx = 0.0;
     num cwy = 0.0;
@@ -154,7 +147,7 @@ class IkConstraint implements Updatable {
       cwx = a * cx + parent.worldX;
       cwy = c * cx + parent.worldY;
     } else {
-      cy = child.y;
+      cy = child.ay;
       cwx = a * cx + b * cy + parent.worldX;
       cwy = c * cx + d * cy + parent.worldY;
     }
@@ -260,13 +253,13 @@ class IkConstraint implements Updatable {
     }
 
     num os = math.atan2(cy, cx) * s2;
-    num rotation = parent.rotation;
+    num rotation = parent.arotation;
     a1 = (a1 - os) * rad2deg + os1 - rotation;
     if (a1 > 180) a1 -= 360; else if (a1 < -180) a1 += 360;
-    parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, parent.scaleX, parent.scaleY, 0, 0);
-    rotation = child.rotation;
-    a2 = ((a2 + os) * rad2deg - child.shearX) * s2 + os2 - rotation;
+    parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, parent.ascaleX, parent.ascaleY, 0, 0);
+    rotation = child.arotation;
+    a2 = ((a2 + os) * rad2deg - child.ashearX) * s2 + os2 - rotation;
     if (a2 > 180) a2 -= 360; else if (a2 < -180) a2 += 360;
-    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.scaleX, child.scaleY, child.shearX, child.shearY);
+    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
   }
 }

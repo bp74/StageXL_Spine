@@ -36,6 +36,8 @@ class TransformConstraintData {
   final List<BoneData> bones = new List<BoneData>();
 
   BoneData target = null;
+
+  int order = 0;
   num translateMix = 0.0;
   num rotateMix = 0.0;
   num scaleMix = 0.0;

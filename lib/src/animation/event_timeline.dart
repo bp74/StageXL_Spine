@@ -39,6 +39,11 @@ class EventTimeline implements Timeline {
       : frames = new Float32List(frameCount),
         events = new List<Event>(frameCount);
 
+  @override
+  int getPropertyId () {
+    return TimelineType.event.ordinal << 24;
+  }
+
   int get frameCount => frames.length;
 
   /// Sets the time and value of the specified keyframe.
@@ -50,13 +55,15 @@ class EventTimeline implements Timeline {
 
   /// Fires events for frames > lastTime and <= time.
   ///
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+      num alpha, bool setupPose, bool mixingOut) {
 
     if (firedEvents == null) return;
 
     if (lastTime > time) {
       // Fire events after last time for looped animations.
-      apply(skeleton, lastTime, double.INFINITY, firedEvents, alpha);
+      apply(skeleton, lastTime, double.MAX_FINITE, firedEvents, alpha, setupPose, mixingOut);
       lastTime = -1;
     } else if (lastTime >= frames[frameCount - 1]) {
       // Last time is after last frame.

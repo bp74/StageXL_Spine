@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
  
-class PathConstraint implements Updatable {
+class PathConstraint implements Constraint {
 
   static const int _NONE = -1;
   static const int _BEFORE = -2;
@@ -125,9 +125,6 @@ class PathConstraint implements Updatable {
         data.positionMode == PositionMode.percent,
         spacingMode == SpacingMode.percent);
 
-    Skeleton skeleton = target.skeleton;
-    num skeletonX = skeleton.x;
-    num skeletonY = skeleton.y;
     num boneX = positions[0];
     num boneY = positions[1];
     num offsetRotation = data.offsetRotation;
@@ -136,8 +133,8 @@ class PathConstraint implements Updatable {
 
     for (int i = 0; i < boneCount; i++, p += 3) {
       Bone bone = bones[i];
-      bone._worldX += (boneX - skeletonX - bone.worldX) * translateMix;
-      bone._worldY += (boneY - skeletonY - bone.worldY) * translateMix;
+      bone._worldX += (boneX - bone.worldX) * translateMix;
+      bone._worldY += (boneY - bone.worldY) * translateMix;
       num x = positions[p + 0];
       num y = positions[p + 1];
       num dx = x - boneX;
@@ -196,6 +193,7 @@ class PathConstraint implements Updatable {
         bone._c = sin * a + cos * c;
         bone._d = sin * b + cos * d;
       }
+      bone.appliedValid = false;
     }
   }
 
@@ -495,7 +493,7 @@ class PathConstraint implements Updatable {
       num x1, num y1, num cx1, num cy1, num cx2, num cy2, num x2, num y2,
       Float32List out, int o, bool tangents) {
 
-    if (p == 0) p = 0.0001;
+    if (p == 0 || p.isNaN) p = 0.0001;
     num tt = p * p;
     num ttt = tt * p;
     num u = 1.0 - p;
@@ -518,6 +516,8 @@ class PathConstraint implements Updatable {
   }
 
   @override
-  String toString() => data.name;
+  int getOrder() => data.order;
 
+  @override
+  String toString() => data.name;
 }

@@ -76,8 +76,8 @@ class VertexAttachment extends Attachment {
       vertices = df ? deform : vertices;
 
       Bone bone = slot.bone;
-      num x = bone.worldX + skeleton.x;
-      num y = bone.worldY + skeleton.y;
+      num x = bone.worldX;
+      num y = bone.worldY;
       num a = bone.a;
       num b = bone.b;
       num c = bone.c;
@@ -100,8 +100,8 @@ class VertexAttachment extends Attachment {
       }
 
       for (int wi = offset; wi < offset + count; wi += 2) {
-        num x = skeleton.x;
-        num y = skeleton.y;
+        num x = 0.0;
+        num y = 0.0;
         int boneCount = bones[bi++];
         int boneFinal = bi + boneCount;
         for (; bi < boneFinal; bi += 1, vi += 3, di += 2) {

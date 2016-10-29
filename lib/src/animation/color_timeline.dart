@@ -51,6 +51,11 @@ class ColorTimeline extends CurveTimeline {
       : frames = new Float32List(frameCount * 5),
         super(frameCount);
 
+  @override
+  int getPropertyId() {
+    return (TimelineType.color.ordinal << 24) + slotIndex;
+  }
+
   /// Sets the time and value of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, num r, num g, num b, num a) {
@@ -63,8 +68,11 @@ class ColorTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+      num alpha, bool setupPose, bool mixingOut) {
 
+    List<num> frames = this.frames;
     if (time < frames[0 + _TIME]) return; // Time is before first frame.
 
     num r = 0.0, g = 0.0, b = 0.0, a = 0.0, t = 0.0;
@@ -99,16 +107,21 @@ class ColorTimeline extends CurveTimeline {
 
     Slot slot = skeleton.slots[slotIndex];
 
-    if (alpha < 1) {
-      slot.r += (r - slot.r) * alpha;
-      slot.g += (g - slot.g) * alpha;
-      slot.b += (b - slot.b) * alpha;
-      slot.a += (a - slot.a) * alpha;
-    } else {
+    if (alpha == 1) {
       slot.r = r;
       slot.g = g;
       slot.b = b;
       slot.a = a;
+    } else if (setupPose) {
+      slot.r = slot.data.r;
+      slot.g = slot.data.g;
+      slot.b = slot.data.b;
+      slot.a = slot.data.a;
+    } else {
+      slot.r += (r - slot.r) * alpha;
+      slot.g += (g - slot.g) * alpha;
+      slot.b += (b - slot.b) * alpha;
+      slot.a += (a - slot.a) * alpha;
     }
   }
 

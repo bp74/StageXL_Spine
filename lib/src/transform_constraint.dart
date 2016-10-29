@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class TransformConstraint implements Updatable {
+class TransformConstraint implements Constraint {
 
   final TransformConstraintData data;
   final List<Bone> bones = new List<Bone>();
@@ -82,8 +82,9 @@ class TransformConstraint implements Updatable {
     List<Bone> bones = this.bones;
     for (int i = 0; i < bones.length; i++) {
       var bone = bones[i];
+      var modified = false;
 
-      if (rotateMix > 0) {
+      if (rotateMix != 0) {
         num a = bone.a;
         num b = bone.b;
         num c = bone.c;
@@ -97,27 +98,30 @@ class TransformConstraint implements Updatable {
         bone._b = cos * b - sin * d;
         bone._c = sin * a + cos * c;
         bone._d = sin * b + cos * d;
+        modified = true;
       }
 
-      if (translateMix > 0) {
+      if (translateMix != 0) {
         _temp[0] = data.offsetX;
         _temp[1] = data.offsetY;
         target.localToWorld(_temp);
         bone._worldX += (_temp[0] - bone.worldX) * translateMix;
         bone._worldY += (_temp[1] - bone.worldY) * translateMix;
+        modified = true;
       }
 
       if (scaleMix > 0) {
-        num bs = math.sqrt(bone.a * bone.a + bone.c * bone.c);
+        num s = math.sqrt(bone.a * bone.a + bone.c * bone.c);
         num ts = math.sqrt(ta * ta + tc * tc);
-        num s = bs > 0.00001 ? (bs + (ts - bs + data.offsetScaleX) * scaleMix) / bs : 0;
+        if (s > 0.00001) s = (s + (ts - s + data.offsetScaleX) * scaleMix) / s;
         bone._a *= s;
         bone._c *= s;
-        bs = math.sqrt(bone.b * bone.b + bone.d * bone.d);
+        s = math.sqrt(bone.b * bone.b + bone.d * bone.d);
         ts = math.sqrt(tb * tb + td * td);
-        s = bs > 0.00001 ? (bs + (ts - bs + data.offsetScaleY) * scaleMix) / bs : 0;
+        if (s > 0.00001) s = (s + (ts - s + data.offsetScaleY) * scaleMix) / s;
         bone._b *= s;
         bone._d *= s;
+        modified = true;
       }
 
       if (shearMix > 0) {
@@ -130,10 +134,17 @@ class TransformConstraint implements Updatable {
         num s = math.sqrt(b * b + d * d);
         bone._b = math.cos(r) * s;
         bone._d = math.sin(r) * s;
+        modified = true;
       }
+
+      if (modified) bone.appliedValid = false;
     }
   }
 
+  @override
+  int getOrder()  => data.order;
+
+  @override
   String toString () => data.name;
 
 }

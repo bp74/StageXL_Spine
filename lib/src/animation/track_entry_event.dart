@@ -30,29 +30,35 @@
 
 part of stagexl_spine;
 
-class PathConstraintData {
-
-	final String name;
-	final List<BoneData> bones = new List<BoneData>();
-
-  SlotData target;
-  PositionMode positionMode;
-  SpacingMode spacingMode;
-  RotateMode rotateMode;
-
-  int order = 0;
-	num offsetRotation = 0.0;
-	num position = 0.0;
-  num spacing = 0.0;
-  num rotateMix = 0.0;
-  num translateMix = 0.0;
-
-	PathConstraintData (this.name) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-	}
+abstract class TrackEntryEvent extends stageXL.Event {
+  final TrackEntry trackEntry;
+  TrackEntryEvent(String type, this.trackEntry) : super(type);
 
   @override
-	String toString() => name;
-
+  bool get captures => false;
 }
 
+class TrackEntryStartEvent extends TrackEntryEvent {
+  TrackEntryStartEvent(TrackEntry trackEntry) : super("start", trackEntry);
+}
+
+class TrackEntryInterruptEvent extends TrackEntryEvent {
+  TrackEntryInterruptEvent(TrackEntry trackEntry) : super("interrupt", trackEntry);
+}
+
+class TrackEntryEndEvent extends TrackEntryEvent {
+  TrackEntryEndEvent(TrackEntry trackEntry) : super("end", trackEntry);
+}
+
+class TrackEntryDisposeEvent extends TrackEntryEvent {
+  TrackEntryDisposeEvent(TrackEntry trackEntry) : super("dispose", trackEntry);
+}
+
+class TrackEntryCompleteEvent extends TrackEntryEvent {
+  TrackEntryCompleteEvent(TrackEntry trackEntry) : super("complete", trackEntry);
+}
+
+class TrackEntryEventEvent extends TrackEntryEvent {
+  final Event event;
+  TrackEntryEventEvent(TrackEntry trackEntry, this.event) : super("event", trackEntry);
+}

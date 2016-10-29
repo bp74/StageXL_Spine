@@ -30,55 +30,74 @@
 
 part of stagexl_spine;
 
-typedef void TrackEntryAction<T extends TrackEntryActionArgs>(T trackEntryActionArgs);
+class TrackEntry extends EventDispatcher {
 
-abstract class TrackEntryActionArgs {
   final int trackIndex;
-  TrackEntryActionArgs(this.trackIndex);
-}
-
-class TrackEntryStartArgs extends TrackEntryActionArgs {
-  TrackEntryStartArgs(int trackIndex) : super(trackIndex);
-}
-
-class TrackEntryEndArgs extends TrackEntryActionArgs {
-  TrackEntryEndArgs(int trackIndex) : super(trackIndex);
-}
-
-class TrackEntryCompleteArgs extends TrackEntryActionArgs {
-  final int count;
-  TrackEntryCompleteArgs(int trackIndex, this.count) : super(trackIndex);
-}
-
-class TrackEntryEventArgs extends TrackEntryActionArgs {
-  final Event event;
-  TrackEntryEventArgs(int trackIndex, this.event) : super(trackIndex);
-}
-
-//-------------------------------------------------------------------------------------------------
-
-class TrackEntry {
+  final Animation animation;
+  final List<bool> timelinesFirst = new List<bool>();
+  final List<num> timelinesRotation = new List<num>();
 
   TrackEntry next = null;
-  TrackEntry _previous = null;
-
-  Animation animation = null;
+  TrackEntry mixingFrom = null;
   bool loop = false;
-  num delay = 0.0;
 
-  num time = 0.0;
-  num lastTime = -1.0;
-  num endTime = -1.0;
+  num eventThreshold = 0.0;
+  num attachmentThreshold = 0.0;
+  num drawOrderThreshold = 0.0;
+  num animationStart = 0.0;
+  num animationEnd = 0.0;
+  num animationLast = -1.0;
+  num nextAnimationLast = -1.0;
+  num trackTime = 0.0;
+  num trackLast = -1.0;
+  num trackEnd = 0.0;
+  num nextTrackLast = -1.0;
+  num mixTime = 0.0;
+  num mixDuration = 0.0;
+  num mixAlpha = 0.0;
   num timeScale = 1.0;
+  num delay = 0.0;
+  num alpha = 1.0;
 
-  num _mixTime = 0.0;
-  num _mixDuration = 0.0;
-  num _mix = 1.0;
+  TrackEntry(this.trackIndex, this.animation) {
+    this.animationEnd = this.animation.duration;
+  }
 
-  TrackEntryAction<TrackEntryStartArgs> onStart = null;
-  TrackEntryAction<TrackEntryEndArgs> onEnd = null;
-  TrackEntryAction<TrackEntryCompleteArgs> onComplete = null;
-  TrackEntryAction<TrackEntryEventArgs> onEvent = null;
+  //---------------------------------------------------------------------------
+
+  num getAnimationTime() {
+    if (loop) {
+      num duration = animationEnd - animationStart;
+      if (duration == 0) return animationStart;
+      return (trackTime % duration) + animationStart;
+    } else {
+      return math.min(trackTime + animationStart, animationEnd);
+    }
+  }
+
+  EventStream<TrackEntryStartEvent> get onTrackStart {
+    return const EventStreamProvider<TrackEntryStartEvent>("start").forTarget(this);
+  }
+
+  EventStream<TrackEntryInterruptEvent> get onTrackInterrupt {
+    return const EventStreamProvider<TrackEntryInterruptEvent>("interrupt").forTarget(this);
+  }
+
+  EventStream<TrackEntryEndEvent> get onTrackEnd {
+    return const EventStreamProvider<TrackEntryEndEvent>("end").forTarget(this);
+  }
+
+  EventStream<TrackEntryDisposeEvent> get onTrackDispose {
+    return const EventStreamProvider<TrackEntryDisposeEvent>("dispose").forTarget(this);
+  }
+
+  EventStream<TrackEntryCompleteEvent> get onTrackComplete {
+    return const EventStreamProvider<TrackEntryCompleteEvent>("complete").forTarget(this);
+  }
+
+  EventStream<TrackEntryEventEvent> get onTrackEvent {
+    return const EventStreamProvider<TrackEntryEventEvent>("event").forTarget(this);
+  }
 
   String toString() => animation == null ? "<none>" : animation.name;
 }

@@ -65,6 +65,8 @@ class SkeletonLoader {
       skeletonData.hash = _getString(skeletonMap, "hash", "");
       skeletonData.width = _getDouble(skeletonMap, "width", 0.0);
       skeletonData.height = _getDouble(skeletonMap, "height", 0.0);
+      skeletonData.fps = _getDouble(skeletonMap, "fps", 0.0);
+      skeletonData.imagesPath = _getString(skeletonMap, "images", "");
     }
 
     // Bones
@@ -82,6 +84,8 @@ class SkeletonLoader {
       var boneIndex = skeletonData.bones.length;
       var boneName = _getString(boneMap, "name", null);
       var boneData = new BoneData(boneIndex, boneName, parent);
+      var transformMode = "TransformMode." + _getString(boneMap, "transform",  "normal");
+
       boneData.length = _getDouble(boneMap, "length", 0.0);
       boneData.x = _getDouble(boneMap, "x", 0.0);
       boneData.y = _getDouble(boneMap, "y", 0.0);
@@ -90,8 +94,7 @@ class SkeletonLoader {
       boneData.scaleY = _getDouble(boneMap, "scaleY", 1.0);
       boneData.shearX = _getDouble(boneMap, "shearX", 0.0);
       boneData.shearY = _getDouble(boneMap, "shearY", 0.0);
-      boneData.inheritScale = _getBool(boneMap, "inheritScale", true);
-      boneData.inheritRotation = _getBool(boneMap, "inheritRotation", true);
+      boneData.transformMode = TransformMode.values.firstWhere((e) => e.toString() == transformMode);
       skeletonData.bones.add(boneData);
     }
 
@@ -141,6 +144,7 @@ class SkeletonLoader {
       if (target == null) throw new StateError("Target bone not found: $targetName");
 
       constraintData.target = target;
+      constraintData.order = _getInt(constraintMap, "order", 0);
       constraintData.bendDirection = _getBool(constraintMap, "bendPositive", true) ? 1 : -1;
       constraintData.mix = _getDouble(constraintMap, "mix", 1.0);
 
@@ -165,6 +169,7 @@ class SkeletonLoader {
       if (target == null) throw new StateError("Target bone not found: $targetName");
 
       constraintData.target = target;
+      constraintData.order = _getInt(constraintMap, "order", 0);
       constraintData.offsetRotation = _getDouble(constraintMap, "rotation", 0.0);
       constraintData.offsetX = _getDouble(constraintMap, "x", 0.0);
       constraintData.offsetY = _getDouble(constraintMap, "y", 0.0);
@@ -201,6 +206,7 @@ class SkeletonLoader {
       var rotateMode = "RotateMode." + _getString(constraintMap, "rotateMode", "tangent");
 
       pathConstraintData.target = target;
+      pathConstraintData.order = _getInt(constraintMap, "order", 0);
       pathConstraintData.positionMode = PositionMode.values.firstWhere((e) => e.toString() == positionMode);
       pathConstraintData.spacingMode = SpacingMode.values.firstWhere((e) => e.toString() == spacingMode);
       pathConstraintData.rotateMode = RotateMode.values.firstWhere((e) => e.toString() == rotateMode);

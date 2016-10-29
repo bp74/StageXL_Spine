@@ -1,13 +1,14 @@
 library stagexl_spine;
 
 import 'dart:convert';
-import 'dart:async';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:stagexl/stagexl.dart';
+import 'package:stagexl/stagexl.dart' as stageXL;
 
 part 'src/bone.dart';
 part 'src/bone_data.dart';
+part 'src/constraint.dart';
 part 'src/event.dart';
 part 'src/event_data.dart';
 part 'src/ik_constraint.dart';
@@ -26,6 +27,7 @@ part 'src/slot_data.dart';
 part 'src/spacing_mode.dart';
 part 'src/transform_constraint.dart';
 part 'src/transform_constraint_data.dart';
+part 'src/transform_mode.dart';
 part 'src/updatable.dart';
 
 part 'src/animation/animation.dart';
@@ -45,7 +47,9 @@ part 'src/animation/rotate_timeline.dart';
 part 'src/animation/scale_timeline.dart';
 part 'src/animation/shear_timeline.dart';
 part 'src/animation/timeline.dart';
+part 'src/animation/timeline_type.dart';
 part 'src/animation/track_entry.dart';
+part 'src/animation/track_entry_event.dart';
 part 'src/animation/transform_constraint_timeline.dart';
 part 'src/animation/translate_timeline.dart';
 

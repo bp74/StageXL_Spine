@@ -37,10 +37,10 @@ class Skeleton {
   final List<Slot> slots = new List<Slot>();
   final List<Slot> drawOrder = new List<Slot>();
   final List<IkConstraint> ikConstraints = new List<IkConstraint>();
-  final List<IkConstraint> ikConstraintsSorted = new List<IkConstraint>();
   final List<TransformConstraint> transformConstraints = new List<TransformConstraint>();
   final List<PathConstraint> pathConstraints = new List<PathConstraint>();
   final List<Updatable> _updateCache = new List<Updatable>();
+  final List<Bone> _updateCacheReset = new List<Bone>();
 
   Skin _skin = null;
 
@@ -95,121 +95,133 @@ class Skeleton {
     updateCache();
   }
 
-  /// Caches information about bones and constraints.
-  /// Must be called if bones, constraints, or weighted path attachments are
-  /// added or removed.
+	/// Caches information about bones and constraints. Must be called if bones,
+  /// constraints, or weighted path attachments are added or removed.
 
-  void updateCache() {
-    List<Updatable> updateCache = _updateCache;
-    updateCache.clear();
+  void updateCache () {
+		List<Updatable> updateCache = _updateCache;
+		updateCache.clear();
 
-    List<Bone> bones = this.bones;
-    for (int i = 0; i < bones.length; i++) {
+		List<Bone> bones = this.bones;
+		for (int i = 0; i < bones.length; i++) {
       bones[i]._sorted = false;
     }
 
-    // IK first, lowest hierarchy depth first.
-    List<IkConstraint> ikConstraints = this.ikConstraintsSorted;
-    ikConstraints.clear();
-    for (IkConstraint c in this.ikConstraints) {
-      ikConstraints.add(c);
-    }
-
-    for (int i = 0; i < ikConstraints.length; i++) {
-      IkConstraint ik = ikConstraints[i];
-      Bone bone = ik.bones[0].parent;
-      int level = 0;
-      for (; bone != null; level++) {
-        bone = bone.parent;
-      }
-      ik.level = level;
-    }
-
-    for (int i = 1; i < ikConstraints.length; i++) {
-      IkConstraint ik = ikConstraints[i];
-      int level = ik.level;
-      int ii = i - 1;
-      for (; ii >= 0; ii--) {
-        IkConstraint other = ikConstraints[ii];
-        if (other.level < level) break;
-        ikConstraints[ii + 1] = other;
-      }
-      ikConstraints[ii + 1] = ik;
-    }
-    for (int i = 0; i < ikConstraints.length; i++) {
-      IkConstraint ikConstraint = ikConstraints[i];
-      Bone target = ikConstraint.target;
-      _sortBone(target);
-
-      List<Bone> constrained = ikConstraint.bones;
-      Bone parent = constrained[0];
-      _sortBone(parent);
-
-      updateCache.add(ikConstraint);
-
-      _sortReset(parent.children);
-      constrained.last._sorted = true;
-    }
-
-    List<PathConstraint> pathConstraints = this.pathConstraints;
-    for (int i = 0; i < pathConstraints.length; i++) {
-      PathConstraint pathConstraint = pathConstraints[i];
-
-      Slot slot = pathConstraint.target;
-      int slotIndex = slot.data.index;
-      Bone slotBone = slot.bone;
-      if (skin != null)
-        _sortPathConstraintAttachment(skin, slotIndex, slotBone);
-      if (data.defaultSkin != null && data.defaultSkin != skin) {
-        _sortPathConstraintAttachment(data.defaultSkin, slotIndex, slotBone);
-      }
-
-      for (int ii = 0; ii < data.skins.length; ii++) {
-        _sortPathConstraintAttachment(data.skins[ii], slotIndex, slotBone);
-      }
-
-      PathAttachment attachment = slot.attachment as PathAttachment;
-      if (attachment != null)
-        _sortPathConstraintAttachment2(attachment, slotBone);
-
-      List<Bone> constrained = pathConstraint.bones;
-
-      for (int ii = 0; ii < constrained.length; ii++) {
-        _sortBone(constrained[ii]);
-      }
-
-      updateCache.add(pathConstraint);
-
-      for (int ii = 0; ii < constrained.length; ii++) {
-        _sortReset(constrained[ii].children);
-      }
-
-      for (int ii = 0; ii < constrained.length; ii++) {
-        constrained[ii]._sorted = true;
-      }
-    }
-
-    List<TransformConstraint> transformConstraints = this.transformConstraints;
-    for (int i = 0; i < transformConstraints.length; i++) {
-      TransformConstraint transformConstraint = transformConstraints[i];
-      _sortBone(transformConstraint.target);
-      List<Bone> constrained = transformConstraint.bones;
-      for (int ii = 0; ii < constrained.length; ii++) {
-        _sortBone(constrained[ii]);
-      }
-      updateCache.add(transformConstraint);
-      for (int ii = 0; ii < constrained.length; ii++) {
-        _sortReset(constrained[ii].children);
-      }
-      for (int ii = 0; ii < constrained.length; ii++) {
-        constrained[ii]._sorted = true;
-      }
-    }
-
-    for (int i = 0, n = bones.length; i < n; i++) {
+		// IK first, lowest hierarchy depth first.
+		List<IkConstraint> ikConstraints = this.ikConstraints;
+		List<TransformConstraint> transformConstraints = this.transformConstraints;
+		List<PathConstraint> pathConstraints = this.pathConstraints;
+		int ikCount = ikConstraints.length;
+    int transformCount = transformConstraints.length;
+    int pathCount = pathConstraints.length;
+		int constraintCount = ikCount + transformCount + pathCount;
+		
+		outer:			
+		for (int i = 0; i < constraintCount; i++) {
+			for (int ii = 0; ii < ikCount; ii++) {
+        IkConstraint  ikConstraint = ikConstraints[ii];
+				if (ikConstraint.data.order == i) {
+					_sortIkConstraint(ikConstraint);
+					continue outer;
+				}
+			}
+			for (int ii = 0; ii < transformCount; ii++) {
+        TransformConstraint transformConstraint = transformConstraints[ii];
+				if (transformConstraint.data.order == i) {
+					_sortTransformConstraint(transformConstraint);
+					continue outer;
+				}
+			}
+			for (int ii = 0; ii < pathCount; ii++) {
+        PathConstraint pathConstraint = pathConstraints[ii];
+				if (pathConstraint.data.order == i) {
+					_sortPathConstraint(pathConstraint);
+					continue outer;
+				}
+			}
+		}
+		
+		for (int i = 0; i < bones.length; i++) {
       _sortBone(bones[i]);
     }
-  }
+	}
+
+	void _sortIkConstraint (IkConstraint constraint) {
+		Bone target = constraint.target;
+		_sortBone(target);
+
+		List<Bone> constrained = constraint.bones;
+		Bone parent = constrained[0];
+		_sortBone(parent);
+
+		if (constrained.length > 1) {
+			Bone child = constrained[constrained.length - 1];
+			if (!(_updateCache.indexOf(child) > -1)) _updateCacheReset.add(child);
+		}
+
+		_updateCache.add(constraint);
+
+		_sortReset(parent.children);
+		constrained[constrained.length - 1]._sorted = true;
+	}
+
+	void _sortPathConstraint (PathConstraint constraint) {
+
+    Slot slot = constraint.target;
+		int slotIndex = slot.data.index;
+		Bone slotBone = slot.bone;
+
+		if (skin != null) {
+      _sortPathConstraintAttachment(skin, slotIndex, slotBone);
+    }
+
+    if (data.defaultSkin != null && data.defaultSkin != skin) {
+      _sortPathConstraintAttachment(data.defaultSkin, slotIndex, slotBone);
+    }
+
+		for (int ii = 0; ii < data.skins.length; ii++) {
+      _sortPathConstraintAttachment(data.skins[ii], slotIndex, slotBone);
+    }
+
+    Attachment attachment = slot.attachment;
+		if (attachment is PathAttachment) {
+      _sortPathConstraintAttachment2(attachment, slotBone);
+    }
+
+		List<Bone> constrained = constraint.bones;
+		for (int ii = 0; ii < constrained.length; ii++) {
+      _sortBone(constrained[ii]);
+    }
+
+		_updateCache.add(constraint);
+
+		for (int ii = 0; ii < constrained.length; ii++) {
+      _sortReset(constrained[ii].children);
+    }
+		for (int ii = 0; ii < constrained.length; ii++) {
+      constrained[ii]._sorted = true;
+    }
+	}
+
+	void _sortTransformConstraint (TransformConstraint constraint) {
+		_sortBone(constraint.target);
+
+		List<Bone> constrained = constraint.bones;
+
+		for (int ii = 0; ii < constrained.length; ii++) {
+      _sortBone(constrained[ii]);
+    }
+
+		_updateCache.add(constraint);
+
+		for (int ii = 0; ii < constrained.length; ii++) {
+      _sortReset(constrained[ii].children);
+    }
+
+		for (int ii = 0; ii < constrained.length; ii++) {
+      constrained[ii]._sorted = true;
+    }
+	}	
 
   void _sortPathConstraintAttachment(Skin skin, int slotIndex, Bone slotBone) {
     var dict = skin.attachments[slotIndex];
@@ -227,8 +239,12 @@ class Skeleton {
       _sortBone(slotBone);
     } else {
       List<Bone> bones = this.bones;
-      for (int boneIndex in pathBones) {
-        _sortBone(bones[boneIndex]);
+      int i = 0;
+      while (i < pathBones.length) {
+        int boneCount = pathBones[i++];
+        for (int n = i + boneCount; i < n; i++) {
+          _sortBone(bones[pathBones[i]]);
+        }
       }
     }
   }
@@ -252,6 +268,16 @@ class Skeleton {
   /// Updates the world transform for each bone and applies constraints.
 
   void updateWorldTransform() {
+    for (Bone bone in _updateCacheReset) {
+      bone.ax = bone.x;
+      bone.ay = bone.y;
+      bone.arotation = bone.rotation;
+      bone.ascaleX = bone.scaleX;
+      bone.ascaleY = bone.scaleY;
+      bone.ashearX = bone.shearX;
+      bone.ashearY = bone.shearY;
+      bone.appliedValid = true;
+    }
     for (Updatable updatable in _updateCache) {
       updatable.update();
     }

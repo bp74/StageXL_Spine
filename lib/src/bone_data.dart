@@ -44,8 +44,7 @@ class BoneData {
   num scaleY = 1.0;
   num shearX = 0.0;
   num shearY = 0.0;
-  bool inheritRotation = true;
-  bool inheritScale = true;
+  TransformMode transformMode = TransformMode.normal;
 
   BoneData(this.index, this.name, this.parent) {
     if (index < 0) throw new ArgumentError("index must be >= 0");

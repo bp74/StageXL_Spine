@@ -42,6 +42,11 @@ class AttachmentTimeline implements Timeline {
 
   int get frameCount => frames.length;
 
+  @override
+  int getPropertyId() {
+    return (TimelineType.attachment.ordinal << 24) + slotIndex;
+  }
+
   /// Sets the time and value of the specified keyframe.
   ///
   void setFrame(int frameIndex, num time, String attachmentName) {
@@ -50,7 +55,18 @@ class AttachmentTimeline implements Timeline {
   }
 
   @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+      num alpha, bool setupPose, bool mixingOut) {
+
+    String attachmentName;
+
+    if (mixingOut && setupPose) {
+      Slot slot = skeleton.slots[slotIndex];
+      attachmentName = slot.data.attachmentName;
+      slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
+      return;
+    }
 
     if (time < frames[0]) return; // Time is before first frame.
 
@@ -58,7 +74,7 @@ class AttachmentTimeline implements Timeline {
       ? frames.length - 1 // Time is after last frame.
       : Animation.binarySearch(frames, time, 1) - 1;
 
-    String attachmentName = attachmentNames[frameIndex];
+    attachmentName = attachmentNames[frameIndex];
     skeleton.slots[slotIndex].attachment = (attachmentName != null)
         ? skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName)
         : null;

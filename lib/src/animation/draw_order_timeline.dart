@@ -39,6 +39,12 @@ class DrawOrderTimeline implements Timeline {
       : frames = new Float32List(frameCount),
         drawOrders = new List<Int16List>(frameCount);
 
+
+  @override
+  int getPropertyId () {
+    return TimelineType.drawOrder.ordinal << 24;
+  }
+
   int get frameCount => frames.length;
 
   /// Sets the time and value of the specified keyframe.
@@ -49,7 +55,16 @@ class DrawOrderTimeline implements Timeline {
   }
 
   @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+      Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+      num alpha, bool setupPose, bool mixingOut) {
+
+    if (mixingOut && setupPose) {
+      for (int ii = 0; ii < skeleton.slots.length; ii++) {
+        skeleton.drawOrder[ii] = skeleton.slots[ii];
+      }
+      return;
+    }
 
     if (time < frames[0]) return; // Time is before first frame.
 

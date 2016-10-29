@@ -52,6 +52,11 @@ class TransformConstraintTimeline extends CurveTimeline {
       :	frames = new Float32List(frameCount * _ENTRIES),
 		    super(frameCount);
 
+  @override
+  int getPropertyId() {
+    return (TimelineType.transformConstraint.ordinal << 24) + transformConstraintIndex;
+  }
+
 	/// Sets the time and mixes of the specified keyframe.
 
   void setFrame (int frameIndex, num time, num rotateMix, num translateMix, num scaleMix, num shearMix) {
@@ -64,50 +69,49 @@ class TransformConstraintTimeline extends CurveTimeline {
 	}
 
 	@override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+			num alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) {
+    Float32List frames = this.frames;
+		if (time < frames[0]) return; // Time is before first frame.
 
-      // Time is before first frame.
+    TransformConstraint constraint = skeleton.transformConstraints[transformConstraintIndex];
 
-    } else if (time >= frames[frames.length + _PREV_TIME]) {
-
-      // Time is after last frame.
-
-      TransformConstraint constraint = skeleton.transformConstraints[transformConstraintIndex];
-      num prevRotate = frames[frames.length + _PREV_ROTATE];
-      num prevTranslate = frames[frames.length + _PREV_TRANSLATE];
-      num prevScale = frames[frames.length + _PREV_SCALE];
-      num prevShear = frames[frames.length + _PREV_SHEAR];
-      constraint.rotateMix += (prevRotate - constraint.rotateMix) * alpha;
-			constraint.translateMix += (prevTranslate - constraint.translateMix) * alpha;
-			constraint.scaleMix += (prevScale - constraint.scaleMix) * alpha;
-			constraint.shearMix += (prevShear - constraint.shearMix) * alpha;
-
+		num rotate = 0, translate = 0, scale = 0, shear = 0;
+		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
+			int i = frames.length;
+			rotate = frames[i + _PREV_ROTATE];
+			translate = frames[i + _PREV_TRANSLATE];
+			scale = frames[i + _PREV_SCALE];
+			shear = frames[i + _PREV_SHEAR];
 		} else {
+			// Interpolate between the previous frame and the current frame.
+			int frame = Animation.binarySearch(frames, time, _ENTRIES);
+			rotate = frames[frame + _PREV_ROTATE];
+			translate = frames[frame + _PREV_TRANSLATE];
+			scale = frames[frame + _PREV_SCALE];
+			shear = frames[frame + _PREV_SHEAR];
+			num frameTime = frames[frame];
+			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
 
-      // Interpolate between the previous frame and the current frame.
+			rotate += (frames[frame + _ROTATE] - rotate) * percent;
+			translate += (frames[frame + _TRANSLATE] - translate) * percent;
+			scale += (frames[frame + _SCALE] - scale) * percent;
+			shear += (frames[frame + _SHEAR] - shear) * percent;
+		}
 
-      TransformConstraint constraint = skeleton.transformConstraints[transformConstraintIndex];
-      int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      num prevTime = frames[frame + _PREV_TIME];
-      num prevRotate = frames[frame + _PREV_ROTATE];
-      num prevTranslate = frames[frame + _PREV_TRANSLATE];
-      num prevScale = frames[frame + _PREV_SCALE];
-      num prevShear = frames[frame + _PREV_SHEAR];
-      num frameTime = frames[frame + _TIME];
-      num frameRotate = frames[frame + _ROTATE];
-      num frameTranslate = frames[frame + _TRANSLATE];
-      num frameScale = frames[frame + _SCALE];
-      num frameShear = frames[frame + _SHEAR];
-
-      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-      num percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
-
-      constraint.rotateMix += (prevRotate + (frameRotate - prevRotate) * percent - constraint.rotateMix) * alpha;
-      constraint.translateMix += (prevTranslate + (frameTranslate - prevTranslate) * percent - constraint.translateMix) * alpha;
-      constraint.scaleMix += (prevScale + (frameScale - prevScale) * percent - constraint.scaleMix) * alpha;
-      constraint.shearMix += (prevShear + (frameShear - prevShear) * percent - constraint.shearMix) * alpha;
-    }
-  }
+		if (setupPose) {
+      TransformConstraintData data = constraint.data;
+			constraint.rotateMix = data.rotateMix + (rotate - data.rotateMix) * alpha;
+			constraint.translateMix = data.translateMix + (translate - data.translateMix) * alpha;
+			constraint.scaleMix = data.scaleMix + (scale - data.scaleMix) * alpha;
+			constraint.shearMix = data.shearMix + (shear - data.shearMix) * alpha;
+		} else {
+			constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
+			constraint.translateMix += (translate - constraint.translateMix) * alpha;
+			constraint.scaleMix += (scale - constraint.scaleMix) * alpha;
+			constraint.shearMix += (shear - constraint.shearMix) * alpha;
+		}
+	}
 }

@@ -32,45 +32,53 @@ part of stagexl_spine;
  
 class ShearTimeline extends TranslateTimeline {
 
-	ShearTimeline (int frameCount) : super(frameCount);
+  static const int _ENTRIES = 3;
+  static const int _PREV_TIME = -3;
+  static const int _PREV_X = -2;
+  static const int _PREV_Y = -1;
+  static const int _TIME = 0;
+  static const int _X = 1;
+  static const int _Y = 2;
+
+  ShearTimeline (int frameCount) : super(frameCount);
+
+  @override
+  int getPropertyId () {
+    return (TimelineType.shear.ordinal << 24) + boneIndex;
+  }
 
 	@override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+  void apply(
+			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+			num alpha, bool setupPose, bool mixingOut) {
 
-		if (time < frames[0]) {
+    Float32List frames = this.frames;
+		if (time < frames[0]) return; // Time is before first frame.
 
-      // Time is before first frame.
+		Bone bone = skeleton.bones[boneIndex];
 
-    } else if (time >= frames[frames.length + TranslateTimeline._PREV_TIME]) {
-
-      // Time is after last frame.
-
-      Bone bone = skeleton.bones[boneIndex];
-      num prevX = frames[frames.length + TranslateTimeline._PREV_X];
-      num prevY = frames[frames.length + TranslateTimeline._PREV_Y];
-      bone.shearX += (bone.data.shearX + prevX - bone.shearX) * alpha;
-			bone.shearY += (bone.data.shearY + prevY - bone.shearY) * alpha;
-
+		num x = 0, y = 0;
+		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
+			x = frames[frames.length + _PREV_X];
+			y = frames[frames.length + _PREV_Y];
 		} else {
+			// Interpolate between the previous frame and the current frame.
+			int frame = Animation.binarySearch(frames, time, _ENTRIES);
+			x = frames[frame + _PREV_X];
+			y = frames[frame + _PREV_Y];
+			num frameTime = frames[frame];
+			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			x = x + (frames[frame + _X] - x) * percent;
+			y = y + (frames[frame + _Y] - y) * percent;
+		}
 
-      // Interpolate between the previous frame and the current frame.
-
-      Bone bone = skeleton.bones[boneIndex];
-      int frame = Animation.binarySearch(frames, time, TranslateTimeline._ENTRIES);
-      num prevTime = frames[frame + TranslateTimeline._PREV_TIME];
-      num prevX = frames[frame + TranslateTimeline._PREV_X];
-      num prevY = frames[frame + TranslateTimeline._PREV_Y];
-      num frameTime = frames[frame + TranslateTimeline._TIME];
-      num frameX = frames[frame + TranslateTimeline._X];
-      num frameY = frames[frame + TranslateTimeline._Y];
-
-      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-      num percent = getCurvePercent(frame ~/ TranslateTimeline._ENTRIES - 1, between);
-
-      bone.shearX += (bone.data.shearX + (prevX + (frameX - prevX) * percent) - bone.shearX) * alpha;
-      bone.shearY += (bone.data.shearY + (prevY + (frameY - prevY) * percent) - bone.shearY) * alpha;
-
-    }
+		if (setupPose) {
+			bone.shearX = bone.data.shearX + x * alpha;
+			bone.shearY = bone.data.shearY + y * alpha;
+		} else {
+			bone.shearX += (bone.data.shearX + x - bone.shearX) * alpha;
+			bone.shearY += (bone.data.shearY + y - bone.shearY) * alpha;
+		}
 	}
 }
 

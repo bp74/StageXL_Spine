@@ -47,6 +47,11 @@ class TranslateTimeline extends CurveTimeline {
       : frames = new Float32List(frameCount * 3),
         super(frameCount);
 
+  @override
+  int getPropertyId() {
+    return (TimelineType.translate.ordinal << 24) + boneIndex;
+  }
+
   /// Sets the time and value of the specified keyframe.
 
   void setFrame(int frameIndex, num time, num x, num y) {
@@ -56,41 +61,38 @@ class TranslateTimeline extends CurveTimeline {
     frames[frameIndex + 2] = y.toDouble();
   }
 
-  @override
-  void apply(Skeleton skeleton, num lastTime, num time, List<Event> firedEvents, num alpha) {
+	@override
+  void apply(
+			Skeleton skeleton, num lastTime, num time, List<Event> firedEvents,
+			num alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) {
+    Float32List frames = this.frames;
+		if (time < frames[0]) return; // Time is before first frame.
 
-      // Time is before first frame.
+		Bone bone = skeleton.bones[boneIndex];
 
-    } else if (time >= frames[frames.length + _PREV_TIME]) {
-
+		num x = 0, y = 0;
+		if (time >= frames[frames.length - _ENTRIES]) {
       // Time is after last frame.
+			x = frames[frames.length + _PREV_X];
+			y = frames[frames.length + _PREV_Y];
+		} else {
+			// Interpolate between the previous frame and the current frame.
+			int frame = Animation.binarySearch(frames, time, _ENTRIES);
+			x = frames[frame + _PREV_X];
+			y = frames[frame + _PREV_Y];
+			num frameTime = frames[frame];
+			num percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+			x += (frames[frame + _X] - x) * percent;
+			y += (frames[frame + _Y] - y) * percent;
+		}
 
-      Bone bone = skeleton.bones[boneIndex];
-      num prevX = frames[frames.length + _PREV_X];
-      num prevY = frames[frames.length + _PREV_Y];
-      bone.x += (bone.data.x + prevX - bone.x) * alpha;
-      bone.y += (bone.data.y + prevY - bone.y) * alpha;
-
-    } else {
-
-      // Interpolate between the previous frame and the current frame.
-
-      Bone bone = skeleton.bones[boneIndex];
-      int frameIndex = Animation.binarySearch(frames, time, 3);
-      num prevTime = frames[frameIndex + _PREV_TIME];
-      num prevX = frames[frameIndex + _PREV_X];
-      num prevY = frames[frameIndex + _PREV_Y];
-      num frameTime = frames[frameIndex + _TIME];
-      num frameX = frames[frameIndex + _X];
-      num frameY = frames[frameIndex + _Y];
-
-      num between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-      num percent = getCurvePercent(frameIndex ~/ _ENTRIES - 1, between);
-
-      bone.x += (bone.data.x + prevX + (frameX - prevX) * percent - bone.x) * alpha;
-      bone.y += (bone.data.y + prevY + (frameY - prevY) * percent - bone.y) * alpha;
-    }
-  }
+		if (setupPose) {
+			bone.x = bone.data.x + x * alpha;
+			bone.y = bone.data.y + y * alpha;
+		} else {
+			bone.x += (bone.data.x + x - bone.x) * alpha;
+			bone.y += (bone.data.y + y - bone.y) * alpha;
+		}
+	}
 }
