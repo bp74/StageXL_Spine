@@ -58,7 +58,7 @@ class ScaleTimeline extends TranslateTimeline {
     double x = 0.0;
     double y = 0.0;
 
-    if (time >= frames[frames.length - _ENTRIES]) {
+    if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
       x = frames[frames.length + _PREV_X];
       y = frames[frames.length + _PREV_Y];
@@ -68,7 +68,7 @@ class ScaleTimeline extends TranslateTimeline {
       double t0 = frames[frame + _PREV_TIME];
       double x0 = frames[frame + _PREV_X];
       double y0 = frames[frame + _PREV_Y];
-      double t1 = frames[frame];
+      double t1 = frames[frame + _TIME];
       double x1 = frames[frame + _X];
       double y1 = frames[frame + _Y];
       double between = 1.0 - (time - t1) / (t0 - t1);
