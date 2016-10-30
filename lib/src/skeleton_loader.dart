@@ -790,9 +790,9 @@ class SkeletonLoader {
       timeline.setStepped(frameIndex);
     } else if (curve is List) {
       double cx1 = curve[0].toDouble();
-      double cy1 = curve[0].toDouble();
-      double cx2 = curve[0].toDouble();
-      double cy2 = curve[0].toDouble();
+      double cy1 = curve[1].toDouble();
+      double cx2 = curve[2].toDouble();
+      double cy2 = curve[3].toDouble();
       timeline.setCurve(frameIndex, cx1, cy1, cx2, cy2);
     }
   }
