@@ -341,7 +341,7 @@ class AnimationState extends EventDispatcher {
     double animationStart = entry.animationStart;
     double animationEnd = entry.animationEnd;
     double duration = animationEnd - animationStart;
-    double trackLastWrapped = entry.trackLast % duration;
+    double trackLastWrapped = entry.trackLast.remainder(duration);
     int i = 0;
 
     // Queue events before complete.
@@ -354,7 +354,7 @@ class AnimationState extends EventDispatcher {
 
     // Queue complete if completed a loop iteration or the animation.
     if (entry.loop
-        ? (trackLastWrapped > entry.trackTime % duration)
+        ? (trackLastWrapped > entry.trackTime.remainder(duration))
         : (animationTime >= animationEnd && entry.animationLast < animationEnd)) {
       _enqueueTrackEntryEvent(new TrackEntryCompleteEvent(entry));
     }

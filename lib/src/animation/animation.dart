@@ -50,7 +50,7 @@ class Animation {
     if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
 
     if (loop && duration != 0) {
-      time %= duration;
+      time = time.remainder(duration);
       if (lastTime > 0) lastTime %= duration;
     }
 

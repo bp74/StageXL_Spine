@@ -69,7 +69,7 @@ class TrackEntry extends EventDispatcher {
     if (loop) {
       double duration = animationEnd - animationStart;
       if (duration == 0.0) return animationStart;
-      return (trackTime % duration) + animationStart;
+      return trackTime.remainder(duration) + animationStart;
     } else {
       return math.min(trackTime + animationStart, animationEnd);
     }

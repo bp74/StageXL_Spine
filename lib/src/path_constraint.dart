@@ -235,8 +235,7 @@ class PathConstraint implements Constraint {
         double p = position;
 
         if (closed) {
-          p %= pathLength;
-          if (p < 0) p += pathLength;
+          p = p % pathLength;
           curve = 0;
         } else if (p < 0) {
           if (prevCurve != _BEFORE) {
@@ -373,8 +372,7 @@ class PathConstraint implements Constraint {
       double p = position;
 
       if (closed) {
-        p %= pathLength;
-        if (p < 0) p += pathLength;
+        p = p % pathLength;
         curve = 0;
       } else if (p < 0) {
         _addBeforePosition(p, world, 0, out, o);
