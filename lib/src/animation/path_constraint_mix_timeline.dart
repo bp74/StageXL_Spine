@@ -86,7 +86,7 @@ class PathConstraintMixTimeline extends CurveTimeline {
       double tim0 = frames[frame + _PREV_TIME];
       double rot0 = frames[frame + _PREV_ROTATE];
       double tra0 = frames[frame + _PREV_TRANSLATE];
-      double tim1 = frames[frame * _TIME];
+      double tim1 = frames[frame + _TIME];
       double rot1 = frames[frame + _ROTATE];
       double tra1 = frames[frame + _TRANSLATE];
       double between = 1.0 - (time - tim1) / (tim0 - tim1);
