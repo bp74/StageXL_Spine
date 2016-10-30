@@ -98,14 +98,10 @@ class Bone implements Updatable {
 
     Bone parent = this.parent;
     if (parent == null) { // Root bone.
-      double la = scaleX * _cosDeg(rotation + shearX);
-      double lb = scaleY * _cosDeg(rotation + 90.0 + shearY);
-      double lc = scaleX * _sinDeg(rotation + shearX);
-      double ld = scaleY * _sinDeg(rotation + 90.0 + shearY);
-      _a = la;
-      _b = lb;
-      _c = lc;
-      _d = ld;
+      _a = scaleX * _cosDeg(rotation + shearX);
+      _b = scaleY * _cosDeg(rotation + 90.0 + shearY);
+      _c = scaleX * _sinDeg(rotation + shearX);
+      _d = scaleY * _sinDeg(rotation + 90.0 + shearY);
       _worldX = x + skeleton.x;
       _worldY = y + skeleton.y;
       return;
