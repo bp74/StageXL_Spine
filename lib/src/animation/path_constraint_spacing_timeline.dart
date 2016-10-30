@@ -53,24 +53,28 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
     if (time < frames[0]) return; // Time is before first frame.
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+    PathConstraintData data = constraint.data;
+		double s = 0.0;
 
-		double spacing = 0.0;
-		if (time >= frames[frames.length - _ENTRIES]) {
+		if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
-      spacing = frames[frames.length + _PREV_VALUE];
+      s = frames[frames.length + _PREV_VALUE];
     } else {
 			// Interpolate between the previous frame and the current frame.
 			int frame = Animation.binarySearch(frames, time, _ENTRIES);
-			spacing = frames[frame + _PREV_VALUE];
-			double frameTime = frames[frame];
-			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
-			spacing += (frames[frame + _VALUE] - spacing) * percent;
-		}
+      double t0 = frames[frame + _PREV_TIME];
+      double s0 = frames[frame + _PREV_VALUE];
+      double t1 = frames[frame + _TIME];
+      double s1 = frames[frame + _VALUE];
+      double between = 1.0 - (time - t1) / (t0 - t1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      s = s0 + (s1 - s0) * percent;
+    }
 
 		if (setupPose) {
-      constraint.spacing = constraint.data.spacing + (spacing - constraint.data.spacing) * alpha;
+      constraint.spacing = data.spacing + (s - data.spacing) * alpha;
     } else {
-      constraint.spacing += (spacing - constraint.spacing) * alpha;
+      constraint.spacing = constraint.spacing + (s - constraint.spacing) * alpha;
     }
 	}
 }
