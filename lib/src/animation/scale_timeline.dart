@@ -43,58 +43,52 @@ class ScaleTimeline extends TranslateTimeline {
   ScaleTimeline(int frameCount) : super(frameCount);
 
   @override
-  int getPropertyId () {
+  int getPropertyId() {
     return (TimelineType.scale.ordinal << 24) + boneIndex;
   }
 
-	@override
+  @override
   void apply(
-			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-			double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    Float32List frames = this.frames;
-		if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		Bone bone = skeleton.bones[boneIndex];
+    Bone bone = skeleton.bones[boneIndex];
+    double x = 0.0;
+    double y = 0.0;
 
-		double x = 0.0, y = 0.0;
-		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
-			x = frames[frames.length + _PREV_X] * bone.data.scaleX;
-			y = frames[frames.length + _PREV_Y] * bone.data.scaleY;
-		} else {
-			// Interpolate between the previous frame and the current frame.
-			int frame = Animation.binarySearch(frames, time, _ENTRIES);
-			x = frames[frame + _PREV_X];
-			y = frames[frame + _PREV_Y];
-			double frameTime = frames[frame];
-			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+    if (time >= frames[frames.length - _ENTRIES]) {
+      // Time is after last frame.
+      x = frames[frames.length + _PREV_X];
+      y = frames[frames.length + _PREV_Y];
+    } else {
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      double t0 = frames[frame + _PREV_TIME];
+      double x0 = frames[frame + _PREV_X];
+      double y0 = frames[frame + _PREV_Y];
+      double t1 = frames[frame];
+      double x1 = frames[frame + _X];
+      double y1 = frames[frame + _Y];
+      double between = 1.0 - (time - t1) / (t0 - t1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      x = x0 + (x1 - x0) * percent;
+      y = y0 + (y1 - y0) * percent;
+    }
 
-			x = (x + (frames[frame + _X] - x) * percent) * bone.data.scaleX;
-			y = (y + (frames[frame + _Y] - y) * percent) * bone.data.scaleY;
-		}
-
-		if (alpha == 1) {
-			bone.scaleX = x;
-			bone.scaleY = y;
-		} else {
-			double bx = 0.0, by = 0.0;
-			if (setupPose) {
-				bx = bone.data.scaleX;
-				by = bone.data.scaleY;
-			} else {
-				bx = bone.scaleX;
-				by = bone.scaleY;
-			}
-			// Mixing out uses sign of setup or current pose, else use sign of key.
-			if (mixingOut) {
-				x = x.abs() * bx.sign;
-				y = y.abs() * by.sign;
-			} else {
-				bx = bx.abs() * x.sign;
-				by = by.abs() * y.sign;
-			}
-			bone.scaleX = bx + (x - bx) * alpha;
-			bone.scaleY = by + (y - by) * alpha;
-		}
-	}
+    if (alpha == 1.0) {
+      bone.scaleX = x * bone.data.scaleX;
+      bone.scaleY = y * bone.data.scaleY;
+    } else {
+      x = x * bone.data.scaleX;
+      y = y * bone.data.scaleY;
+      double bx = setupPose ? bone.data.scaleX : bone.scaleX;
+      double by = setupPose ? bone.data.scaleY : bone.scaleY;
+      double mx = mixingOut ? x.abs() * bx.sign : bx.abs() * x.sign;
+      double my = mixingOut ? y.abs() * by.sign : by.abs() * y.sign;
+      bone.scaleX = bx + (mx - bx) * alpha;
+      bone.scaleY = by + (my - by) * alpha;
+    }
+  }
 }
