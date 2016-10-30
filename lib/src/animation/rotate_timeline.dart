@@ -60,42 +60,34 @@ class RotateTimeline extends CurveTimeline {
 
   @override
   void apply(
-			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-			double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-		if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		Bone bone = skeleton.bones[boneIndex];
+    Bone bone = skeleton.bones[boneIndex];
+    double rotation = 0.0;
 
-		if (time >= frames[frames.length - _ENTRIES]) {
+    if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
-			if (setupPose) {
-        bone.rotation = bone.data.rotation + frames[frames.length + _PREV_ROTATION] * alpha;
-      } else {
-				double r = bone.data.rotation + frames[frames.length + _PREV_ROTATION] - bone.rotation;
-				r = _wrapRotation(r); // Wrap within -180 and 180.
-				bone.rotation += r * alpha;
-			}
-			return;
-		}
+      rotation = frames[frames.length + _PREV_ROTATION];
+    } else {
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      double time0 = frames[frame + _PREV_TIME];
+      double time1 = frames[frame + _TIME];
+      double rotation0 = frames[frame + _PREV_ROTATION];
+      double rotation1 = frames[frame + _ROTATION];
+      double between = 1.0 - (time - time1) / (time0 - time1);
+      double percent = getCurvePercent((frame >> 1) - 1, between);
+      rotation = rotation0 + _wrapRotation(rotation1 - rotation0) * percent;
+    }
 
-		// Interpolate between the previous frame and the current frame.
-		int frame = Animation.binarySearch(frames, time, _ENTRIES);
-		double prevTime = frames[frame + _PREV_TIME];
-		double prevRotation = frames[frame + _PREV_ROTATION];
-		double frameTime = frames[frame + _TIME];
-		double frameRotation = frames[frame + _ROTATION];
-		double between = 1.0 - (time - frameTime) / (prevTime - frameTime);
-		double percent = getCurvePercent((frame >> 1) - 1, between);
-
-		double r = _wrapRotation(frameRotation - prevRotation);
-		r = prevRotation + r * percent;
-		if (setupPose) {
-			r = _wrapRotation(r);
-			bone.rotation = bone.data.rotation + r * alpha;
-		} else {
-			r = _wrapRotation(bone.data.rotation + r - bone.rotation);
-			bone.rotation += r * alpha;
-		}
-	}
+    if (setupPose) {
+      bone.rotation = bone.data.rotation + _wrapRotation(rotation) * alpha;
+    } else {
+      rotation = bone.data.rotation - bone.rotation + rotation;
+      bone.rotation = bone.rotation + _wrapRotation(rotation) * alpha;
+    }
+  }
 }
