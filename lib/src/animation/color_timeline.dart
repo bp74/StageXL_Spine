@@ -58,56 +58,57 @@ class ColorTimeline extends CurveTimeline {
 
   /// Sets the time and value of the specified keyframe.
   ///
-  void setFrame(int frameIndex, double time, double r, double g, double b, double a) {
+  void setFrame(
+      int frameIndex, double time, double r, double g, double b, double a) {
     frameIndex *= _ENTRIES;
-    frames[frameIndex + _TIME] = time.toDouble();
-    frames[frameIndex + _R] = r.toDouble();
-    frames[frameIndex + _G] = g.toDouble();
-    frames[frameIndex + _B] = b.toDouble();
-    frames[frameIndex + _A] = a.toDouble();
+    frames[frameIndex + _TIME] = time;
+    frames[frameIndex + _R] = r;
+    frames[frameIndex + _G] = g;
+    frames[frameIndex + _B] = b;
+    frames[frameIndex + _A] = a;
   }
 
   @override
   void apply(
-      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-      double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    List<num> frames = this.frames;
-    if (time < frames[0 + _TIME]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-    double r = 0.0, g = 0.0, b = 0.0, a = 0.0, t = 0.0;
+    Slot slot = skeleton.slots[slotIndex];
+    double r = 0.0;
+    double g = 0.0;
+    double b = 0.0;
+    double a = 0.0;
 
     if (time >= frames[frames.length + _PREV_TIME]) {
-
       // Time is after last frame.
       r = frames[frames.length + _PREV_R];
       g = frames[frames.length + _PREV_G];
       b = frames[frames.length + _PREV_B];
       a = frames[frames.length + _PREV_A];
-
     } else {
-
       // Interpolate between the previous frame and the current frame.
-
       int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      t = frames[frame + _PREV_TIME];
-      r = frames[frame + _PREV_R];
-      g = frames[frame + _PREV_G];
-      b = frames[frame + _PREV_B];
-      a = frames[frame + _PREV_A];
-
-      double ft = frames[frame + _TIME];
-      double p = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - ft) / (t - ft));
-
-      r += (frames[frame + _R] - r) * p;
-      g += (frames[frame + _G] - g) * p;
-      b += (frames[frame + _B] - b) * p;
-      a += (frames[frame + _A] - a) * p;
+      double t0 = frames[frame + _PREV_TIME];
+      double r0 = frames[frame + _PREV_R];
+      double g0 = frames[frame + _PREV_G];
+      double b0 = frames[frame + _PREV_B];
+      double a0 = frames[frame + _PREV_A];
+      double t1 = frames[frame + _TIME];
+      double r1 = frames[frame + _R];
+      double g1 = frames[frame + _G];
+      double b1 = frames[frame + _B];
+      double a1 = frames[frame + _A];
+      double between = 1.0 - (time - t1) / (t0 - t1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      r = r0 + (r1 - r0) * percent;
+      g = g0 + (g1 - g0) * percent;
+      b = b0 + (b1 - b0) * percent;
+      a = a0 + (a1 - a0) * percent;
     }
 
-    Slot slot = skeleton.slots[slotIndex];
-
-    if (alpha == 1) {
+    if (alpha == 1.0) {
       slot.r = r;
       slot.g = g;
       slot.b = b;
@@ -118,11 +119,10 @@ class ColorTimeline extends CurveTimeline {
       slot.b = slot.data.b;
       slot.a = slot.data.a;
     } else {
-      slot.r += (r - slot.r) * alpha;
-      slot.g += (g - slot.g) * alpha;
-      slot.b += (b - slot.b) * alpha;
-      slot.a += (a - slot.a) * alpha;
+      slot.r = slot.r + (r - slot.r) * alpha;
+      slot.g = slot.g + (g - slot.g) * alpha;
+      slot.b = slot.b + (b - slot.b) * alpha;
+      slot.a = slot.a + (a - slot.a) * alpha;
     }
   }
-
 }
