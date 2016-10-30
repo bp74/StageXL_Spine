@@ -32,19 +32,19 @@ part of stagexl_spine;
 
 class PathConstraintMixTimeline extends CurveTimeline {
 
-	static const int _ENTRIES = 3;
-	static const int _PREV_TIME = -3;
+  static const int _ENTRIES = 3;
+  static const int _PREV_TIME = -3;
   static const int _PREV_ROTATE = -2;
   static const int _PREV_TRANSLATE = -1;
   static const int _TIME = 0;
-	static const int _ROTATE = 1;
+  static const int _ROTATE = 1;
   static const int _TRANSLATE = 2;
 
-	int pathConstraintIndex = 0;
-	
-	final Float32List frames; // time, rotate mix, translate mix, ...
+  int pathConstraintIndex = 0;
 
-	PathConstraintMixTimeline (int frameCount)
+  final Float32List frames; // time, rotate mix, translate mix, ...
+
+  PathConstraintMixTimeline(int frameCount)
       : frames = new Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
@@ -53,46 +53,54 @@ class PathConstraintMixTimeline extends CurveTimeline {
     return (TimelineType.pathConstraintMix.ordinal << 24) + pathConstraintIndex;
   }
 
-	/// Sets the time and mixes of the specified keyframe.
+  /// Sets the time and mixes of the specified keyframe.
 
-  void setFrame(int frameIndex, double time, double rotateMix, double translateMix) {
-		frameIndex *= _ENTRIES;
-		frames[frameIndex + _TIME] = time;
-		frames[frameIndex + _ROTATE] = rotateMix;
-		frames[frameIndex + _TRANSLATE] = translateMix;
-	}
+  void setFrame(
+      int frameIndex, double time, double rotateMix, double translateMix) {
 
-	@override
+    frameIndex *= _ENTRIES;
+    frames[frameIndex + _TIME] = time;
+    frames[frameIndex + _ROTATE] = rotateMix;
+    frames[frameIndex + _TRANSLATE] = translateMix;
+  }
+
+  @override
   void apply(
-			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-			double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
-    PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+    PathConstraint pc = skeleton.pathConstraints[pathConstraintIndex];
+    PathConstraintData data = pc.data;
+    double rot = 0.0;
+    double tra = 0.0;
 
-		double rotate = 0.0, translate = 0.0;
+    if (time >= frames[frames.length + _PREV_TIME]) {
+      // Time is after last frame.
+      rot = frames[frames.length + _PREV_ROTATE];
+      tra = frames[frames.length + _PREV_TRANSLATE];
+    } else {
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      double tim0 = frames[frame + _PREV_TIME];
+      double rot0 = frames[frame + _PREV_ROTATE];
+      double tra0 = frames[frame + _PREV_TRANSLATE];
+      double tim1 = frames[frame * _TIME];
+      double rot1 = frames[frame + _ROTATE];
+      double tra1 = frames[frame + _TRANSLATE];
+      double between = 1.0 - (time - tim1) / (tim0 - tim1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      rot = rot0 + (rot1 - rot0) * percent;
+      tra = tra0 + (tra1 - tra0) * percent;
+    }
 
-		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
-			rotate = frames[frames.length + _PREV_ROTATE];
-			translate = frames[frames.length + _PREV_TRANSLATE];
-		} else {
-			// Interpolate between the previous frame and the current frame.
-			int frame = Animation.binarySearch(frames, time, _ENTRIES);
-			rotate = frames[frame + _PREV_ROTATE];
-			translate = frames[frame + _PREV_TRANSLATE];
-			double frameTime = frames[frame];
-			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
-			rotate += (frames[frame + _ROTATE] - rotate) * percent;
-			translate += (frames[frame + _TRANSLATE] - translate) * percent;
-		}
-
-		if (setupPose) {
-			constraint.rotateMix = constraint.data.rotateMix + (rotate - constraint.data.rotateMix) * alpha;
-			constraint.translateMix = constraint.data.translateMix + (translate - constraint.data.translateMix) * alpha;
-		} else {
-			constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
-			constraint.translateMix += (translate - constraint.translateMix) * alpha;
-		}
-	}
+    if (setupPose) {
+      pc.rotateMix = data.rotateMix + (rot - data.rotateMix) * alpha;
+      pc.translateMix = data.translateMix + (tra - data.translateMix) * alpha;
+    } else {
+      pc.rotateMix = pc.rotateMix + (rot - pc.rotateMix) * alpha;
+      pc.translateMix = pc.translateMix + (tra - pc.translateMix) * alpha;
+    }
+  }
 }

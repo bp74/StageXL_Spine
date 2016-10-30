@@ -69,6 +69,7 @@ class IkConstraintTimeline extends CurveTimeline {
     if (time < frames[0]) return; // Time is before first frame.
 
     IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
+    IkConstraintData data = constraint.data;
     double m = 0.0;
     double b = 0.0;
 
@@ -91,8 +92,8 @@ class IkConstraintTimeline extends CurveTimeline {
     }
 
     if (setupPose) {
-      constraint.mix = constraint.data.mix + (m - constraint.data.mix) * alpha;
-      constraint.bendDirection = mixingOut ? constraint.data.bendDirection : b.toInt();
+      constraint.mix = data.mix + (m - data.mix) * alpha;
+      constraint.bendDirection = mixingOut ? data.bendDirection : b.toInt();
     } else {
       constraint.mix = constraint.mix + (m - constraint.mix) * alpha;
       constraint.bendDirection = mixingOut ? constraint.bendDirection : b.toInt();
