@@ -38,7 +38,7 @@ class AnimationState extends EventDispatcher {
   final List<TrackEntry> _tracks = new List<TrackEntry>();
   final List<Event> _events = new List<Event>();
   final List<TrackEntryEvent> _trackEntryEvents = new List<TrackEntryEvent>();
-  final Map<int, int> _propertyIDs = new Map<int, int>();
+  final Set<int> _propertyIDs = new Set<int>();
 
   bool _eventDispatchDisabled = false;
   bool animationsChanged = false;
@@ -151,7 +151,7 @@ class AnimationState extends EventDispatcher {
     from.trackTime += mixingFromDelta;
     entry.mixTime += mixingFromDelta;
 
-    _updateMixingFrom(from, delta, canEnd && from.alpha == 1);
+    _updateMixingFrom(from, delta, canEnd && from.alpha == 1.0);
   }
 
   void apply(Skeleton skeleton) {
@@ -164,7 +164,7 @@ class AnimationState extends EventDispatcher {
     for (int i = 0; i < _tracks.length; i++) {
 
       TrackEntry current = _tracks[i];
-      if (current == null || current.delay > 0) continue;
+      if (current == null || current.delay > 0.0) continue;
 
       // Apply mixing from entries first.
       double mix = current.alpha;
@@ -179,13 +179,20 @@ class AnimationState extends EventDispatcher {
       List<num> timelinesRotation = current.timelinesRotation;
       List<bool> timelinesFirst = current.timelinesFirst;
 
-      if (mix == 1) {
+      if (mix == 1.0) {
+
         for (int tl = 0; tl < timelines.length; tl++) {
           timelines[tl].apply(skeleton, animationLast, animationTime, events, 1.0, true, false);
         }
+
       } else {
+
         var firstFrame = timelinesRotation.length == 0;
-        if (firstFrame) timelinesRotation.length = timelines.length << 1;
+        if (firstFrame) {
+          timelinesRotation.length = timelines.length << 1;
+          timelinesRotation.fillRange(0, timelinesRotation.length, 0.0);
+        }
+
         for (int tl = 0; tl < timelines.length; tl++) {
           Timeline timeline = timelines[tl];
           if (timeline is RotateTimeline) {
@@ -226,18 +233,21 @@ class AnimationState extends EventDispatcher {
     List<Event> events = mix < from.eventThreshold ? _events : null;
     bool attachments = mix < from.attachmentThreshold;
     bool drawOrder = mix < from.drawOrderThreshold;
+    alpha = from.alpha * (1.0 - mix);
+
     double animationLast = from.animationLast;
     double animationTime = from.getAnimationTime();
-    alpha = from.alpha * (1 - mix);
-    int timelineCount = from.animation.timelines.length;
     List<Timeline> timelines = from.animation.timelines;
+    List<num> timelinesRotation = from.timelinesRotation;
     List<bool> timelinesFirst = from.timelinesFirst;
 
-    bool firstFrame = from.timelinesRotation.length == 0;
-    if (firstFrame) from.timelinesRotation.length = timelineCount << 1;
-    List<num> timelinesRotation = from.timelinesRotation;
+    var firstFrame = timelinesRotation.length == 0;
+    if (firstFrame) {
+      timelinesRotation.length = timelines.length << 1;
+      timelinesRotation.fillRange(0, timelinesRotation.length, 0.0);
+    }
 
-    for (int i = 0; i < timelineCount; i++) {
+    for (int i = 0; i < timelines.length; i++) {
       Timeline timeline = timelines[i];
       bool setupPose = timelinesFirst[i];
       if (timeline is RotateTimeline) {
@@ -298,31 +308,30 @@ class AnimationState extends EventDispatcher {
     double total = 0.0;
     double diff = r2 - r1;
 
-    if (diff == 0) {
+    if (diff == 0.0) {
       if (firstFrame) {
-        timelinesRotation[i] = 0.0;
-        total = 0.0;
+        total = timelinesRotation[i] = 0.0;
       } else {
         total = timelinesRotation[i];
       }
     } else {
       diff = _wrapRotation(diff);
-      double lastTotal = firstFrame ? 0.0 : timelinesRotation[i];
-      double lastDiff = firstFrame ? diff : timelinesRotation[i + 1];
+      double lastTotal = firstFrame ? 0.0 : timelinesRotation[i]; // Angle and direction of mix, including loops.
+      double lastDiff = firstFrame ? diff : timelinesRotation[i + 1];  // Difference between bones.
       bool current = diff > 0.0;
       bool dir = lastTotal >= 0.0;
-      if (lastDiff.sign != diff.sign && lastDiff.abs() <= 90.0) {
+      if ((lastDiff.sign != diff.sign) && (lastDiff.abs() <= 90.0)) {
+        // A cross after a 360 rotation is a loop.
         if (lastTotal.abs() > 180.0) lastTotal += 360.0 * lastTotal.sign;
         dir = current;
       }
-      total = diff + lastTotal - lastTotal % 360.0;
+      total = diff + lastTotal - (lastTotal % 360.0);
       if (dir != current) total += 360.0 * lastTotal.sign;
       timelinesRotation[i] = total;
     }
 
     timelinesRotation[i + 1] = diff;
-    r1 += total * alpha;
-    bone.rotation = _wrapRotation(r1);
+    bone.rotation = r1 + _wrapRotation(total) * alpha;
   }
 
   void _queueEvents(TrackEntry entry, double animationTime) {
@@ -342,13 +351,15 @@ class AnimationState extends EventDispatcher {
     }
 
     // Queue complete if completed a loop iteration or the animation.
-    if (entry.loop ? (trackLastWrapped > entry.trackTime % duration) : (animationTime >= animationEnd && entry.animationLast < animationEnd)) {
+    if (entry.loop
+        ? (trackLastWrapped > entry.trackTime % duration)
+        : (animationTime >= animationEnd && entry.animationLast < animationEnd)) {
       _enqueueTrackEntryEvent(new TrackEntryCompleteEvent(entry));
     }
 
     // Queue events after complete.
     for (; i < _events.length; i++) {
-      Event  event = _events[i];
+      Event event = _events[i];
       if (event.time < animationStart) continue;
       _enqueueTrackEntryEvent(new TrackEntryEventEvent(entry, _events[i]));
     }
@@ -396,8 +407,9 @@ class AnimationState extends EventDispatcher {
       current.mixTime = 0.0;
       from.timelinesRotation.clear();
       // If not completely mixed in, set alpha so mixing out happens from current mix to zero.
-      if (from.mixingFrom != null)
-        from.alpha *= math.min(from.mixTime / from.mixDuration, 1);
+      if (from.mixingFrom != null) {
+        from.alpha *= math.min(from.mixTime / from.mixDuration, 1.0);
+      }
     }
 
     _enqueueTrackEntryEvent(new TrackEntryStartEvent(current));
@@ -474,7 +486,7 @@ class AnimationState extends EventDispatcher {
   }
 
   TrackEntry addEmptyAnimation(int trackIndex, double mixDuration, double delay) {
-    if (delay <= 0) delay -= mixDuration;
+    if (delay <= 0.0) delay -= mixDuration;
     TrackEntry entry = addAnimation(trackIndex, _emptyAnimation, false, delay);
     entry.mixDuration = mixDuration;
     entry.trackEnd = mixDuration;
@@ -501,7 +513,7 @@ class AnimationState extends EventDispatcher {
     TrackEntry entry = new TrackEntry(trackIndex, animation);
     entry.loop = loop;
     entry.trackEnd = loop ? double.MAX_FINITE : entry.animationEnd;
-    entry.mixDuration = last == null ? 0 : data.getMix(last.animation, animation);
+    entry.mixDuration = last == null ? 0.0 : data.getMix(last.animation, animation);
     return entry;
   }
 
@@ -534,13 +546,13 @@ class AnimationState extends EventDispatcher {
     if (entry.mixingFrom != null) {
       _setTimelinesFirst(entry.mixingFrom);
       _checkTimelinesUsage(entry, entry.timelinesFirst);
-      return;
-    }
-    entry.timelinesFirst.length = entry.animation.timelines.length;
-    for (int i = 0; i < entry.animation.timelines.length; i++) {
-      int id = entry.animation.timelines[i].getPropertyId();
-      _propertyIDs[id] = id;
-      entry.timelinesFirst[i] = true;
+    } else {
+      List<Timeline> timelines = entry.animation.timelines;
+      entry.timelinesFirst.length = timelines.length;
+      for (int i = 0; i < timelines.length; i++) {
+        _propertyIDs.add(timelines[i].getPropertyId());
+        entry.timelinesFirst[i] = true;
+      }
     }
   }
 
@@ -550,11 +562,11 @@ class AnimationState extends EventDispatcher {
   }
 
   void _checkTimelinesUsage(TrackEntry entry, List<bool> usageArray) {
-    usageArray.length = entry.animation.timelines.length;
-    for (int i = 0; i < entry.animation.timelines.length; i++) {
-      int id = entry.animation.timelines[i].getPropertyId();
-      usageArray[i] = !_propertyIDs.containsKey(id);
-      _propertyIDs[id] = id;
+    List<Timeline> timelines = entry.animation.timelines;
+    usageArray.length = timelines.length;
+    for (int i = 0; i < timelines.length; i++) {
+      int id = timelines[i].getPropertyId();
+      usageArray[i] = _propertyIDs.add(id);
     }
   }
 

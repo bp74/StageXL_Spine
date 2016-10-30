@@ -38,7 +38,7 @@ class RotateTimeline extends CurveTimeline {
   static const int _TIME = 0;
   static const int _ROTATION = 1;
 
-  final Float32List frames; // time, value, ...
+  final Float32List frames; // time, degrees, ...
   int boneIndex = 0;
 
   RotateTimeline(int frameCount)
@@ -63,17 +63,16 @@ class RotateTimeline extends CurveTimeline {
 			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
 			double alpha, bool setupPose, bool mixingOut) {
 
-		if (time < this.frames[0]) return; // Time is before first frame.
+		if (time < frames[0]) return; // Time is before first frame.
 
 		Bone bone = skeleton.bones[boneIndex];
-		double r = 0.0;
 
-		if (time >= this.frames[this.frames.length - _ENTRIES]) {
+		if (time >= frames[frames.length - _ENTRIES]) {
       // Time is after last frame.
 			if (setupPose) {
-        bone.rotation = bone.data.rotation + this.frames[this.frames.length + _PREV_ROTATION] * alpha;
+        bone.rotation = bone.data.rotation + frames[frames.length + _PREV_ROTATION] * alpha;
       } else {
-				r = bone.data.rotation + this.frames[this.frames.length + _PREV_ROTATION] - bone.rotation;
+				double r = bone.data.rotation + frames[frames.length + _PREV_ROTATION] - bone.rotation;
 				r = _wrapRotation(r); // Wrap within -180 and 180.
 				bone.rotation += r * alpha;
 			}
@@ -81,12 +80,15 @@ class RotateTimeline extends CurveTimeline {
 		}
 
 		// Interpolate between the previous frame and the current frame.
-		int frame = Animation.binarySearch(this.frames, time, _ENTRIES);
-		double prevRotation = this.frames[frame + _PREV_ROTATION];
-		double frameTime = this.frames[frame];
-		double percent = getCurvePercent((frame >> 1) - 1, 1 - (time - frameTime) / (this.frames[frame + _PREV_TIME] - frameTime));
+		int frame = Animation.binarySearch(frames, time, _ENTRIES);
+		double prevTime = frames[frame + _PREV_TIME];
+		double prevRotation = frames[frame + _PREV_ROTATION];
+		double frameTime = frames[frame + _TIME];
+		double frameRotation = frames[frame + _ROTATION];
+		double between = 1.0 - (time - frameTime) / (prevTime - frameTime);
+		double percent = getCurvePercent((frame >> 1) - 1, between);
 
-		r = _wrapRotation(this.frames[frame + _ROTATION] - prevRotation);
+		double r = _wrapRotation(frameRotation - prevRotation);
 		r = prevRotation + r * percent;
 		if (setupPose) {
 			r = _wrapRotation(r);
