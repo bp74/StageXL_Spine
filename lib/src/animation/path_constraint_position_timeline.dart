@@ -32,17 +32,17 @@ part of stagexl_spine;
  
 class PathConstraintPositionTimeline extends CurveTimeline {
 
-	static const int _ENTRIES  = 2;
-	static const int _PREV_TIME = -2;
-	static const int _PREV_VALUE = -1;
-	static const int _TIME = 0;
-	static const int _VALUE = 1;
+  static const int _ENTRIES = 2;
+  static const int _PREV_TIME = -2;
+  static const int _PREV_VALUE = -1;
+  static const int _TIME = 0;
+  static const int _VALUE = 1;
 
-	int pathConstraintIndex = 0;
+  int pathConstraintIndex = 0;
 
-	final Float32List frames; // time, position, ...
+  final Float32List frames; // time, position, ...
 
-	PathConstraintPositionTimeline (int frameCount)
+  PathConstraintPositionTimeline(int frameCount)
       : frames = new Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
@@ -51,41 +51,44 @@ class PathConstraintPositionTimeline extends CurveTimeline {
     return (TimelineType.pathConstraintPosition.ordinal << 24) + pathConstraintIndex;
   }
 
-	/// Sets the time and value of the specified keyframe.
+  /// Sets the time and value of the specified keyframe.
 
-  void setFrame (int frameIndex, double time, double value) {
-		frameIndex *= _ENTRIES;
-		frames[frameIndex + _TIME] = time;
-		frames[frameIndex + _VALUE] = value;
-	}
+  void setFrame(int frameIndex, double time, double value) {
+    frameIndex *= _ENTRIES;
+    frames[frameIndex + _TIME] = time;
+    frames[frameIndex + _VALUE] = value;
+  }
 
-	@override
+  @override
   void apply(
-			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-			double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
+    PathConstraintData data = constraint.data;
+    double p = 0.0;
 
-		double position = 0.0;
-
-		if (time >= frames[frames.length - _ENTRIES]) {
+    if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
-      position = frames[frames.length + _PREV_VALUE];
+      p = frames[frames.length + _PREV_VALUE];
     } else {
-			// Interpolate between the previous frame and the current frame.
-			int frame = Animation.binarySearch(frames, time, _ENTRIES);
-			position = frames[frame + _PREV_VALUE];
-			double frameTime = frames[frame];
-			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
-			position += (frames[frame + _VALUE] - position) * percent;
-		}
-
-		if (setupPose) {
-      constraint.position = constraint.data.position + (position - constraint.data.position) * alpha;
-    } else {
-      constraint.position += (position - constraint.position) * alpha;
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      double t0 = frames[frame + _PREV_TIME];
+      double p0 = frames[frame + _PREV_VALUE];
+      double t1 = frames[frame + _TIME];
+      double p1 = frames[frame + _VALUE];
+      double between = 1.0 - (time - t1) / (t0 - t1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      p = p0 + (p1 - p0) * percent;
     }
-	}
+
+    if (setupPose) {
+      constraint.position = data.position + (p - data.position) * alpha;
+    } else {
+      constraint.position = constraint.position + (p - constraint.position) * alpha;
+    }
+  }
 }
