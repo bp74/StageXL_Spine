@@ -32,13 +32,13 @@ part of stagexl_spine;
 
 class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 
-  static const int _ENTRIES  = 2;
+  static const int _ENTRIES = 2;
   static const int _PREV_TIME = -2;
   static const int _PREV_VALUE = -1;
   static const int _TIME = 0;
   static const int _VALUE = 1;
 
-	PathConstraintSpacingTimeline (int frameCount) : super(frameCount);
+  PathConstraintSpacingTimeline(int frameCount) : super(frameCount);
 
   @override
   int getPropertyId() {
@@ -47,21 +47,21 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 
   @override
   void apply(
-      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-      double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
     if (time < frames[0]) return; // Time is before first frame.
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = constraint.data;
-		double s = 0.0;
+    double s = 0.0;
 
-		if (time >= frames[frames.length + _PREV_TIME]) {
+    if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
       s = frames[frames.length + _PREV_VALUE];
     } else {
-			// Interpolate between the previous frame and the current frame.
-			int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
       double t0 = frames[frame + _PREV_TIME];
       double s0 = frames[frame + _PREV_VALUE];
       double t1 = frames[frame + _TIME];
@@ -71,10 +71,10 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
       s = s0 + (s1 - s0) * percent;
     }
 
-		if (setupPose) {
+    if (setupPose) {
       constraint.spacing = data.spacing + (s - data.spacing) * alpha;
     } else {
       constraint.spacing = constraint.spacing + (s - constraint.spacing) * alpha;
     }
-	}
+  }
 }
