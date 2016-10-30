@@ -19,4 +19,4 @@ double _toDeg(double rad) => _rad2deg * rad;
 double _toRad(double deg) => _deg2rad * deg;
 
 /// Wrap within -180 degrees and 180 degrees
-double _wrapRotation(double deg) => deg - 360.0 * (deg / 360.0).round();
+double _wrapRotation(double deg) => (180.0 + deg) % 360.0 - 180.0;
