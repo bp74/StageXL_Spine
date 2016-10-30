@@ -487,7 +487,9 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            rotateTimeline.setFrame(frameIndex, valueMap["time"], valueMap["angle"]);
+            double time = _getDouble(valueMap, "time", 0.0);
+            double degrees = _getDouble(valueMap, "angle", 0.0);
+            rotateTimeline.setFrame(frameIndex, time, degrees);
             _readCurve(valueMap, rotateTimeline, frameIndex);
             frameIndex++;
           }
@@ -787,7 +789,11 @@ class SkeletonLoader {
     } else if (curve == "stepped") {
       timeline.setStepped(frameIndex);
     } else if (curve is List) {
-      timeline.setCurve(frameIndex, curve[0], curve[1], curve[2], curve[3]);
+      double cx1 = curve[0].toDouble();
+      double cy1 = curve[0].toDouble();
+      double cx2 = curve[0].toDouble();
+      double cy2 = curve[0].toDouble();
+      timeline.setCurve(frameIndex, cx1, cy1, cx2, cy2);
     }
   }
 
