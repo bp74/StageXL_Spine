@@ -320,12 +320,13 @@ class AnimationState extends EventDispatcher {
       double lastDiff = firstFrame ? diff : timelinesRotation[i + 1];  // Difference between bones.
       bool current = diff > 0.0;
       bool dir = lastTotal >= 0.0;
+      // Detect cross at 0 (not 180).
       if ((lastDiff.sign != diff.sign) && (lastDiff.abs() <= 90.0)) {
         // A cross after a 360 rotation is a loop.
         if (lastTotal.abs() > 180.0) lastTotal += 360.0 * lastTotal.sign;
         dir = current;
       }
-      total = diff + lastTotal - (lastTotal % 360.0);
+      total = diff + lastTotal - (lastTotal % 360.0); // Store loops as part of lastTotal.
       if (dir != current) total += 360.0 * lastTotal.sign;
       timelinesRotation[i] = total;
     }
