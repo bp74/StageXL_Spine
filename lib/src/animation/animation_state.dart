@@ -326,13 +326,14 @@ class AnimationState extends EventDispatcher {
         if (lastTotal.abs() > 180.0) lastTotal += 360.0 * lastTotal.sign;
         dir = current;
       }
-      total = diff + lastTotal - (lastTotal % 360.0); // Store loops as part of lastTotal.
+      // Store loops as part of lastTotal.
+      total = diff + lastTotal - lastTotal.remainder(360.0);
       if (dir != current) total += 360.0 * lastTotal.sign;
       timelinesRotation[i] = total;
     }
 
     timelinesRotation[i + 1] = diff;
-    bone.rotation = r1 + _wrapRotation(total) * alpha;
+    bone.rotation = _wrapRotation(r1 + total * alpha);
   }
 
   void _queueEvents(TrackEntry entry, double animationTime) {
