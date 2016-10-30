@@ -61,38 +61,42 @@ class TranslateTimeline extends CurveTimeline {
     frames[frameIndex + 2] = y.toDouble();
   }
 
-	@override
+  @override
   void apply(
-			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-			double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    Float32List frames = this.frames;
-		if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-		Bone bone = skeleton.bones[boneIndex];
+    Bone bone = skeleton.bones[boneIndex];
+    double x = 0.0;
+    double y = 0.0;
 
-		double x = 0.0, y = 0.0;
-		if (time >= frames[frames.length - _ENTRIES]) {
+    if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
-			x = frames[frames.length + _PREV_X];
-			y = frames[frames.length + _PREV_Y];
-		} else {
-			// Interpolate between the previous frame and the current frame.
-			int frame = Animation.binarySearch(frames, time, _ENTRIES);
-			x = frames[frame + _PREV_X];
-			y = frames[frame + _PREV_Y];
-			double frameTime = frames[frame];
-			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
-			x += (frames[frame + _X] - x) * percent;
-			y += (frames[frame + _Y] - y) * percent;
-		}
+      x = frames[frames.length + _PREV_X];
+      y = frames[frames.length + _PREV_Y];
+    } else {
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      double t0 = frames[frame + _PREV_TIME];
+      double x0 = frames[frame + _PREV_X];
+      double y0 = frames[frame + _PREV_Y];
+      double t1 = frames[frame + _TIME];
+      double x1 = frames[frame + _X];
+      double y1 = frames[frame + _Y];
+      double between = 1.0 - (time - t1) / (t0 - t1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      x = x0 + (x1 - x0) * percent;
+      y = y0 + (y1 - y0) * percent;
+    }
 
-		if (setupPose) {
-			bone.x = bone.data.x + x * alpha;
-			bone.y = bone.data.y + y * alpha;
-		} else {
-			bone.x += (bone.data.x + x - bone.x) * alpha;
-			bone.y += (bone.data.y + y - bone.y) * alpha;
-		}
-	}
+    if (setupPose) {
+      bone.x = bone.data.x + x * alpha;
+      bone.y = bone.data.y + y * alpha;
+    } else {
+      bone.x = bone.x + (bone.data.x - bone.x + x) * alpha;
+      bone.y = bone.y + (bone.data.y - bone.y + y) * alpha;
+    }
+  }
 }

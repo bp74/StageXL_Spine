@@ -74,13 +74,13 @@ class RotateTimeline extends CurveTimeline {
     } else {
       // Interpolate between the previous frame and the current frame.
       int frame = Animation.binarySearch(frames, time, _ENTRIES);
-      double time0 = frames[frame + _PREV_TIME];
-      double time1 = frames[frame + _TIME];
-      double rotation0 = frames[frame + _PREV_ROTATION];
-      double rotation1 = frames[frame + _ROTATION];
-      double between = 1.0 - (time - time1) / (time0 - time1);
+      double t0 = frames[frame + _PREV_TIME];
+      double r0 = frames[frame + _PREV_ROTATION];
+      double t1 = frames[frame + _TIME];
+      double r1 = frames[frame + _ROTATION];
+      double between = 1.0 - (time - t1) / (t0 - t1);
       double percent = getCurvePercent((frame >> 1) - 1, between);
-      rotation = rotation0 + _wrapRotation(rotation1 - rotation0) * percent;
+      rotation = r0 + _wrapRotation(r1 - r0) * percent;
     }
 
     if (setupPose) {
