@@ -32,86 +32,98 @@ part of stagexl_spine;
 
 class TransformConstraintTimeline extends CurveTimeline {
 
-	static const int _ENTRIES = 5;
-	static const int _PREV_TIME = -5;
+  static const int _ENTRIES = 5;
+  static const int _PREV_TIME = -5;
   static const int _PREV_ROTATE = -4;
   static const int _PREV_TRANSLATE = -3;
   static const int _PREV_SCALE = -2;
   static const int _PREV_SHEAR = -1;
   static const int _TIME = 0;
-	static const int _ROTATE = 1;
+  static const int _ROTATE = 1;
   static const int _TRANSLATE = 2;
   static const int _SCALE = 3;
   static const int _SHEAR = 4;
 
-	int transformConstraintIndex = 0;
+  int transformConstraintIndex = 0;
 
   final Float32List frames; // time, rotate mix, translate mix, scale mix, shear mix, ...
 
-	TransformConstraintTimeline(int frameCount)
-      :	frames = new Float32List(frameCount * _ENTRIES),
-		    super(frameCount);
+  TransformConstraintTimeline(int frameCount)
+      : frames = new Float32List(frameCount * _ENTRIES),
+        super(frameCount);
 
   @override
   int getPropertyId() {
     return (TimelineType.transformConstraint.ordinal << 24) + transformConstraintIndex;
   }
 
-	/// Sets the time and mixes of the specified keyframe.
+  /// Sets the time and mixes of the specified keyframe.
 
-  void setFrame (int frameIndex, double time, double rotateMix, double translateMix, double scaleMix, double shearMix) {
-		frameIndex *= _ENTRIES;
-		frames[frameIndex + _TIME] = time;
-		frames[frameIndex + _ROTATE] = rotateMix;
-		frames[frameIndex + _TRANSLATE] = translateMix;
-		frames[frameIndex + _SCALE] = scaleMix;
-		frames[frameIndex + _SHEAR] = shearMix;
-	}
+  void setFrame(
+      int frameIndex, double time, double rotateMix,
+      double translateMix, double scaleMix, double shearMix) {
 
-	@override
+    frameIndex *= _ENTRIES;
+    frames[frameIndex + _TIME] = time;
+    frames[frameIndex + _ROTATE] = rotateMix;
+    frames[frameIndex + _TRANSLATE] = translateMix;
+    frames[frameIndex + _SCALE] = scaleMix;
+    frames[frameIndex + _SHEAR] = shearMix;
+  }
+
+  @override
   void apply(
-			Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-			double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time,
+      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    Float32List frames = this.frames;
-		if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) return; // Time is before first frame.
 
-    TransformConstraint constraint = skeleton.transformConstraints[transformConstraintIndex];
+    List<TransformConstraint> tcs = skeleton.transformConstraints;
+    TransformConstraint tc = tcs[transformConstraintIndex];
+    TransformConstraintData data = tc.data;
 
-		double rotate = 0.0, translate = 0.0, scale = 0.0, shear = 0.0;
-		if (time >= frames[frames.length - _ENTRIES]) { // Time is after last frame.
-			int i = frames.length;
-			rotate = frames[i + _PREV_ROTATE];
-			translate = frames[i + _PREV_TRANSLATE];
-			scale = frames[i + _PREV_SCALE];
-			shear = frames[i + _PREV_SHEAR];
-		} else {
-			// Interpolate between the previous frame and the current frame.
-			int frame = Animation.binarySearch(frames, time, _ENTRIES);
-			rotate = frames[frame + _PREV_ROTATE];
-			translate = frames[frame + _PREV_TRANSLATE];
-			scale = frames[frame + _PREV_SCALE];
-			shear = frames[frame + _PREV_SHEAR];
-			double frameTime = frames[frame];
-			double percent = getCurvePercent(frame ~/ _ENTRIES - 1, 1 - (time - frameTime) / (frames[frame + _PREV_TIME] - frameTime));
+    double rot = 0.0; // rotate
+    double tra = 0.0; // translate
+    double sca = 0.0; // scale
+    double she = 0.0; // shear
 
-			rotate += (frames[frame + _ROTATE] - rotate) * percent;
-			translate += (frames[frame + _TRANSLATE] - translate) * percent;
-			scale += (frames[frame + _SCALE] - scale) * percent;
-			shear += (frames[frame + _SHEAR] - shear) * percent;
-		}
+    if (time >= frames[frames.length + _PREV_TIME]) {
+      // Time is after last frame.
+      rot = frames[frames.length + _PREV_ROTATE];
+      tra = frames[frames.length + _PREV_TRANSLATE];
+      sca = frames[frames.length + _PREV_SCALE];
+      she = frames[frames.length + _PREV_SHEAR];
+    } else {
+      // Interpolate between the previous frame and the current frame.
+      int frame = Animation.binarySearch(frames, time, _ENTRIES);
+      double tim0 = frames[frame + _PREV_TIME];
+      double rot0 = frames[frame + _PREV_ROTATE];
+      double tra0 = frames[frame + _PREV_TRANSLATE];
+      double sca0 = frames[frame + _PREV_SCALE];
+      double she0 = frames[frame + _PREV_SHEAR];
+      double tim1 = frames[frame + _TIME];
+      double rot1 = frames[frame + _ROTATE];
+      double tra1 = frames[frame + _TRANSLATE];
+      double sca1 = frames[frame + _SCALE];
+      double she1 = frames[frame + _SHEAR];
+      double between = 1.0 - (time - tim1) / (tim0 - tim1);
+      double percent = getCurvePercent(frame ~/ _ENTRIES - 1, between);
+      rot = rot0 + (rot1 - rot0) * percent;
+      tra = tra0 + (tra1 - tra0) * percent;
+      sca = sca0 + (sca1 - sca0) * percent;
+      she = she0 + (she1 - she0) * percent;
+    }
 
-		if (setupPose) {
-      TransformConstraintData data = constraint.data;
-			constraint.rotateMix = data.rotateMix + (rotate - data.rotateMix) * alpha;
-			constraint.translateMix = data.translateMix + (translate - data.translateMix) * alpha;
-			constraint.scaleMix = data.scaleMix + (scale - data.scaleMix) * alpha;
-			constraint.shearMix = data.shearMix + (shear - data.shearMix) * alpha;
-		} else {
-			constraint.rotateMix += (rotate - constraint.rotateMix) * alpha;
-			constraint.translateMix += (translate - constraint.translateMix) * alpha;
-			constraint.scaleMix += (scale - constraint.scaleMix) * alpha;
-			constraint.shearMix += (shear - constraint.shearMix) * alpha;
-		}
-	}
+    if (setupPose) {
+      tc.rotateMix = data.rotateMix + (rot - data.rotateMix) * alpha;
+      tc.translateMix = data.translateMix + (tra - data.translateMix) * alpha;
+      tc.scaleMix = data.scaleMix + (sca - data.scaleMix) * alpha;
+      tc.shearMix = data.shearMix + (she - data.shearMix) * alpha;
+    } else {
+      tc.rotateMix = tc.rotateMix + (rot - tc.rotateMix) * alpha;
+      tc.translateMix = tc.translateMix + (tra - tc.translateMix) * alpha;
+      tc.scaleMix = tc.scaleMix + (sca - tc.scaleMix) * alpha;
+      tc.shearMix = tc.shearMix + (she - tc.shearMix) * alpha;
+    }
+  }
 }
