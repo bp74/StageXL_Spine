@@ -77,7 +77,6 @@ class PathConstraint implements Constraint {
     if (target.attachment is! PathAttachment) return;
     PathAttachment attachment = target.attachment;
 
-    double deg2rad = math.PI / 180.0;
     double rotateMix = this.rotateMix;
     double translateMix = this.translateMix;
     bool translate = translateMix > 0;
@@ -169,7 +168,7 @@ class PathConstraint implements Constraint {
           r = math.atan2(dy, dx);
         }
 
-        r -= math.atan2(c, a) - offsetRotation * deg2rad;
+        r -= math.atan2(c, a) - _toRad(offsetRotation);
 
         if (tip) {
           cos = math.cos(r);

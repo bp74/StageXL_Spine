@@ -70,7 +70,6 @@ class TransformConstraint implements Constraint {
     double translateMix = this.translateMix;
     double scaleMix = this.scaleMix;
     double shearMix = this.shearMix;
-    double deg2rad = math.PI / 180.0;
 
     Bone target = this.target;
 
@@ -89,7 +88,7 @@ class TransformConstraint implements Constraint {
         double b = bone.b;
         double c = bone.c;
         double d = bone.d;
-        double r = math.atan2(tc, ta) - math.atan2(c, a) + data.offsetRotation * deg2rad;
+        double r = math.atan2(tc, ta) - math.atan2(c, a) + _toRad(data.offsetRotation);
         if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
         r *= rotateMix;
         double cos = math.cos(r);
@@ -130,7 +129,7 @@ class TransformConstraint implements Constraint {
         double by = math.atan2(d, b);
         double r = math.atan2(td, tb) - math.atan2(tc, ta) - (by - math.atan2(bone.c, bone.a));
         if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
-        r = by + (r + data.offsetShearY * deg2rad) * shearMix;
+        r = by + (r + _toRad(data.offsetShearY)) * shearMix;
         double s = math.sqrt(b * b + d * d);
         bone._b = math.cos(r) * s;
         bone._d = math.sin(r) * s;
