@@ -62,7 +62,7 @@ class Skin {
     for (Slot slot in skeleton.slots) {
       Attachment slotAttachment = slot.attachment;
       if (slotAttachment != null && slotIndex < oldSkin.attachments.length) {
-        Map map = oldSkin.attachments[slotIndex];
+        Map map = oldSkin.attachments[slotIndex] ?? {};
         for (var name in map.keys) {
           Attachment skinAttachment = map[name];
           if (slotAttachment == skinAttachment) {
