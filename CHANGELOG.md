@@ -3,12 +3,18 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
-#### Pub version 0.7.0
+#### Pub version 0.8.0-dev.1
+  * Added all features of the Spine v3.5 format.
+  * Updated examples to Spine 3.5
+  
+#### Pub version 0.7.0 
   * Added all features of the Spine v3.4 format.
+  * Updated examples to Spine 3.4
   
 #### Pub version 0.6.0
-  * Added all features of the Spine v3.1 format
-
+  * Added all features of the Spine v3.1 format.
+  * Updated examples to Spine 3.1
+  
 #### Pub version 0.5.1
   * Fixed bone matrix calculation.
   * Fixed bone sorting transform behavior.
