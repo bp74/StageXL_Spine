@@ -6,13 +6,14 @@ class SkeletonAnimation extends SkeletonDisplayObject implements Animatable {
   double timeScale = 1.0;
 
   SkeletonAnimation(SkeletonData skeletonData, [AnimationStateData stateData])
-      : super(skeletonData),
-        state = new AnimationState(stateData ?? new AnimationStateData(skeletonData));
+      : state = new AnimationState(stateData ?? new AnimationStateData(skeletonData)),
+        super(skeletonData);
 
-  bool advanceTime(double time) {
-    time = time * timeScale;
-    skeleton.update(time);
-    state.update(time);
+  @override
+  bool advanceTime(num time) {
+    double timeScaled = time * timeScale;
+    skeleton.update(timeScaled);
+    state.update(timeScaled);
     state.apply(skeleton);
     skeleton.updateWorldTransform();
     return true;

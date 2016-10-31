@@ -72,6 +72,7 @@ class PathConstraint implements Constraint {
     update();
   }
 
+  @override
   void update() {
 
     if (target.attachment is! PathAttachment) return;
@@ -95,7 +96,7 @@ class PathConstraint implements Constraint {
     List<Bone> bones = this.bones;
     if (_spaces.length != spacesCount) _spaces = new Float32List(spacesCount);
     Float32List spaces = _spaces;
-    Float32List lengths = null;
+    Float32List lengths;
     double spacing = this.spacing;
 
     if (scale || lengthSpacing) {

@@ -40,7 +40,7 @@ class Slot {
   double b = 1.0;
   double a = 1.0;
 
-  Attachment _attachment = null;
+  Attachment _attachment;
   double _attachmentTime = 0.0;
   Float32List attachmentVertices = new Float32List(0);
 
@@ -54,7 +54,7 @@ class Slot {
 
   Attachment get attachment => _attachment;
 
-  void set attachment(Attachment attachment) {
+  set attachment(Attachment attachment) {
     if (_attachment == attachment) return;
     _attachment = attachment;
     _attachmentTime = bone.skeleton.time;
@@ -64,7 +64,7 @@ class Slot {
   /// Returns the time since the attachment was set.
   double get attachmentTime => bone.skeleton.time - _attachmentTime;
 
-  void set attachmentTime(double time) {
+  set attachmentTime(double time) {
     _attachmentTime = bone.skeleton.time - time;
   }
 
@@ -81,5 +81,6 @@ class Slot {
     }
   }
 
+  @override
   String toString() => data.name;
 }

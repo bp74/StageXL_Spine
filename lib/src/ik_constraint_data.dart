@@ -35,7 +35,7 @@ class IkConstraintData {
   final String name;
   final List<BoneData> bones = new List<BoneData>();
   
-  BoneData target = null;
+  BoneData target;
   int bendDirection = 1;
   int order = 0;
   double mix = 1.0;
@@ -44,5 +44,6 @@ class IkConstraintData {
     if (name == null) throw new ArgumentError("name cannot be null.");
   }
 
+  @override
   String toString() => name;
 }

@@ -50,7 +50,7 @@ class SkeletonData {
   List<TransformConstraintData> transformConstraints = new List<TransformConstraintData>();
   List<PathConstraintData> pathConstraints = new List<PathConstraintData>();
 
-  Skin defaultSkin = null;
+  Skin defaultSkin;
 
   // --- Bones.
 
@@ -140,6 +140,7 @@ class SkeletonData {
     return -1;
   }
 
-  String toString() => name != null ? name : super.toString();
+  @override
+  String toString() => name ?? super.toString();
 
 }

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:stagexl/stagexl.dart';
-import 'package:stagexl/stagexl.dart' as stageXL;
+import 'package:stagexl/stagexl.dart' as stagexl;
 
 part 'src/bone.dart';
 part 'src/bone_data.dart';

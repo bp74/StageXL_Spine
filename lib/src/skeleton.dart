@@ -42,7 +42,7 @@ class Skeleton {
   final List<Updatable> _updateCache = new List<Updatable>();
   final List<Bone> _updateCacheReset = new List<Bone>();
 
-  Skin _skin = null;
+  Skin _skin;
 
   double r = 1.0;
   double g = 1.0;
@@ -359,7 +359,7 @@ class Skeleton {
     return -1;
   }
 
-  void set skinName(String skinName) {
+  set skinName(String skinName) {
     Skin skin = data.findSkin(skinName);
     if (skin == null) throw new ArgumentError("Skin not found: $skinName");
     this.skin = skin;
@@ -373,7 +373,7 @@ class Skeleton {
   /// old skin was attached. If there was no old skin, each slot's setup
   /// mode attachment is attached from the new skin.
 
-  void set skin(Skin newSkin) {
+  set skin(Skin newSkin) {
     if (newSkin != null) {
       if (_skin != null) {
         newSkin.attachAll(this, _skin);
@@ -418,7 +418,7 @@ class Skeleton {
     for (int i = 0; i < this.slots.length; i++) {
       Slot slot = this.slots[i];
       if (slot.data.name == slotName) {
-        Attachment attachment = null;
+        Attachment attachment;
         if (attachmentName != null) {
           attachment = getAttachmentForSlotIndex(i, attachmentName);
           if (attachment == null) {
@@ -462,7 +462,6 @@ class Skeleton {
     time += delta;
   }
 
-  String toString() {
-    return this.data.name != null ? this.data.name : super.toString();
-  }
+  @override
+  String toString() => this.data.name ?? super.toString();
 }

@@ -34,7 +34,7 @@ class IkConstraint implements Constraint {
 
   final List<Bone> bones = new List<Bone>();
   final IkConstraintData data;
-  Bone target = null;
+  Bone target;
 
   double mix = 1.0;
   int bendDirection = 0;
@@ -58,19 +58,19 @@ class IkConstraint implements Constraint {
     update();
   }
 
+  @override
   void update() {
-    switch (bones.length) {
-      case 1:
-        apply1(bones[0], target.worldX, target.worldY, mix);
-        break;
-      case 2:
-        apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
-        break;
+    if (bones.length == 1) {
+      apply1(bones[0], target.worldX, target.worldY, mix);
+    } else if (bones.length == 2) {
+      apply2( bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
     }
   }
 
+  @override
   int getOrder() => this.data.order;
 
+  @override
   String toString() => data.name;
 
 	/// Adjusts the bone rotation so the tip is as close to the target position

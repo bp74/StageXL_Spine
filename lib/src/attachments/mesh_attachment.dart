@@ -33,6 +33,8 @@ part of stagexl_spine;
 class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
   final String path;
+
+  @override
   final BitmapData bitmapData;
 
   Float32List worldVertices;
@@ -40,9 +42,16 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
   Int16List triangles;
   Int16List edges;
 
+  @override
   double r = 1.0;
+
+  @override
   double g = 1.0;
+
+  @override
   double b = 1.0;
+
+  @override
   double a = 1.0;
 
   int hullLength = 0;
@@ -106,8 +115,10 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
   //---------------------------------------------------------------------------
 
+  @override
   Int16List get ixList => _ixList;
 
+  @override
   Float32List getVertexList(double posX, double posY, Slot slot) {
 
     // TODO: make this more efficient!

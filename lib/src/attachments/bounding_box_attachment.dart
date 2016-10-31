@@ -32,8 +32,6 @@ part of stagexl_spine;
 
 class BoundingBoxAttachment extends VertexAttachment {
 
-  Float32List vertices = new Float32List(0);
-
   BoundingBoxAttachment(String name) : super(name);
 
 }

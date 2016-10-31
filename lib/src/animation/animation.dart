@@ -67,7 +67,7 @@ class Animation {
     int current = high >> 1;
     if (high == 0) return step;
 
-    while (true) {
+    for(;;) {
       if (values[(current + 1) * step] <= target) {
         low = current + 1;
       } else {
@@ -89,7 +89,7 @@ class Animation {
     if (high == 0) return 1;
 
     int current = high >> 1;
-    while (true) {
+    for(;;) {
       if (values[current + 1] <= target) {
         low = current + 1;
       } else {
@@ -107,5 +107,6 @@ class Animation {
     return -1;
   }
 
+  @override
   String toString() => name;
 }

@@ -73,7 +73,7 @@ class SkeletonLoader {
 
     for (Map boneMap in root["bones"] ?? []) {
 
-      BoneData parent = null;
+      BoneData parent;
 
       String parentName = _getString(boneMap, "parent", null);
       if (parentName != null) {
@@ -308,6 +308,10 @@ class SkeletonLoader {
         region.update();
 
         return region;
+
+      case AttachmentType.regionsequence:
+        // Currently not supported
+        return null;
 
       case AttachmentType.mesh:
       case AttachmentType.linkedmesh:
@@ -709,7 +713,7 @@ class SkeletonLoader {
       for (Map drawOrderMap in drawOrderValues) {
 
         double time = _getDouble(drawOrderMap, "time", 0.0);
-        Int16List drawOrder = null;
+        Int16List drawOrder;
 
         if (drawOrderMap.containsKey("offsets")) {
 

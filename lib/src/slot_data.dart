@@ -41,7 +41,7 @@ class SlotData {
   double b = 1.0;
   double a = 1.0;
 
-  String attachmentName = null;
+  String attachmentName;
   BlendMode blendMode = BlendMode.NORMAL;
 
   SlotData(this.index, this.name, this.boneData) {
@@ -50,5 +50,6 @@ class SlotData {
     if (boneData == null) throw new ArgumentError("boneData cannot be null.");
   }
 
+  @override
   String toString() => name;
 }

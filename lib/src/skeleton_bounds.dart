@@ -63,7 +63,7 @@ class SkeletonBounds {
       if (attachment is BoundingBoxAttachment) {
 
         BoundingBoxAttachment boundingBox = attachment;
-        Float32List vertices = null;
+        Float32List vertices;
         int verticesLength = boundingBox.worldVerticesLength;
         int byteBufferLength = verticesLength << 2;
 

@@ -54,7 +54,8 @@ class EventTimeline implements Timeline {
   }
 
   /// Fires events for frames > lastTime and <= time.
-  ///
+
+  @override
   void apply(
       Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
       double alpha, bool setupPose, bool mixingOut) {

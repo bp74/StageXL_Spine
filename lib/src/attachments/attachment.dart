@@ -38,6 +38,7 @@ class Attachment {
     if (name == null) throw new ArgumentError("name cannot be null.");
   }
 
+  @override
   String toString() => name;
 }
 

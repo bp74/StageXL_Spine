@@ -33,18 +33,33 @@ part of stagexl_spine;
 class RegionAttachment extends Attachment implements _RenderAttachment {
 
   final String path;
-  final BitmapData bitmapData;
 
   double rotation = 0.0;
   double x = 0.0, y = 0.0;
   double scaleX = 1.0, scaleY = 1.0;
   double width = 0.0, height = 0.0;
-  double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+
+  Float32List vxList;
+  Float32List vertices;
   Matrix matrix = new Matrix.fromIdentity();
 
-  Int16List ixList = null;
-  Float32List vxList = null;
-  Float32List vertices = null;
+  @override
+  final BitmapData bitmapData;
+
+  @override
+  double r = 1.0;
+
+  @override
+  double g = 1.0;
+
+  @override
+  double b = 1.0;
+
+  @override
+  double a = 1.0;
+
+  @override
+  Int16List ixList;
 
   RegionAttachment(String name, this.path, this.bitmapData) : super(name);
 
@@ -84,6 +99,7 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   //---------------------------------------------------------------------------
 
+  @override
   Float32List getVertexList(double posX, double posY, Slot slot) {
 
     var vertices = this.vertices;

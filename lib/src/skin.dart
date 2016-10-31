@@ -76,5 +76,6 @@ class Skin {
     }
   }
 
+  @override
   String toString() => name;
 }

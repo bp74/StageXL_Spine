@@ -35,7 +35,7 @@ class TransformConstraint implements Constraint {
   final TransformConstraintData data;
   final List<Bone> bones = new List<Bone>();
 
-  Bone target = null;
+  Bone target;
   double translateMix = 0.0;
   double rotateMix = 0.0;
   double scaleMix = 0.0;
@@ -64,6 +64,7 @@ class TransformConstraint implements Constraint {
     update();
   }
 
+  @override
   void update () {
 
     double rotateMix = this.rotateMix;

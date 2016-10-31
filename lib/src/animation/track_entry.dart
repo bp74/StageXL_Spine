@@ -37,8 +37,8 @@ class TrackEntry extends EventDispatcher {
   final List<bool> timelinesFirst = new List<bool>();
   final List<num> timelinesRotation = new List<num>();
 
-  TrackEntry next = null;
-  TrackEntry mixingFrom = null;
+  TrackEntry next;
+  TrackEntry mixingFrom;
   bool loop = false;
 
   double eventThreshold = 0.0;
@@ -99,5 +99,6 @@ class TrackEntry extends EventDispatcher {
     return const EventStreamProvider<TrackEntryEventEvent>("event").forTarget(this);
   }
 
+  @override
   String toString() => animation == null ? "<none>" : animation.name;
 }

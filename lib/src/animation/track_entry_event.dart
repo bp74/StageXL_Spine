@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-abstract class TrackEntryEvent extends stageXL.Event {
+abstract class TrackEntryEvent extends stagexl.Event {
   final TrackEntry trackEntry;
   TrackEntryEvent(String type, this.trackEntry) : super(type);
 

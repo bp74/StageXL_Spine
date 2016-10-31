@@ -380,13 +380,15 @@ class AnimationState extends EventDispatcher {
   }
 
   void clearTrack(int trackIndex) {
+
     if (trackIndex >= _tracks.length) return;
     TrackEntry current = _tracks[trackIndex];
     if (current == null) return;
     _enqueueTrackEntryEvent(new TrackEntryEndEvent(current));
     _disposeNext(current);
     TrackEntry entry = current;
-    while (true) {
+
+    for(;;) {
       TrackEntry from = entry.mixingFrom;
       if (from == null) break;
       _enqueueTrackEntryEvent(new TrackEntryEndEvent(from));

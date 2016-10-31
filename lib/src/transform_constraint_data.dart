@@ -35,7 +35,7 @@ class TransformConstraintData {
   final String name;
   final List<BoneData> bones = new List<BoneData>();
 
-  BoneData target = null;
+  BoneData target;
 
   int order = 0;
   double translateMix = 0.0;
@@ -53,6 +53,7 @@ class TransformConstraintData {
     if (name == null) throw new ArgumentError("name cannot be null.");
   }
 
+  @override
   String toString () => name;
 
 }

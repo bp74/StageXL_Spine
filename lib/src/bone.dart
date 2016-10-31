@@ -71,7 +71,8 @@ class Bone implements Updatable {
 
   /// Same as updateWorldTransform().
   /// This method exists for Bone to implement Updatable.
-  ///
+
+  @override
   void update() {
     updateWorldTransformWith(x, y, rotation, scaleX, scaleY, shearX, shearY);
   }
@@ -321,5 +322,6 @@ class Bone implements Updatable {
     local[1] = localX * c + localY * d + worldY;
   }
 
+  @override
   String toString() => this.data.name;
 }

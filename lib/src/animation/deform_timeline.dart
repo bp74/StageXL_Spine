@@ -36,7 +36,7 @@ class DeformTimeline extends CurveTimeline {
   final List<Float32List> frameVertices;
 
   int slotIndex = 0;
-  VertexAttachment attachment = null;
+  VertexAttachment attachment;
 
   DeformTimeline (int frameCount)
     : frames = new Float32List(frameCount),
