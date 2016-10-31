@@ -17,16 +17,40 @@ class SkeletonDisplayObject extends DisplayObject {
 
   @override
   Rectangle<num> get bounds {
-    // TODO: Currently bounds are not supported.
-    // We sould add an opt-in flag.
-    return new Rectangle<num>(0.0, 0.0, 0.0, 0.0);
+
+    double minX = double.INFINITY;
+    double minY = double.INFINITY;
+    double maxX = double.NEGATIVE_INFINITY;
+    double maxY = double.NEGATIVE_INFINITY;
+
+    for (var slot in skeleton.drawOrder) {
+      var attachment = slot.attachment;
+      if (attachment is _RenderAttachment) {
+        var renderAttachment = attachment as _RenderAttachment;
+        var oxList = renderAttachment.oxList;
+        var vxList = renderAttachment.vxList;
+        for(int i = 0; i < oxList.length; i++) {
+          int offset = oxList[i] * 4;
+          double x = vxList[offset + 0];
+          double y = vxList[offset + 1];
+          if (minX > x) minX = x;
+          if (minY > y) minY = y;
+          if (maxX < x) maxX = x;
+          if (maxY < y) maxY = y;
+        }
+      }
+    }
+
+    minX = minX.isFinite ? minX : 0.0;
+    minY = minY.isFinite ? minY : 0.0;
+    maxX = maxX.isFinite ? maxX : 0.0;
+    maxY = maxY.isFinite ? maxY : 0.0;
+    return new Rectangle<num>(minX, 0.0 - maxY, maxX - minX, maxY - minY);
   }
 
   @override
   DisplayObject hitTestInput(num localX, num localY) {
-    // TODO: Currently hitTests are not supported.
-    // We sould add an opt-in flag.
-    return null;
+    return bounds.contains(localX, localY) ? this : null;
   }
 
   @override
@@ -59,11 +83,11 @@ class SkeletonDisplayObject extends DisplayObject {
         var renderAttachment = attachment as _RenderAttachment;
         var ixList = renderAttachment.ixList;
         var vxList = renderAttachment.vxList;
-        var renderTexture = renderAttachment.bitmapData.renderTexture;
         var r = renderAttachment.r * skeletonR * slot.r;
         var g = renderAttachment.g * skeletonG * slot.g;
         var b = renderAttachment.b * skeletonB * slot.b;
         var a = renderAttachment.a * skeletonA * slot.a;
+        var renderTexture = renderAttachment.bitmapData.renderTexture;
         renderContext.activateRenderTexture(renderTexture);
         renderContext.activateBlendMode(slot.data.blendMode);
         renderProgram.renderTextureMesh(renderState, ixList, vxList, r, g, b, a);
