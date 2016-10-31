@@ -65,46 +65,44 @@ class DeformTimeline extends CurveTimeline {
     VertexAttachment vertexAttachment = slot.attachment;
     if (vertexAttachment.applyDeform(attachment) == false) return;
 
-    Float32List frames = this.frames;
     if (time < frames[0]) return; // Time is before first frame.
 
-    List<Float32List> frameVertices = this.frameVertices;
     int vertexCount = frameVertices[0].length;
+    Float32List targetVertices = slot.attachmentVertices;
+    Float32List vertexAttachmentVertices = vertexAttachment.vertices;
 
-    Float32List vertices = slot.attachmentVertices;
-    if (vertices.length != vertexCount) {
+    if (targetVertices.length != vertexCount) {
       alpha = 1.0; // Don't mix from uninitialized slot vertices.
-      vertices = slot.attachmentVertices = new Float32List(vertexCount);
+      targetVertices = new Float32List(vertexCount);
+      slot.attachmentVertices = targetVertices;
     }
 
-    List<num> setupVertices;
-    double setup = 0.0, prev = 0.0;
-
-    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+    if (time >= frames[frames.length - 1]) {
+      // Time is after last frame.
       Float32List lastVertices = frameVertices[frames.length - 1];
-      if (alpha == 1) {
+      if (alpha == 1.0) {
         // Vertex positions or deform offsets, no alpha.
         for (int i = 0; i < vertexCount; i++) {
-          vertices[i] = lastVertices[i];
+          targetVertices[i] = lastVertices[i];
         }
-      } else if (setupPose) {
-        if (vertexAttachment.bones == null) {
-          // Unweighted vertex positions, with alpha.
-          setupVertices = vertexAttachment.vertices;
-          for (int i = 0; i < vertexCount; i++) {
-            setup = setupVertices[i];
-            vertices[i] = setup + (lastVertices[i] - setup) * alpha;
-          }
-        } else {
-          // Weighted deform offsets, with alpha.
-          for (int i = 0; i < vertexCount; i++) {
-            vertices[i] = lastVertices[i] * alpha;
-          }
-        }
-      } else {
+      } else if (setupPose == false) {
         // Vertex positions or deform offsets, with alpha.
         for (int i = 0; i < vertexCount; i++) {
-          vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
+          double v0 = targetVertices[i];
+          double v1 = lastVertices[i];
+          targetVertices[i] = v0 + (v1 - v0) * alpha;
+        }
+      } else if (vertexAttachment.bones == null) {
+        // Unweighted vertex positions, with alpha.
+        for (int i = 0; i < vertexCount; i++) {
+          double v0 = vertexAttachmentVertices[i];
+          double v1 = lastVertices[i];
+          targetVertices[i] = v0 + (v1 - v0) * alpha;
+        }
+      } else {
+        // Weighted deform offsets, with alpha.
+        for (int i = 0; i < vertexCount; i++) {
+          targetVertices[i] = lastVertices[i] * alpha;
         }
       }
       return;
@@ -112,41 +110,42 @@ class DeformTimeline extends CurveTimeline {
 
     // Interpolate between the previous frame and the current frame.
     int frame = Animation.binarySearch1(frames, time);
-    Float32List prevVertices = frameVertices[frame - 1];
-    Float32List nextVertices = frameVertices[frame];
-    double frameTime = frames[frame];
-    double percent = getCurvePercent(frame - 1, 1 - (time - frameTime) / (frames[frame - 1] - frameTime));
+    double t0 = frames[frame - 1];
+    double t1 = frames[frame + 0];
+    Float32List v0List = frameVertices[frame - 1];
+    Float32List v1List = frameVertices[frame + 0];
+    double between = 1.0 - (time - t1) / (t0 - t1);
+    double percent = getCurvePercent(frame - 1, between);
 
-    if (alpha == 1) {
+    if (alpha == 1.0) {
       // Vertex positions or deform offsets, no alpha.
       for (int i = 0; i < vertexCount; i++) {
-        prev = prevVertices[i];
-        vertices[i] = prev + (nextVertices[i] - prev) * percent;
+        double v0 = v0List[i];
+        targetVertices[i] = v0 + (v1List[i] - v0) * percent;
       }
-    } else if (setupPose) {
-      if (vertexAttachment.bones == null) {
-        // Unweighted vertex positions, with alpha.
-        setupVertices = vertexAttachment.vertices;
-        for (int i = 0; i < vertexCount; i++) {
-          prev = prevVertices[i];
-          setup = setupVertices[i];
-          vertices[i] = setup + (prev + (nextVertices[i] - prev) * percent - setup) * alpha;
-        }
-      } else {
-        // Weighted deform offsets, with alpha.
-        for (int i = 0; i < vertexCount; i++) {
-          prev = prevVertices[i];
-          vertices[i] = (prev + (nextVertices[i] - prev) * percent) * alpha;
-        }
-      }
-    } else {
+    } else if (setupPose == false) {
       // Vertex positions or deform offsets, with alpha.
       for (int i = 0; i < vertexCount; i++) {
-        prev = prevVertices[i];
-        vertices[i] += (prev + (nextVertices[i] - prev) * percent - vertices[i]) * alpha;
+        double v0 = v0List[i];
+        double v1 = v1List[i];
+        double vx = targetVertices[i];
+        targetVertices[i] = vx + (v0 + (v1 - v0) * percent - vx) * alpha;
+      }
+    } else if (vertexAttachment.bones == null) {
+      // Unweighted vertex positions, with alpha.
+      for (int i = 0; i < vertexCount; i++) {
+        double v0 = v0List[i];
+        double v1 = v1List[i];
+        double vx = vertexAttachmentVertices[i];
+        targetVertices[i] = vx + (v0 + (v1 - v0) * percent - vx) * alpha;
+      }
+    } else {
+      // Weighted deform offsets, with alpha.
+      for (int i = 0; i < vertexCount; i++) {
+        double v0 = v0List[i];
+        double v1 = v1List[i];
+        targetVertices[i] = (v0 + (v1 - v0) * percent) * alpha;
       }
     }
   }
-
 }
-
