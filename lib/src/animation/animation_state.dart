@@ -327,7 +327,7 @@ class AnimationState extends EventDispatcher {
         dir = current;
       }
       // Store loops as part of lastTotal.
-      total = diff + lastTotal - lastTotal.remainder(360.0);
+      total = diff + 360.0 * (lastTotal / 360.0).truncateToDouble();
       if (dir != current) total += 360.0 * lastTotal.sign;
       timelinesRotation[i] = total;
     }
