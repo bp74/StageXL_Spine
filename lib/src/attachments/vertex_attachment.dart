@@ -39,7 +39,7 @@ class VertexAttachment extends Attachment {
   VertexAttachment(String name) : super(name);
 
   void computeWorldVertices(Slot slot, Float32List worldVertices) {
-    computeWorldVertices2(slot, 0, worldVerticesLength, worldVertices, 0);
+    computeWorldVertices2(slot, 0, worldVerticesLength, worldVertices, 0, 2);
   }
 
   /// Transforms local vertices to world coordinates.
@@ -57,7 +57,7 @@ class VertexAttachment extends Attachment {
 
   void computeWorldVertices2(
       Slot slot, int start, int count,
-      Float32List worldVertices, int offset) {
+      Float32List worldVertices, [int offset = 0, int stride = 2]) {
 
     Skeleton skeleton = slot.skeleton;
     List<Bone> skeletonBones = skeleton.bones;
@@ -66,13 +66,9 @@ class VertexAttachment extends Attachment {
     Int16List bones = this.bones;
 
     bool df = deform.length > 0;
-    int vi = 0; // vertices index
-    int di = 0; // deform index
-    int bi = 0; // bones index
 
     if (bones == null) {
 
-      vi = start;
       vertices = df ? deform : vertices;
 
       Bone bone = slot.bone;
@@ -83,7 +79,10 @@ class VertexAttachment extends Attachment {
       double c = bone.c;
       double d = bone.d;
 
-      for (int wi = offset; wi < offset + count; vi += 2, wi += 2) {
+      int vi = start;
+      int wi = offset;
+
+      for (int i = 0; i < count; i += 2, vi += 2, wi += stride) {
         double vx = vertices[vi + 0];
         double vy = vertices[vi + 1];
         worldVertices[wi + 0] = vx * a + vy * b + x;
@@ -92,6 +91,11 @@ class VertexAttachment extends Attachment {
 
     } else {
 
+      int vi = 0; // vertices index
+      int di = 0; // deform index
+      int bi = 0; // bones index
+      int wi = offset; // world vertices index
+
       for (int i = 0; i < start; i += 2) {
         int boneCount = bones[bi];
         bi += boneCount + 1;
@@ -99,7 +103,7 @@ class VertexAttachment extends Attachment {
         di += boneCount * 2;
       }
 
-      for (int wi = offset; wi < offset + count; wi += 2) {
+      for (int i = 0; i < count; i += 2, wi += stride) {
         double x = 0.0;
         double y = 0.0;
         int boneCount = bones[bi++];

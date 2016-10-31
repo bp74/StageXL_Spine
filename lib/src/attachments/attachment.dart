@@ -45,11 +45,16 @@ class Attachment {
 //-----------------------------------------------------------------------------
 
 abstract class _RenderAttachment {
-  Int16List get ixList;
+
   BitmapData get bitmapData;
+  Float32List get vxList;
+  Int16List get ixList;
+
   double get r;
   double get g;
   double get b;
   double get a;
-  Float32List getVertexList(double posX, double posY, Slot slot);
+
+  void initRenderGeometry();
+  void updateRenderGeometry(Slot slot);
 }

@@ -246,7 +246,7 @@ class SkeletonLoader {
       var parentMesh = parentSkin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
       if (parentMesh == null) throw new StateError("Parent mesh not found: ${linkedMesh.parent}");
       linkedMesh.mesh.parentMesh = parentMesh as MeshAttachment;
-      linkedMesh.mesh.updateUVs();
+      linkedMesh.mesh.initRenderGeometry();
     }
 
     _linkedMeshes.clear();
@@ -305,6 +305,7 @@ class SkeletonLoader {
         region.g = _toColor(regionColor, 1);
         region.b = _toColor(regionColor, 2);
         region.a = _toColor(regionColor, 3);
+        region.initRenderGeometry();
         region.update();
 
         return region;
@@ -342,7 +343,7 @@ class SkeletonLoader {
 
         mesh.triangles = _getInt16List(map, "triangles");
         mesh.regionUVs = uvs;
-        mesh.updateUVs();
+        mesh.initRenderGeometry();
 
         mesh.hullLength = _getInt(map, "hull", 0) * 2;
         if (map.containsKey("edges")) mesh.edges = _getInt16List(map, "edges");

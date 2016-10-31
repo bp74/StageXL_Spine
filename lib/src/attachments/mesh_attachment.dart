@@ -34,34 +34,27 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
   final String path;
 
-  @override
-  final BitmapData bitmapData;
-
-  Float32List worldVertices;
   Float32List regionUVs;
   Int16List triangles;
   Int16List edges;
-
-  @override
-  double r = 1.0;
-
-  @override
-  double g = 1.0;
-
-  @override
-  double b = 1.0;
-
-  @override
-  double a = 1.0;
 
   int hullLength = 0;
   bool inheritDeform = false;
   double width = 0.0;
   double height = 0.0;
-
-  Int16List _ixList;
-  Float32List _vxList;
   MeshAttachment _parentMesh;
+
+  @override
+  final BitmapData bitmapData;
+
+  @override
+  Float32List vxList;
+
+  @override
+  Int16List ixList;
+
+  @override
+  double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
   MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 
@@ -92,7 +85,11 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
 
   //---------------------------------------------------------------------------
 
-  void updateUVs()  {
+  @override
+  void initRenderGeometry()  {
+
+    ixList = new Int16List.fromList(triangles);
+    vxList = new Float32List(regionUVs.length * 2);
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;
@@ -102,39 +99,16 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
     var mx = matrix.tx;
     var my = matrix.ty;
 
-    _ixList = this.triangles;
-    _vxList = new Float32List(regionUVs.length * 2);
-
     for (int i = 0, o = 0; i < regionUVs.length - 1; i += 2, o += 4) {
       var u = regionUVs[i + 0];
       var v = regionUVs[i + 1];
-      _vxList[o + 2] = u * ma + v * mc + mx;
-      _vxList[o + 3] = u * mb + v * md + my;
+      vxList[o + 2] = u * ma + v * mc + mx;
+      vxList[o + 3] = u * mb + v * md + my;
     }
   }
 
-  //---------------------------------------------------------------------------
-
   @override
-  Int16List get ixList => _ixList;
-
-  @override
-  Float32List getVertexList(double posX, double posY, Slot slot) {
-
-    // TODO: make this more efficient!
-
-    if (worldVertices == null || worldVertices.length < worldVerticesLength) {
-      worldVertices = new Float32List(worldVerticesLength);
-    }
-
-    this.computeWorldVertices(slot, worldVertices);
-
-    for (int i = 0, o = 0; i <= worldVertices.length - 2; i += 2, o += 4) {
-      _vxList[o + 0] = posX + worldVertices[i + 0];
-      _vxList[o + 1] = posY - worldVertices[i + 1];
-    }
-
-    return _vxList;
+  void updateRenderGeometry(Slot slot) {
+    this.computeWorldVertices2(slot, 0, worldVerticesLength, vxList, 0, 4);
   }
-
 }

@@ -3,11 +3,14 @@ part of stagexl_spine;
 class SkeletonDisplayObject extends DisplayObject {
 
   final Skeleton skeleton;
+  final Matrix _skeletonMatrix = new Matrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
+  final Matrix _identityMatrix = new Matrix.fromIdentity();
 
   SkeletonDisplayObject(SkeletonData skeletonData)
       : skeleton = new Skeleton(skeletonData) {
 
     skeleton.updateWorldTransform();
+    skeleton.updateRenderGeometry();
   }
 
   //---------------------------------------------------------------------------
@@ -42,21 +45,20 @@ class SkeletonDisplayObject extends DisplayObject {
 
     var renderContext = renderState.renderContext as RenderContextWebGL;
     var renderProgram = renderContext.renderProgramTinted;
-    renderContext.activateRenderProgram(renderProgram);
-
-    var skeletonX = skeleton.x;
-    var skeletonY = skeleton.y;
     var skeletonR = skeleton.r;
     var skeletonG = skeleton.g;
     var skeletonB = skeleton.b;
     var skeletonA = skeleton.a;
+
+    renderContext.activateRenderProgram(renderProgram);
+    renderState.push(_skeletonMatrix, 1.0, renderState.globalBlendMode);
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
       if (attachment is _RenderAttachment) {
         var renderAttachment = attachment as _RenderAttachment;
         var ixList = renderAttachment.ixList;
-        var vxList = renderAttachment.getVertexList(skeletonX, skeletonY, slot);
+        var vxList = renderAttachment.vxList;
         var renderTexture = renderAttachment.bitmapData.renderTexture;
         var r = renderAttachment.r * skeletonR * slot.r;
         var g = renderAttachment.g * skeletonG * slot.g;
@@ -67,49 +69,48 @@ class SkeletonDisplayObject extends DisplayObject {
         renderProgram.renderTextureMesh(renderState, ixList, vxList, r, g, b, a);
       }
     }
+
+    renderState.pop();
   }
 
   //---------------------------------------------------------------------------
 
   void _renderCanvas(RenderState renderState) {
 
-    var renderContext = renderState.renderContext;
-    var globalMatrix = renderState.globalMatrix;
-    var globalAlpha = renderState.globalAlpha;
     var tmpMatrix = new Matrix.fromIdentity();
-    var tmpRenderState = new RenderState(renderContext);
     var boneMatrix = new Matrix.fromIdentity();
-
-    var skeletonX = skeleton.x;
-    var skeletonY = skeleton.y;
     var skeletonA = skeleton.a;
+
+    renderState.push(_skeletonMatrix, 1.0, renderState.globalBlendMode);
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
       if (attachment is RegionAttachment) {
         var bitmapData = attachment.bitmapData;
         var blendMode = slot.data.blendMode;
-        var alpha = globalAlpha * skeletonA * attachment.a * slot.a;
-        var b = slot.bone;
-        boneMatrix.setTo(b.a, 0.0 - b.c, b.b, 0 - b.d, b.worldX, 0 - b.worldY);
-        tmpMatrix.copyFrom(attachment.matrix);
-        tmpMatrix.translate(skeletonX, skeletonY);
+        var alpha = skeletonA * attachment.a * slot.a;
+        var bone = slot.bone;
+        boneMatrix.setTo(bone.a, bone.c, bone.b, bone.d, bone.worldX, bone.worldY);
+        tmpMatrix.copyFrom(attachment.transformationMatrix);
         tmpMatrix.concat(boneMatrix);
-        tmpMatrix.concat(globalMatrix);
-        tmpRenderState.reset(tmpMatrix, alpha, blendMode);
-        tmpRenderState.renderTextureQuad(bitmapData.renderTextureQuad);
+        renderState.push(tmpMatrix, alpha, blendMode);
+        renderState.renderTextureQuad(bitmapData.renderTextureQuad);
+        renderState.pop();
       } else if (attachment is _RenderAttachment) {
         var renderAttachment = attachment as _RenderAttachment;
         var bitmapData = renderAttachment.bitmapData;
         var renderTexture = bitmapData.renderTexture;
         var blendMode = slot.data.blendMode;
         var ixList = renderAttachment.ixList;
-        var vxList = renderAttachment.getVertexList(skeletonX, skeletonY, slot);
-        var alpha = globalAlpha * skeletonA * renderAttachment.a * slot.a;
-        tmpRenderState.reset(globalMatrix, alpha, blendMode);
-        tmpRenderState.renderTextureMesh(renderTexture, ixList, vxList);
+        var vxList = renderAttachment.vxList;
+        var alpha = skeletonA * renderAttachment.a * slot.a;
+        renderState.push(_identityMatrix, alpha, blendMode);
+        renderState.renderTextureMesh(renderTexture, ixList, vxList);
+        renderState.pop();
       }
     }
+
+    renderState.pop();
   }
 
 }

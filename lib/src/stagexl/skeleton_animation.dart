@@ -16,6 +16,7 @@ class SkeletonAnimation extends SkeletonDisplayObject implements Animatable {
     state.update(timeScaled);
     state.apply(skeleton);
     skeleton.updateWorldTransform();
+    skeleton.updateRenderGeometry();
     return true;
   }
 }

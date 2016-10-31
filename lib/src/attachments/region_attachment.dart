@@ -39,70 +39,68 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
   double scaleX = 1.0, scaleY = 1.0;
   double width = 0.0, height = 0.0;
 
-  Float32List vxList;
-  Float32List vertices;
-  Matrix matrix = new Matrix.fromIdentity();
-
   @override
   final BitmapData bitmapData;
 
   @override
-  double r = 1.0;
-
-  @override
-  double g = 1.0;
-
-  @override
-  double b = 1.0;
-
-  @override
-  double a = 1.0;
+  Float32List vxList;
 
   @override
   Int16List ixList;
+
+  @override
+  double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+
+  Matrix _transformationMatrix = new Matrix.fromIdentity();
+  Float32List _vxListWithTransformation;
 
   RegionAttachment(String name, this.path, this.bitmapData) : super(name);
 
   //---------------------------------------------------------------------------
 
+  Matrix get transformationMatrix => _transformationMatrix;
+
   void update() {
 
-    var ixData = bitmapData.renderTextureQuad.ixList;
-    var vxData = bitmapData.renderTextureQuad.vxList;
+    num cosR = _cosDeg(rotation);
+    num sinR = _sinDeg(rotation);
+    num sw = scaleX * width;
+    num sh = scaleY * height;
+    num bw = bitmapData.width;
+    num bh = bitmapData.height;
 
-    this.ixList = new Int16List.fromList(ixData);
-    this.vxList = new Float32List.fromList(vxData);
-    this.vertices = new Float32List(vxData.length >> 1);
+    num ma = cosR * sw / bw;
+    num mb = sinR * sh / bh;
+    num mc = sinR * sw / bw;
+    num md = 0.0 - cosR * sh / bh;
+    num mx = x - 0.5 * (sw * cosR + sh * sinR);
+    num my = y - 0.5 * (sw * sinR - sh * cosR);
 
-    this.matrix.identity();
-    this.matrix.scale(width / bitmapData.width, height / bitmapData.height);
-    this.matrix.translate(0.0 - width / 2, 0.0 - height / 2);
-    this.matrix.scale(scaleX, scaleY);
-    this.matrix.scale(1.0, -1.0);
-    this.matrix.rotate(rotation * math.PI / 180.0);
-    this.matrix.translate(x, y);
+    this.initRenderGeometry();
 
-    var ma = matrix.a;
-    var mb = matrix.b;
-    var mc = matrix.c;
-    var md = matrix.d;
-    var mx = matrix.tx;
-    var my = matrix.ty;
+    _transformationMatrix.setTo(ma, mb, mc, md, mx, my);
+    _vxListWithTransformation = new Float32List.fromList(vxList);
 
-    for (int i = 0, o = 0; i <= vxData.length - 4; i += 4, o += 2) {
-      var x = vxData[i + 0];
-      var y = vxData[i + 1];
-      this.vertices[o + 0] = x * ma + y * mc + mx;
-      this.vertices[o + 1] = x * mb + y * md + my;
+    for (int i = 0; i <= vxList.length - 4; i += 4) {
+      var x = vxList[i + 0];
+      var y = vxList[i + 1];
+      _vxListWithTransformation[i + 0] = x * ma + y * mc + mx;
+      _vxListWithTransformation[i + 1] = x * mb + y * md + my;
     }
   }
 
   //---------------------------------------------------------------------------
 
   @override
-  Float32List getVertexList(double posX, double posY, Slot slot) {
+  void initRenderGeometry() {
+    this.ixList = new Int16List.fromList(bitmapData.renderTextureQuad.ixList);
+    this.vxList = new Float32List.fromList(bitmapData.renderTextureQuad.vxList);
+  }
 
-    var vertices = this.vertices;
+  @override
+  void updateRenderGeometry(Slot slot) {
+
+    var vxData = _vxListWithTransformation;
     var vxList = this.vxList;
     var bone = slot.bone;
 
@@ -110,17 +108,14 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
     var bb = bone.b;
     var bc = bone.c;
     var bd = bone.d;
-    var bx = bone.worldX + posX;
-    var by = bone.worldY + posY;
+    var bx = bone.worldX;
+    var by = bone.worldY;
 
-    for (int i = 0, o = 0; i <= vertices.length - 2; i += 2, o += 4) {
-      var x = vertices[i + 0];
-      var y = vertices[i + 1];
-      vxList[o + 0] = 0.0 + x * ba + y * bb + bx;
-      vxList[o + 1] = 0.0 - x * bc - y * bd - by;
+    for (int i = 0; i <= vxList.length - 4; i += 4) {
+      var x = vxData[i + 0];
+      var y = vxData[i + 1];
+      vxList[i + 0] = x * ba + y * bb + bx;
+      vxList[i + 1] = x * bc + y * bd + by;
     }
-
-    return vxList;
   }
-
 }
