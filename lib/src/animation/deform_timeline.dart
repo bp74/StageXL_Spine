@@ -61,10 +61,9 @@ class DeformTimeline extends CurveTimeline {
       double alpha, bool setupPose, bool mixingOut) {
 
     Slot slot = skeleton.slots[slotIndex];
-    Attachment slotAttachment = slot.attachment;
-    VertexAttachment vertexAttachment = slotAttachment is VertexAttachment ? slotAttachment : null;
-
-    if (vertexAttachment == null || vertexAttachment.applyDeform(attachment)) return;
+    if (slot.attachment is! VertexAttachment) return;
+    VertexAttachment vertexAttachment = slot.attachment;
+    if (vertexAttachment.applyDeform(attachment) == false) return;
 
     Float32List frames = this.frames;
     if (time < frames[0]) return; // Time is before first frame.
@@ -72,10 +71,11 @@ class DeformTimeline extends CurveTimeline {
     List<Float32List> frameVertices = this.frameVertices;
     int vertexCount = frameVertices[0].length;
 
-    Float32List verticesArray = slot.attachmentVertices;
-    if (verticesArray.length != vertexCount) alpha = 1.0; // Don't mix from uninitialized slot vertices.
-    verticesArray.length = vertexCount;
-    Float32List vertices = verticesArray;
+    Float32List vertices = slot.attachmentVertices;
+    if (vertices.length != vertexCount) {
+      alpha = 1.0; // Don't mix from uninitialized slot vertices.
+      vertices = slot.attachmentVertices = new Float32List(vertexCount);
+    }
 
     List<num> setupVertices;
     double setup = 0.0, prev = 0.0;
