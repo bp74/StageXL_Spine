@@ -44,7 +44,7 @@ class Attachment {
 
 //-----------------------------------------------------------------------------
 
-abstract class _RenderAttachment {
+abstract class RenderAttachment {
 
   BitmapData get bitmapData;
   Float32List get vxList;

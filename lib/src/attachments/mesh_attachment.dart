@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class MeshAttachment extends VertexAttachment implements _RenderAttachment {
+class MeshAttachment extends VertexAttachment implements RenderAttachment {
 
   final String path;
 

@@ -288,8 +288,8 @@ class Skeleton {
   void updateRenderGeometry() {
     for (var slot in this.drawOrder) {
       var attachment = slot.attachment;
-      if (attachment is _RenderAttachment) {
-        var renderAttachment = attachment as _RenderAttachment;
+      if (attachment is RenderAttachment) {
+        var renderAttachment = attachment as RenderAttachment;
         renderAttachment.updateRenderGeometry(slot);
       }
     }

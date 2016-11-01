@@ -25,8 +25,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
-      if (attachment is _RenderAttachment) {
-        var renderAttachment = attachment as _RenderAttachment;
+      if (attachment is RenderAttachment) {
+        var renderAttachment = attachment as RenderAttachment;
         var vxCount = renderAttachment.hullLength >> 1;
         var vxList = renderAttachment.vxList;
         for(int i = 0; i < vxCount; i++) {
@@ -78,8 +78,8 @@ class SkeletonDisplayObject extends DisplayObject {
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
-      if (attachment is _RenderAttachment) {
-        var renderAttachment = attachment as _RenderAttachment;
+      if (attachment is RenderAttachment) {
+        var renderAttachment = attachment as RenderAttachment;
         var ixList = renderAttachment.ixList;
         var vxList = renderAttachment.vxList;
         var r = renderAttachment.r * skeletonR * slot.r;
@@ -119,8 +119,8 @@ class SkeletonDisplayObject extends DisplayObject {
         renderState.push(tmpMatrix, alpha, blendMode);
         renderState.renderTextureQuad(bitmapData.renderTextureQuad);
         renderState.pop();
-      } else if (attachment is _RenderAttachment) {
-        var renderAttachment = attachment as _RenderAttachment;
+      } else if (attachment is RenderAttachment) {
+        var renderAttachment = attachment as RenderAttachment;
         var bitmapData = renderAttachment.bitmapData;
         var renderTexture = bitmapData.renderTexture;
         var blendMode = slot.data.blendMode;

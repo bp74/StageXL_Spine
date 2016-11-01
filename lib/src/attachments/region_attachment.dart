@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class RegionAttachment extends Attachment implements _RenderAttachment {
+class RegionAttachment extends Attachment implements RenderAttachment {
 
   final String path;
 
