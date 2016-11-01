@@ -73,22 +73,22 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
     num bh = bitmapData.height;
 
     num ma = cosR * sw / bw;
-    num mb = sinR * sh / bh;
-    num mc = sinR * sw / bw;
+    num mb = sinR * sw / bw;
+    num mc = sinR * sh / bh;
     num md = 0.0 - cosR * sh / bh;
     num mx = x - 0.5 * (sw * cosR + sh * sinR);
     num my = y - 0.5 * (sw * sinR - sh * cosR);
 
     this.initRenderGeometry();
 
-    _transformationMatrix.setTo(ma, mb, mc, md, mx, my);
+    _transformationMatrix.setTo(ma, mc, mb, md, mx, my);
     _vxListWithTransformation = new Float32List.fromList(vxList);
 
     for (int i = 0; i <= vxList.length - 4; i += 4) {
       var x = vxList[i + 0];
       var y = vxList[i + 1];
-      _vxListWithTransformation[i + 0] = x * ma + y * mc + mx;
-      _vxListWithTransformation[i + 1] = x * mb + y * md + my;
+      _vxListWithTransformation[i + 0] = x * ma + y * mb + mx;
+      _vxListWithTransformation[i + 1] = x * mc + y * md + my;
     }
   }
 
