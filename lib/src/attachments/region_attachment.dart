@@ -82,11 +82,14 @@ class RegionAttachment extends Attachment implements RenderAttachment {
     num my = y - 0.5 * (sw * sinR - sh * cosR);
     transformationMatrix.setTo(ma, mc, mb, md, mx, my);
 
-    for (int i = 0; i <= vxList.length - 4; i += 4) {
-      var x = vxList[i + 0];
-      var y = vxList[i + 1];
-      _vxListWithTransformation[i + 0] = x * ma + y * mb + mx;
-      _vxListWithTransformation[i + 1] = x * mc + y * md + my;
+    Float32List vxSource = bitmapData.renderTextureQuad.vxList;
+    Float32List vxTarget = _vxListWithTransformation;
+
+    for (int o = 0; o <= vxTarget.length - 4; o += 4) {
+      double x = vxSource[o + 0];
+      double y = vxSource[o + 1];
+      vxTarget[o + 0] = x * ma + y * mb + mx;
+      vxTarget[o + 1] = x * mc + y * md + my;
     }
   }
 
@@ -103,22 +106,21 @@ class RegionAttachment extends Attachment implements RenderAttachment {
   @override
   void updateRenderGeometry(Slot slot) {
 
-    var vxData = _vxListWithTransformation;
-    var vxList = this.vxList;
-    var bone = slot.bone;
+    var ma = slot.bone.a;
+    var mb = slot.bone.b;
+    var mc = slot.bone.c;
+    var md = slot.bone.d;
+    var mx = slot.bone.worldX;
+    var my = slot.bone.worldY;
 
-    var ba = bone.a;
-    var bb = bone.b;
-    var bc = bone.c;
-    var bd = bone.d;
-    var bx = bone.worldX;
-    var by = bone.worldY;
+    var vxSource = _vxListWithTransformation;
+    var vxTarget = vxList;
 
-    for (int i = 0; i <= vxList.length - 4; i += 4) {
-      var x = vxData[i + 0];
-      var y = vxData[i + 1];
-      vxList[i + 0] = x * ba + y * bb + bx;
-      vxList[i + 1] = x * bc + y * bd + by;
+    for (int o = 0; o <= vxTarget.length - 4; o += 4) {
+      double x = vxSource[o + 0];
+      double y = vxSource[o + 1];
+      vxTarget[o + 0] = x * ma + y * mb + mx;
+      vxTarget[o + 1] = x * mc + y * md + my;
     }
   }
 }
