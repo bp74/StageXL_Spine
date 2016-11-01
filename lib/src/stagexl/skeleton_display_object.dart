@@ -101,33 +101,25 @@ class SkeletonDisplayObject extends DisplayObject {
   void _renderCanvas(RenderState renderState) {
 
     var tmpMatrix = new Matrix.fromIdentity();
-    var boneMatrix = new Matrix.fromIdentity();
-    var skeletonA = skeleton.a;
 
-    renderState.push(_skeletonMatrix, 1.0, renderState.globalBlendMode);
+    renderState.push(_skeletonMatrix, skeleton.a, renderState.globalBlendMode);
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
       if (attachment is RegionAttachment) {
-        var bitmapData = attachment.bitmapData;
-        var blendMode = slot.data.blendMode;
-        var alpha = skeletonA * attachment.a * slot.a;
-        var bone = slot.bone;
-        boneMatrix.setTo(bone.a, bone.c, bone.b, bone.d, bone.worldX, bone.worldY);
-        tmpMatrix.copyFrom(attachment.transformationMatrix);
-        tmpMatrix.concat(boneMatrix);
-        renderState.push(tmpMatrix, alpha, blendMode);
-        renderState.renderTextureQuad(bitmapData.renderTextureQuad);
+        var b = slot.bone;
+        tmpMatrix.setTo(b.a, b.c, b.b, b.d, b.worldX, b.worldY);
+        tmpMatrix.prepend(attachment.transformationMatrix);
+        renderState.push(tmpMatrix, attachment.a * slot.a, slot.data.blendMode);
+        renderState.renderTextureQuad(attachment.bitmapData.renderTextureQuad);
         renderState.pop();
       } else if (attachment is RenderAttachment) {
         var renderAttachment = attachment as RenderAttachment;
-        var bitmapData = renderAttachment.bitmapData;
-        var renderTexture = bitmapData.renderTexture;
-        var blendMode = slot.data.blendMode;
         var ixList = renderAttachment.ixList;
         var vxList = renderAttachment.vxList;
-        var alpha = skeletonA * renderAttachment.a * slot.a;
-        renderState.push(_identityMatrix, alpha, blendMode);
+        var alpha = renderAttachment.a * slot.a;
+        var renderTexture = renderAttachment.bitmapData.renderTexture;
+        renderState.push(_identityMatrix, alpha, slot.data.blendMode);
         renderState.renderTextureMesh(renderTexture, ixList, vxList);
         renderState.pop();
       }
