@@ -75,8 +75,8 @@ class RegionAttachment extends Attachment implements RenderAttachment {
     num sinR = _sinDeg(rotation);
 
     num ma = cosR * sw / bw;
-    num mb = sinR * sw / bw;
-    num mc = sinR * sh / bh;
+    num mb = sinR * sh / bh;
+    num mc = sinR * sw / bw;
     num md = 0.0 - cosR * sh / bh;
     num mx = x - 0.5 * (sw * cosR + sh * sinR);
     num my = y - 0.5 * (sw * sinR - sh * cosR);
