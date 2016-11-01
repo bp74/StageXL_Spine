@@ -4,6 +4,7 @@ This file contains highlights of what changes on each version of the StageXL_Spi
 package. This file is normally updated whenever we push a new version to pub.
 
 #### Pub version 0.8.0-dev.1
+  * Added DisplayObject bounds and hitTest calculation
   * Added all features of the Spine v3.5 format.
   * Updated examples to Spine 3.5
   
