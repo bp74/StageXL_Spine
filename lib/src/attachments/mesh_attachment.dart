@@ -43,20 +43,14 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
   double height = 0.0;
   MeshAttachment _parentMesh;
 
-  @override
-  final BitmapData bitmapData;
-
-  @override
-  Float32List vxList;
-
-  @override
-  Int16List ixList;
-
-  @override
-  int hullLength = 0;
-
-  @override
-  double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+  @override BitmapData bitmapData;
+  @override Float32List vxList;
+  @override Int16List ixList;
+  @override int hullLength = 0;
+  @override double r = 1.0;
+  @override double g = 1.0;
+  @override double b = 1.0;
+  @override double a = 1.0;
 
   MeshAttachment(String name, this.path, this.bitmapData) : super(name);
 

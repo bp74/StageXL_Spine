@@ -43,23 +43,16 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
   double rotation = 0.0;
 
   final Matrix transformationMatrix = new Matrix.fromIdentity();
-
-  @override
-  final BitmapData bitmapData;
-
-  @override
-  Float32List vxList;
-
-  @override
-  Int16List ixList;
-
-  @override
-  int hullLength = 0;
-
-  @override
-  double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
-
   Float32List _vxListWithTransformation;
+
+  @override BitmapData bitmapData;
+  @override Float32List vxList;
+  @override Int16List ixList;
+  @override int hullLength = 0;
+  @override double r = 1.0;
+  @override double g = 1.0;
+  @override double b = 1.0;
+  @override double a = 1.0;
 
   RegionAttachment(String name, this.path, this.bitmapData) : super(name) {
     this.initRenderGeometry();
@@ -74,12 +67,12 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   void update() {
 
-    num cosR = _cosDeg(rotation);
-    num sinR = _sinDeg(rotation);
     num sw = scaleX * width;
     num sh = scaleY * height;
     num bw = bitmapData.width;
     num bh = bitmapData.height;
+    num cosR = _cosDeg(rotation);
+    num sinR = _sinDeg(rotation);
 
     num ma = cosR * sw / bw;
     num mb = sinR * sw / bw;
