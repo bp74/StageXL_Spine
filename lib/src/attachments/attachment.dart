@@ -49,7 +49,7 @@ abstract class _RenderAttachment {
   BitmapData get bitmapData;
   Float32List get vxList;
   Int16List get ixList;
-  Int16List get oxList;
+  int hullLength;
 
   double get r;
   double get g;

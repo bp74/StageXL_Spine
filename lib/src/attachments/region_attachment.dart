@@ -46,7 +46,10 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
   Float32List vxList;
 
   @override
-  Int16List ixList, oxList;
+  Int16List ixList;
+
+  @override
+  int hullLength = 0;
 
   @override
   double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
@@ -93,8 +96,7 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   @override
   void initRenderGeometry() {
-    var distinct = bitmapData.renderTextureQuad.ixList.toSet().toList();
-    this.oxList = new Int16List.fromList(distinct);
+    this.hullLength = bitmapData.renderTextureQuad.vxList.length >> 1;
     this.ixList = new Int16List.fromList(bitmapData.renderTextureQuad.ixList);
     this.vxList = new Float32List.fromList(bitmapData.renderTextureQuad.vxList);
   }

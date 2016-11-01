@@ -27,12 +27,11 @@ class SkeletonDisplayObject extends DisplayObject {
       var attachment = slot.attachment;
       if (attachment is _RenderAttachment) {
         var renderAttachment = attachment as _RenderAttachment;
-        var oxList = renderAttachment.oxList;
+        var vxCount = renderAttachment.hullLength >> 1;
         var vxList = renderAttachment.vxList;
-        for(int i = 0; i < oxList.length; i++) {
-          int offset = oxList[i] * 4;
-          double x = vxList[offset + 0];
-          double y = vxList[offset + 1];
+        for(int i = 0; i < vxCount; i++) {
+          double x = vxList[i * 4 + 0];
+          double y = vxList[i * 4 + 1];
           if (minX > x) minX = x;
           if (minY > y) minY = y;
           if (maxX < x) maxX = x;

@@ -38,7 +38,6 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
   Int16List triangles;
   Int16List edges;
 
-  int hullLength = 0;
   bool inheritDeform = false;
   double width = 0.0;
   double height = 0.0;
@@ -51,7 +50,10 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
   Float32List vxList;
 
   @override
-  Int16List ixList, oxList;
+  Int16List ixList;
+
+  @override
+  int hullLength = 0;
 
   @override
   double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
@@ -88,7 +90,6 @@ class MeshAttachment extends VertexAttachment implements _RenderAttachment {
   @override
   void initRenderGeometry()  {
 
-    oxList = new Int16List.fromList(edges ?? triangles);
     ixList = new Int16List.fromList(triangles);
     vxList = new Float32List(regionUVs.length * 2);
 
