@@ -34,10 +34,15 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   final String path;
 
+  double x = 0.0;
+  double y = 0.0;
+  double width = 0.0;
+  double height = 0.0;
+  double scaleX = 1.0;
+  double scaleY = 1.0;
   double rotation = 0.0;
-  double x = 0.0, y = 0.0;
-  double scaleX = 1.0, scaleY = 1.0;
-  double width = 0.0, height = 0.0;
+
+  final Matrix transformationMatrix = new Matrix.fromIdentity();
 
   @override
   final BitmapData bitmapData;
@@ -54,14 +59,18 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
   @override
   double r = 1.0, g = 1.0, b = 1.0, a = 1.0;
 
-  Matrix _transformationMatrix = new Matrix.fromIdentity();
   Float32List _vxListWithTransformation;
 
-  RegionAttachment(String name, this.path, this.bitmapData) : super(name);
+  RegionAttachment(String name, this.path, this.bitmapData) : super(name) {
+    this.initRenderGeometry();
+    this.update();
+  }
 
   //---------------------------------------------------------------------------
 
-  Matrix get transformationMatrix => _transformationMatrix;
+  /// The update method will update the [transformationMatrix] based on the
+  /// x, y, width, height, scaleX, scaleY and rotation fields. Therefore you
+  /// have to call this method after you have changed one of those fields.
 
   void update() {
 
@@ -78,11 +87,7 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
     num md = 0.0 - cosR * sh / bh;
     num mx = x - 0.5 * (sw * cosR + sh * sinR);
     num my = y - 0.5 * (sw * sinR - sh * cosR);
-
-    this.initRenderGeometry();
-
-    _transformationMatrix.setTo(ma, mc, mb, md, mx, my);
-    _vxListWithTransformation = new Float32List.fromList(vxList);
+    transformationMatrix.setTo(ma, mc, mb, md, mx, my);
 
     for (int i = 0; i <= vxList.length - 4; i += 4) {
       var x = vxList[i + 0];
@@ -96,9 +101,10 @@ class RegionAttachment extends Attachment implements _RenderAttachment {
 
   @override
   void initRenderGeometry() {
-    this.hullLength = bitmapData.renderTextureQuad.vxList.length >> 1;
-    this.ixList = new Int16List.fromList(bitmapData.renderTextureQuad.ixList);
-    this.vxList = new Float32List.fromList(bitmapData.renderTextureQuad.vxList);
+    hullLength = bitmapData.renderTextureQuad.vxList.length >> 1;
+    ixList = new Int16List.fromList(bitmapData.renderTextureQuad.ixList);
+    vxList = new Float32List.fromList(bitmapData.renderTextureQuad.vxList);
+    _vxListWithTransformation = new Float32List.fromList(vxList);
   }
 
   @override
