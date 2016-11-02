@@ -260,7 +260,7 @@ class SkeletonLoader {
       var eventData = new EventData(eventName);
       eventData.intValue = _getInt(eventMap, "int", 0);
       eventData.floatValue = _getDouble(eventMap, "float", 0.0);
-      eventData.stringValue = _getString(eventMap, "string", "");
+      eventData.stringValue = _getString(eventMap, "string", null);
       skeletonData.events.add(eventData);
     }
 

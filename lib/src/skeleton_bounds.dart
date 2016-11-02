@@ -89,7 +89,14 @@ class SkeletonBounds {
       }
     }
 
-    if (updateAabb) aabbCompute();
+    if (updateAabb) {
+      aabbCompute();
+    } else {
+      minX = double.NEGATIVE_INFINITY;
+      minY = double.NEGATIVE_INFINITY;
+      maxX = double.INFINITY;
+      maxY = double.INFINITY;
+    }
   }
 
   void aabbCompute() {

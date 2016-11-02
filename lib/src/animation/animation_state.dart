@@ -169,7 +169,7 @@ class AnimationState extends EventDispatcher {
       // Apply mixing from entries first.
       double mix = current.alpha;
       if (current.mixingFrom != null) {
-        mix = _applyMixingFrom(current, skeleton, mix);
+        mix *= _applyMixingFrom(current, skeleton);
       }
 
       // Apply current entry.
@@ -215,10 +215,10 @@ class AnimationState extends EventDispatcher {
     _dispatchTrackEntryEvents();
   }
 
-  double _applyMixingFrom(TrackEntry entry, Skeleton skeleton, double alpha) {
+  double _applyMixingFrom(TrackEntry entry, Skeleton skeleton) {
 
     TrackEntry from = entry.mixingFrom;
-    if (from.mixingFrom != null) _applyMixingFrom(from, skeleton, alpha);
+    if (from.mixingFrom != null) _applyMixingFrom(from, skeleton);
 
     double mix = 0.0;
     if (entry.mixDuration == 0.0) {
@@ -227,19 +227,18 @@ class AnimationState extends EventDispatcher {
     } else {
       mix = entry.mixTime / entry.mixDuration;
       if (mix > 1.0) mix = 1.0;
-      mix *= alpha;
     }
 
     List<Event> events = mix < from.eventThreshold ? _events : null;
     bool attachments = mix < from.attachmentThreshold;
     bool drawOrder = mix < from.drawOrderThreshold;
-    alpha = from.alpha * (1.0 - mix);
 
     double animationLast = from.animationLast;
     double animationTime = from.getAnimationTime();
     List<Timeline> timelines = from.animation.timelines;
     List<num> timelinesRotation = from.timelinesRotation;
     List<bool> timelinesFirst = from.timelinesFirst;
+    double alpha = from.alpha * entry.mixAlpha * (1.0 - mix);
 
     var firstFrame = timelinesRotation.length == 0;
     if (firstFrame) {
@@ -410,9 +409,10 @@ class AnimationState extends EventDispatcher {
       current.mixingFrom = from;
       current.mixTime = 0.0;
       from.timelinesRotation.clear();
-      // If not completely mixed in, set alpha so mixing out happens from current mix to zero.
+
+      // If not completely mixed in, set mixAlpha so mixing out happens from current mix to zero.
       if (from.mixingFrom != null) {
-        from.alpha *= math.min(from.mixTime / from.mixDuration, 1.0);
+        current.mixAlpha *= math.min(from.mixTime / from.mixDuration, 1.0);
       }
     }
 

@@ -76,7 +76,7 @@ class IkConstraint implements Constraint {
 	/// Adjusts the bone rotation so the tip is as close to the target position
   /// as possible. The target is specified in the world coordinate system.
 	static void apply1 (Bone bone, double targetX, double targetY, double alpha) {
-		if (!bone.appliedValid) bone.updateAppliedTransform();
+		if (!bone.appliedValid) bone._updateAppliedTransform();
 		Bone p = bone.parent;
     double rad2deg = 180.0 / math.PI;
 		double id = 1.0 / (p.a * p.d - p.b * p.c);
@@ -105,8 +105,8 @@ class IkConstraint implements Constraint {
       child.updateWorldTransform();
       return;
     }
-    if (!parent.appliedValid) parent.updateAppliedTransform();
-    if (!child.appliedValid) child.updateAppliedTransform();
+    if (!parent.appliedValid) parent._updateAppliedTransform();
+    if (!child.appliedValid) child._updateAppliedTransform();
 
     double px = parent.ax;
     double py = parent.ay;

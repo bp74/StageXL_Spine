@@ -256,7 +256,7 @@ class Bone implements Updatable {
   /// Some information is ambiguous in the world transform, such as -1,-1 scale
   /// versus 180 rotation.
 
-  void updateAppliedTransform() {
+  void _updateAppliedTransform() {
 
     this.appliedValid = true;
 		Bone parent = this.parent;

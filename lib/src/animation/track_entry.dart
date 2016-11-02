@@ -54,7 +54,7 @@ class TrackEntry extends EventDispatcher {
   double nextTrackLast = -1.0;
   double mixTime = 0.0;
   double mixDuration = 0.0;
-  double mixAlpha = 0.0;
+  double mixAlpha = 1.0;
   double timeScale = 1.0;
   double delay = 0.0;
   double alpha = 1.0;
@@ -97,6 +97,10 @@ class TrackEntry extends EventDispatcher {
 
   EventStream<TrackEntryEventEvent> get onTrackEvent {
     return const EventStreamProvider<TrackEntryEventEvent>("event").forTarget(this);
+  }
+
+  void resetRotationDirection() {
+    timelinesRotation.clear();
   }
 
   @override
