@@ -50,11 +50,15 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
       Skeleton skeleton, double lastTime, double time,
       List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) return; // Time is before first frame.
-
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = constraint.data;
     double s = 0.0;
+
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) constraint.spacing = data.spacing;
+      return;
+    }
 
     if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.

@@ -60,15 +60,22 @@ class AttachmentTimeline implements Timeline {
       double alpha, bool setupPose, bool mixingOut) {
 
     String attachmentName;
+    Slot slot = skeleton.slots[slotIndex];
 
     if (mixingOut && setupPose) {
-      Slot slot = skeleton.slots[slotIndex];
       attachmentName = slot.data.attachmentName;
       slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
       return;
     }
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) {
+        attachmentName = slot.data.attachmentName;
+        slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
+      }
+      return;
+    }
 
     int frameIndex = (time >= frames.last)
       ? frames.length - 1 // Time is after last frame.

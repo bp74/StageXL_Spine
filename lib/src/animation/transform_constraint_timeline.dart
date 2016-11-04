@@ -76,16 +76,24 @@ class TransformConstraintTimeline extends CurveTimeline {
       Skeleton skeleton, double lastTime, double time,
       List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) return; // Time is before first frame.
-
     List<TransformConstraint> tcs = skeleton.transformConstraints;
     TransformConstraint tc = tcs[transformConstraintIndex];
     TransformConstraintData data = tc.data;
-
     double rot = 0.0; // rotate
     double tra = 0.0; // translate
     double sca = 0.0; // scale
     double she = 0.0; // shear
+
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) {
+        tc.rotateMix = data.rotateMix;
+        tc.translateMix = data.translateMix;
+        tc.scaleMix = data.scaleMix;
+        tc.shearMix = data.shearMix;
+      }
+      return;
+    }
 
     if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.

@@ -65,7 +65,11 @@ class DeformTimeline extends CurveTimeline {
     VertexAttachment vertexAttachment = slot.attachment;
     if (vertexAttachment.applyDeform(attachment) == false) return;
 
-    if (time < frames[0]) return; // Time is before first frame.
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) slot.attachmentVertices = new Float32List(0);
+      return;
+    }
 
     int vertexCount = frameVertices[0].length;
     Float32List targetVertices = slot.attachmentVertices;

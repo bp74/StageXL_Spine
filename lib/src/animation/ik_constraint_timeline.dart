@@ -66,12 +66,19 @@ class IkConstraintTimeline extends CurveTimeline {
       Skeleton skeleton, double lastTime, double time,
       List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) return; // Time is before first frame.
-
     IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
     IkConstraintData data = constraint.data;
     double m = 0.0;
     double b = 0.0;
+
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) {
+        constraint.mix = data.mix;
+        constraint.bendDirection = data.bendDirection;
+      }
+      return;
+    }
 
     if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.

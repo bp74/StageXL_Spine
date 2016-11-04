@@ -52,11 +52,18 @@ class ShearTimeline extends TranslateTimeline {
       Skeleton skeleton, double lastTime, double time,
       List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) return; // Time is before first frame.
-
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
     double y = 0.0;
+
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) {
+        bone.shearX = bone.data.shearX;
+        bone.shearY = bone.data.shearY;
+      }
+      return;
+    }
 
     if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.

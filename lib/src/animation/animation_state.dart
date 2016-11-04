@@ -281,11 +281,14 @@ class AnimationState extends EventDispatcher {
 
     RotateTimeline rotateTimeline = timeline;
     Float32List frames = rotateTimeline.frames;
-    if (time < frames[0]) return; // Time is before first frame.
-
     Bone bone = skeleton.bones[rotateTimeline.boneIndex];
-
     double r2 = 0.0;
+
+    if (time < frames[0]) {
+      if (setupPose) bone.rotation = bone.data.rotation;
+      return;
+    }
+
     if (time >= frames[frames.length - RotateTimeline._ENTRIES]) {
       // Time is after last frame.
       r2 = bone.data.rotation + frames[frames.length + RotateTimeline._PREV_ROTATION];

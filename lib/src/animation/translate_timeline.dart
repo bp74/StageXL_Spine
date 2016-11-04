@@ -66,11 +66,18 @@ class TranslateTimeline extends CurveTimeline {
       Skeleton skeleton, double lastTime, double time,
       List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) return; // Time is before first frame.
-
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
     double y = 0.0;
+
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) {
+        bone.x = bone.data.x;
+        bone.y = bone.data.y;
+      }
+      return;
+    }
 
     if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.

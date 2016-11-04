@@ -64,11 +64,15 @@ class PathConstraintPositionTimeline extends CurveTimeline {
       Skeleton skeleton, double lastTime, double time,
       List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
 
-    if (time < frames[0]) return; // Time is before first frame.
-
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = constraint.data;
     double p = 0.0;
+
+    if (time < frames[0]) {
+      // Time is before first frame.
+      if (setupPose) constraint.position = data.position;
+      return;
+    }
 
     if (time >= frames[frames.length + _PREV_TIME]) {
       // Time is after last frame.
