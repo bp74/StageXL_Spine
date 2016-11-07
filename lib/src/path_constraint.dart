@@ -128,10 +128,17 @@ class PathConstraint implements Constraint {
     double boneX = positions[0];
     double boneY = positions[1];
     double offsetRotation = data.offsetRotation;
-    bool tip = rotateMode == RotateMode.chain && offsetRotation == 0;
-    int p = 3;
 
-    for (int i = 0; i < boneCount; i++, p += 3) {
+    bool tip = false;
+    if (offsetRotation == 0) {
+      tip = rotateMode == RotateMode.chain;
+    } else {
+      tip = false;
+      Bone pa = target.bone;
+      offsetRotation *= (pa.a * pa.d - pa.b * pa.c > 0) ? _deg2rad : -_deg2rad;
+    }
+
+    for (int i = 0, p = 3; i < boneCount; i++, p += 3) {
       Bone bone = bones[i];
       bone._worldX += (boneX - bone.worldX) * translateMix;
       bone._worldY += (boneY - bone.worldY) * translateMix;
@@ -169,7 +176,7 @@ class PathConstraint implements Constraint {
           r = math.atan2(dy, dx);
         }
 
-        r -= math.atan2(c, a) - _toRad(offsetRotation);
+        r -= math.atan2(c, a);
 
         if (tip) {
           cos = math.cos(r);
@@ -177,6 +184,8 @@ class PathConstraint implements Constraint {
           double length = bone.data.length;
           boneX += (length * (cos * a - sin * c) - dx) * rotateMix;
           boneY += (length * (sin * a + cos * c) - dy) * rotateMix;
+        } else {
+          r += offsetRotation;
         }
 
         if (r > math.PI) {
