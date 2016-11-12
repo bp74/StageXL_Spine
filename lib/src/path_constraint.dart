@@ -134,8 +134,9 @@ class PathConstraint implements Constraint {
       tip = rotateMode == RotateMode.chain;
     } else {
       tip = false;
-      Bone pa = target.bone;
-      offsetRotation *= (pa.a * pa.d - pa.b * pa.c > 0) ? _deg2rad : -_deg2rad;
+      Bone bone = target.bone;
+      double reflect = (bone.a * bone.d - bone.b * bone.c > 0) ? 1.0 : -1.0;
+      offsetRotation = _toRad(data.offsetRotation) * reflect;
     }
 
     for (int i = 0, p = 3; i < boneCount; i++, p += 3) {
