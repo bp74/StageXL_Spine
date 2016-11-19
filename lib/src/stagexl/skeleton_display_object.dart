@@ -8,7 +8,8 @@ class SkeletonDisplayObject extends DisplayObject {
   final Matrix _skeletonMatrix = new Matrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
   final Matrix _identityMatrix = new Matrix.fromIdentity();
   final Matrix _transformMatrix = new Matrix.fromIdentity();
-  static final SkeletonBounds _skeletonBounds = new SkeletonBounds();
+
+  static final Float32List _boundsVertices = new Float32List(2048);
 
   SkeletonBoundsCalculation boundsCalculation = SkeletonBoundsCalculation.None;
 
@@ -23,38 +24,42 @@ class SkeletonDisplayObject extends DisplayObject {
   @override
   Rectangle<num> get bounds {
 
+    Float32List vertices = _boundsVertices;
+    int offset = 0;
+
+    if (boundsCalculation == SkeletonBoundsCalculation.BoundingBoxes) {
+      for (var slot in skeleton.drawOrder) {
+        var attachment = slot.attachment;
+        if (attachment is BoundingBoxAttachment) {
+          var length = attachment.worldVerticesLength;
+          attachment.computeWorldVertices2(slot, 0, length, vertices, offset, 2);
+          offset += length;
+        }
+      }
+    } else if (boundsCalculation == SkeletonBoundsCalculation.Hull) {
+      for (var slot in skeleton.drawOrder) {
+        var attachment = slot.attachment;
+        if (attachment is RenderableAttachment) {
+          var renderable = attachment as RenderableAttachment;
+          var length = renderable.hullLength;
+          renderable.computeWorldVertices2(slot, 0, length, vertices, offset, 2);
+          offset += length;
+        }
+      }
+    }
+
     double minX = double.INFINITY;
     double minY = double.INFINITY;
     double maxX = double.NEGATIVE_INFINITY;
     double maxY = double.NEGATIVE_INFINITY;
 
-    if (boundsCalculation == SkeletonBoundsCalculation.BoundingBoxes) {
-
-      _skeletonBounds.update(this.skeleton, true);
-      minX = _skeletonBounds.minX;
-      minY = _skeletonBounds.minY;
-      maxX = _skeletonBounds.maxX;
-      maxY = _skeletonBounds.maxY;
-
-    } else if (boundsCalculation == SkeletonBoundsCalculation.Hull) {
-
-      for (var slot in skeleton.drawOrder) {
-        var attachment = slot.attachment;
-        if (attachment is RenderAttachment) {
-          var renderAttachment = attachment as RenderAttachment;
-          renderAttachment.updateRenderGeometry(slot);
-          var vxCount = renderAttachment.hullLength >> 1;
-          var vxList = renderAttachment.vxList;
-          for (int i = 0; i < vxCount; i++) {
-            double x = vxList[i * 4 + 0];
-            double y = vxList[i * 4 + 1];
-            if (minX > x) minX = x;
-            if (minY > y) minY = y;
-            if (maxX < x) maxX = x;
-            if (maxY < y) maxY = y;
-          }
-        }
-      }
+    for (int i = 0; i < offset - 1; i += 2) {
+      double x = vertices[i + 0];
+      double y = vertices[i + 1];
+      if (minX > x) minX = x;
+      if (minY > y) minY = y;
+      if (maxX < x) maxX = x;
+      if (maxY < y) maxY = y;
     }
 
     minX = minX.isFinite ? minX : 0.0;
@@ -96,16 +101,16 @@ class SkeletonDisplayObject extends DisplayObject {
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
-      if (attachment is RenderAttachment) {
-        var renderAttachment = attachment as RenderAttachment;
-        renderAttachment.updateRenderGeometry(slot);
-        var ixList = renderAttachment.ixList;
-        var vxList = renderAttachment.vxList;
-        var r = renderAttachment.r * skeletonR * slot.r;
-        var g = renderAttachment.g * skeletonG * slot.g;
-        var b = renderAttachment.b * skeletonB * slot.b;
-        var a = renderAttachment.a * skeletonA * slot.a;
-        var renderTexture = renderAttachment.bitmapData.renderTexture;
+      if (attachment is RenderableAttachment) {
+        var renderable = attachment as RenderableAttachment;
+        renderable.updateRenderGeometry(slot);
+        var ixList = renderable.ixList;
+        var vxList = renderable.vxList;
+        var r = renderable.r * skeletonR * slot.r;
+        var g = renderable.g * skeletonG * slot.g;
+        var b = renderable.b * skeletonB * slot.b;
+        var a = renderable.a * skeletonA * slot.a;
+        var renderTexture = renderable.bitmapData.renderTexture;
         renderContext.activateRenderTexture(renderTexture);
         renderContext.activateBlendMode(slot.data.blendMode);
         renderProgram.renderTextureMesh(renderState, ixList, vxList, r, g, b, a);
@@ -131,13 +136,13 @@ class SkeletonDisplayObject extends DisplayObject {
         renderState.push(transform, attachment.a * slot.a, slot.data.blendMode);
         renderState.renderTextureQuad(attachment.bitmapData.renderTextureQuad);
         renderState.pop();
-      } else if (attachment is RenderAttachment) {
-        var renderAttachment = attachment as RenderAttachment;
-        renderAttachment.updateRenderGeometry(slot);
-        var ixList = renderAttachment.ixList;
-        var vxList = renderAttachment.vxList;
-        var alpha = renderAttachment.a * slot.a;
-        var renderTexture = renderAttachment.bitmapData.renderTexture;
+      } else if (attachment is RenderableAttachment) {
+        var renderable = attachment as RenderableAttachment;
+        renderable.updateRenderGeometry(slot);
+        var ixList = renderable.ixList;
+        var vxList = renderable.vxList;
+        var alpha = renderable.a * slot.a;
+        var renderTexture = renderable.bitmapData.renderTexture;
         renderState.push(_identityMatrix, alpha, slot.data.blendMode);
         renderState.renderTextureMesh(renderTexture, ixList, vxList);
         renderState.pop();

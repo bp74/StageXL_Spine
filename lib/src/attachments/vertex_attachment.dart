@@ -57,7 +57,7 @@ class VertexAttachment extends Attachment {
 
   void computeWorldVertices2(
       Slot slot, int start, int count,
-      Float32List worldVertices, [int offset = 0, int stride = 2]) {
+      Float32List worldVertices, int offset, int stride) {
 
     Skeleton skeleton = slot.skeleton;
     List<Bone> skeletonBones = skeleton.bones;

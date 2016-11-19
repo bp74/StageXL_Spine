@@ -44,7 +44,7 @@ class Attachment {
 
 //-----------------------------------------------------------------------------
 
-abstract class RenderAttachment {
+abstract class RenderableAttachment {
 
   BitmapData get bitmapData;
   Float32List get vxList;
@@ -58,4 +58,8 @@ abstract class RenderAttachment {
 
   void initRenderGeometry();
   void updateRenderGeometry(Slot slot);
+
+  void computeWorldVertices(Slot slot, Float32List worldVertices);
+  void computeWorldVertices2(Slot slot, int start, int count,
+      Float32List worldVertices, int offset, int stride);
 }

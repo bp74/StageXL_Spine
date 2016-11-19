@@ -251,14 +251,14 @@ class PathConstraint implements Constraint {
         } else if (p < 0) {
           if (prevCurve != _BEFORE) {
             prevCurve = _BEFORE;
-            path.computeWorldVertices2(target, 2, 4, world, 0);
+            path.computeWorldVertices2(target, 2, 4, world, 0, 2);
           }
           _addBeforePosition(p, world, 0, out, o);
           continue;
         } else if (p > pathLength) {
           if (prevCurve != _AFTER) {
             prevCurve = _AFTER;
-            path.computeWorldVertices2(target, verticesLength - 6, 4, world, 0);
+            path.computeWorldVertices2(target, verticesLength - 6, 4, world, 0, 2);
           }
           _addAfterPosition(p - pathLength, world, 0, out, o);
           continue;
@@ -280,10 +280,10 @@ class PathConstraint implements Constraint {
         if (curve != prevCurve) {
           prevCurve = curve;
           if (closed && curve == curveCount) {
-            path.computeWorldVertices2(target, verticesLength - 4, 4, world, 0);
-            path.computeWorldVertices2(target, 0, 4, world, 4);
+            path.computeWorldVertices2(target, verticesLength - 4, 4, world, 0, 2);
+            path.computeWorldVertices2(target, 0, 4, world, 4, 2);
           } else {
-            path.computeWorldVertices2(target, curve * 6 + 2, 8, world, 0);
+            path.computeWorldVertices2(target, curve * 6 + 2, 8, world, 0, 2);
           }
         }
 
@@ -301,8 +301,8 @@ class PathConstraint implements Constraint {
       verticesLength += 2;
       if (_world.length != verticesLength) _world = new Float32List(verticesLength);
       world = _world;
-      path.computeWorldVertices2(target, 2, verticesLength - 4, world, 0);
-      path.computeWorldVertices2(target, 0, 2, world, verticesLength - 4);
+      path.computeWorldVertices2(target, 2, verticesLength - 4, world, 0, 2);
+      path.computeWorldVertices2(target, 0, 2, world, verticesLength - 4, 2);
       world[verticesLength - 2] = world[0];
       world[verticesLength - 1] = world[1];
     } else {
@@ -310,7 +310,7 @@ class PathConstraint implements Constraint {
       verticesLength -= 4;
       if (_world.length != verticesLength) _world = new Float32List(verticesLength);
       world = _world;
-      path.computeWorldVertices2(target, 2, verticesLength, world, 0);
+      path.computeWorldVertices2(target, 2, verticesLength, world, 0, 2);
     }
 
     // Curve lengths.

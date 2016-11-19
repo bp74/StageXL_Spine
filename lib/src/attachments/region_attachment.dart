@@ -30,7 +30,7 @@
 
 part of stagexl_spine;
 
-class RegionAttachment extends Attachment implements RenderAttachment {
+class RegionAttachment extends Attachment implements RenderableAttachment {
 
   final String path;
 
@@ -105,6 +105,18 @@ class RegionAttachment extends Attachment implements RenderAttachment {
 
   @override
   void updateRenderGeometry(Slot slot) {
+    computeWorldVertices2(slot, 0, vxList.length >> 1, vxList, 0, 4);
+  }
+
+  @override
+  void computeWorldVertices(Slot slot, Float32List worldVertices) {
+    computeWorldVertices2(slot, 0, vxList.length >> 1, worldVertices, 0, 2);
+  }
+
+  @override
+  void computeWorldVertices2(
+      Slot slot, int start, int count,
+      Float32List worldVertices, int offset, int stride) {
 
     var ma = slot.bone.a;
     var mb = slot.bone.b;
@@ -113,14 +125,14 @@ class RegionAttachment extends Attachment implements RenderAttachment {
     var mx = slot.bone.worldX;
     var my = slot.bone.worldY;
 
-    var vxSource = _vxListWithTransformation;
-    var vxTarget = vxList;
+    var vxList = _vxListWithTransformation;
+    var length = count >> 1;
 
-    for (int o = 0; o <= vxTarget.length - 4; o += 4) {
-      double x = vxSource[o + 0];
-      double y = vxSource[o + 1];
-      vxTarget[o + 0] = x * ma + y * mb + mx;
-      vxTarget[o + 1] = x * mc + y * md + my;
+    for (int i = 0; i < length; i++, start += 4, offset += stride) {
+      double x = vxList[start + 0];
+      double y = vxList[start + 1];
+      worldVertices[offset + 0] = x * ma + y * mb + mx;
+      worldVertices[offset + 1] = x * mc + y * md + my;
     }
   }
 }
