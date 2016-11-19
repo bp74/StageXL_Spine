@@ -1,10 +1,10 @@
 
 vine.png
-size: 128,1024
+size: 72,966
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-images/vine
+vine
   rotate: false
   xy: 2, 2
   size: 68, 962
