@@ -102,16 +102,14 @@ class SkeletonDisplayObject extends DisplayObject {
       var attachment = slot.attachment;
       if (attachment is RenderAttachment) {
         attachment.updateRenderGeometry(slot);
-        var ixList = attachment.ixList;
-        var vxList = attachment.vxList;
-        var r = attachment.r * skeletonR * slot.r;
-        var g = attachment.g * skeletonG * slot.g;
-        var b = attachment.b * skeletonB * slot.b;
-        var a = attachment.a * skeletonA * slot.a;
-        var renderTexture = attachment.bitmapData.renderTexture;
-        renderContext.activateRenderTexture(renderTexture);
+        renderContext.activateRenderTexture(attachment.bitmapData.renderTexture);
         renderContext.activateBlendMode(slot.data.blendMode);
-        renderProgram.renderTextureMesh(renderState, ixList, vxList, r, g, b, a);
+        renderProgram.renderTextureMesh(renderState,
+            attachment.ixList, attachment.vxList,
+            attachment.r * skeletonR * slot.r,
+            attachment.g * skeletonG * slot.g,
+            attachment.b * skeletonB * slot.b,
+            attachment.a * skeletonA * slot.a);
       }
     }
 
