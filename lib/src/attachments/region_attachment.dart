@@ -43,12 +43,14 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
   double rotation = 0.0;
 
   final Matrix transformationMatrix = new Matrix.fromIdentity();
-  Float32List _vxListWithTransformation;
+  Float32List vertices;
 
   @override BitmapData bitmapData;
   @override Float32List vxList;
   @override Int16List ixList;
   @override int hullLength = 0;
+  @override int worldVerticesLength = 0;
+
   @override double r = 1.0;
   @override double g = 1.0;
   @override double b = 1.0;
@@ -56,7 +58,6 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
 
   RegionAttachment(String name, this.path, this.bitmapData) : super(name) {
     this.initRenderGeometry();
-    this.update();
   }
 
   //---------------------------------------------------------------------------
@@ -82,14 +83,13 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
     num my = y - 0.5 * (sw * sinR - sh * cosR);
     transformationMatrix.setTo(ma, mc, mb, md, mx, my);
 
-    Float32List vxSource = bitmapData.renderTextureQuad.vxList;
-    Float32List vxTarget = _vxListWithTransformation;
+    Float32List vxList = bitmapData.renderTextureQuad.vxList;
 
-    for (int o = 0; o <= vxTarget.length - 4; o += 4) {
-      double x = vxSource[o + 0];
-      double y = vxSource[o + 1];
-      vxTarget[o + 0] = x * ma + y * mb + mx;
-      vxTarget[o + 1] = x * mc + y * md + my;
+    for (int o = 0; o <= vertices.length - 2; o += 2) {
+      double x = vxList[o * 2 + 0];
+      double y = vxList[o * 2 + 1];
+      vertices[o + 0] = x * ma + y * mb + mx;
+      vertices[o + 1] = x * mc + y * md + my;
     }
   }
 
@@ -97,20 +97,22 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
 
   @override
   void initRenderGeometry() {
-    hullLength = bitmapData.renderTextureQuad.vxList.length >> 1;
-    ixList = new Int16List.fromList(bitmapData.renderTextureQuad.ixList);
-    vxList = new Float32List.fromList(bitmapData.renderTextureQuad.vxList);
-    _vxListWithTransformation = new Float32List.fromList(vxList);
+    var renderTextureQuad = bitmapData.renderTextureQuad;
+    this.ixList = new Int16List.fromList(renderTextureQuad.ixList);
+    this.vxList = new Float32List.fromList(renderTextureQuad.vxList);
+    this.worldVerticesLength = this.hullLength = vxList.length >> 1;
+    this.vertices = new Float32List(worldVerticesLength);
+    this.update();
   }
 
   @override
   void updateRenderGeometry(Slot slot) {
-    computeWorldVertices2(slot, 0, vxList.length >> 1, vxList, 0, 4);
+    computeWorldVertices2(slot, 0, worldVerticesLength, vxList, 0, 4);
   }
 
   @override
   void computeWorldVertices(Slot slot, Float32List worldVertices) {
-    computeWorldVertices2(slot, 0, vxList.length >> 1, worldVertices, 0, 2);
+    computeWorldVertices2(slot, 0, worldVerticesLength, worldVertices, 0, 2);
   }
 
   @override
@@ -124,13 +126,11 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
     var md = slot.bone.d;
     var mx = slot.bone.worldX;
     var my = slot.bone.worldY;
-
-    var vxList = _vxListWithTransformation;
     var length = count >> 1;
 
-    for (int i = 0; i < length; i++, start += 4, offset += stride) {
-      double x = vxList[start + 0];
-      double y = vxList[start + 1];
+    for (int i = 0; i < length; i++, start += 2, offset += stride) {
+      double x = vertices[start + 0];
+      double y = vertices[start + 1];
       worldVertices[offset + 0] = x * ma + y * mb + mx;
       worldVertices[offset + 1] = x * mc + y * md + my;
     }

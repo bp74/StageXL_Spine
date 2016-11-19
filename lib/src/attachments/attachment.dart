@@ -49,6 +49,7 @@ abstract class RenderableAttachment {
   BitmapData get bitmapData;
   Float32List get vxList;
   Int16List get ixList;
+  int get worldVerticesLength;
   int get hullLength;
 
   double get r;
