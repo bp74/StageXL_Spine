@@ -30,66 +30,27 @@
 
 part of stagexl_spine;
 
-class MeshAttachment extends RenderAttachment {
+abstract class RenderAttachment extends VertexAttachment {
 
-  Float32List regionUVs;
-  Int16List triangles;
-  Int16List edges;
+  final String path;
 
-  bool inheritDeform = false;
-  double width = 0.0;
-  double height = 0.0;
-  MeshAttachment _parentMesh;
+  BitmapData bitmapData;
+  Float32List vxList;
+  Int16List ixList;
+  int hullLength = 0;
 
-  MeshAttachment(String name, String path, BitmapData bitmapData)
-      : super(name, path, bitmapData);
+  double r = 1.0;
+  double g = 1.0;
+  double b = 1.0;
+  double a = 1.0;
 
-  //---------------------------------------------------------------------------
+  RenderAttachment(String name, this.path, this.bitmapData) : super(name);
 
-  MeshAttachment get parentMesh => _parentMesh;
+  //----------------------------------------------------------------------------
 
-  set parentMesh(MeshAttachment parentMesh) {
-    _parentMesh = parentMesh;
-    if (parentMesh != null) {
-      bones = parentMesh.bones;
-      vertices = parentMesh.vertices;
-      worldVerticesLength = parentMesh.worldVerticesLength;
-      regionUVs = parentMesh.regionUVs;
-      triangles = parentMesh.triangles;
-      hullLength = parentMesh.hullLength;
-      edges = parentMesh.edges;
-      width = parentMesh.width;
-      height = parentMesh.height;
-    }
-  }
+  void initRenderGeometry();
 
-  bool applyFFD(Attachment sourceAttachment) {
-    if (sourceAttachment == this) return true;
-    if (sourceAttachment == _parentMesh && inheritDeform) return true;
-    return false;
-  }
-
-  //---------------------------------------------------------------------------
-
-  @override
-  void initRenderGeometry()  {
-
-    ixList = new Int16List.fromList(triangles);
-    vxList = new Float32List(regionUVs.length * 2);
-
-    var matrix = bitmapData.renderTextureQuad.samplerMatrix;
-    var ma = matrix.a * bitmapData.width;
-    var mb = matrix.b * bitmapData.width;
-    var mc = matrix.c * bitmapData.height;
-    var md = matrix.d * bitmapData.height;
-    var mx = matrix.tx;
-    var my = matrix.ty;
-
-    for (int i = 0, o = 0; i < regionUVs.length - 1; i += 2, o += 4) {
-      var u = regionUVs[i + 0];
-      var v = regionUVs[i + 1];
-      vxList[o + 2] = u * ma + v * mc + mx;
-      vxList[o + 3] = u * mb + v * md + my;
-    }
+  void updateRenderGeometry(Slot slot) {
+    computeWorldVertices2(slot, 0, worldVerticesLength, vxList, 0, 4);
   }
 }

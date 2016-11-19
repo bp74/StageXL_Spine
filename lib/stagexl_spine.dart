@@ -61,6 +61,7 @@ part 'src/attachments/bounding_box_attachment.dart';
 part 'src/attachments/mesh_attachment.dart';
 part 'src/attachments/path_attachment.dart';
 part 'src/attachments/region_attachment.dart';
+part 'src/attachments/render_attachment.dart';
 part 'src/attachments/vertex_attachment.dart';
 
 part 'src/stagexl/skeleton_animation.dart';

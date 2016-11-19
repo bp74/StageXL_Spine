@@ -41,26 +41,3 @@ class Attachment {
   @override
   String toString() => name;
 }
-
-//-----------------------------------------------------------------------------
-
-abstract class RenderableAttachment {
-
-  BitmapData get bitmapData;
-  Float32List get vxList;
-  Int16List get ixList;
-  int get worldVerticesLength;
-  int get hullLength;
-
-  double get r;
-  double get g;
-  double get b;
-  double get a;
-
-  void initRenderGeometry();
-  void updateRenderGeometry(Slot slot);
-
-  void computeWorldVertices(Slot slot, Float32List worldVertices);
-  void computeWorldVertices2(Slot slot, int start, int count,
-      Float32List worldVertices, int offset, int stride);
-}

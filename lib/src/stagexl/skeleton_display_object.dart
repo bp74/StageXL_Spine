@@ -39,10 +39,9 @@ class SkeletonDisplayObject extends DisplayObject {
     } else if (boundsCalculation == SkeletonBoundsCalculation.Hull) {
       for (var slot in skeleton.drawOrder) {
         var attachment = slot.attachment;
-        if (attachment is RenderableAttachment) {
-          var renderable = attachment as RenderableAttachment;
-          var length = renderable.hullLength;
-          renderable.computeWorldVertices2(slot, 0, length, vertices, offset, 2);
+        if (attachment is RenderAttachment) {
+          var length = attachment.hullLength;
+          attachment.computeWorldVertices2(slot, 0, length, vertices, offset, 2);
           offset += length;
         }
       }
@@ -101,16 +100,15 @@ class SkeletonDisplayObject extends DisplayObject {
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
-      if (attachment is RenderableAttachment) {
-        var renderable = attachment as RenderableAttachment;
-        renderable.updateRenderGeometry(slot);
-        var ixList = renderable.ixList;
-        var vxList = renderable.vxList;
-        var r = renderable.r * skeletonR * slot.r;
-        var g = renderable.g * skeletonG * slot.g;
-        var b = renderable.b * skeletonB * slot.b;
-        var a = renderable.a * skeletonA * slot.a;
-        var renderTexture = renderable.bitmapData.renderTexture;
+      if (attachment is RenderAttachment) {
+        attachment.updateRenderGeometry(slot);
+        var ixList = attachment.ixList;
+        var vxList = attachment.vxList;
+        var r = attachment.r * skeletonR * slot.r;
+        var g = attachment.g * skeletonG * slot.g;
+        var b = attachment.b * skeletonB * slot.b;
+        var a = attachment.a * skeletonA * slot.a;
+        var renderTexture = attachment.bitmapData.renderTexture;
         renderContext.activateRenderTexture(renderTexture);
         renderContext.activateBlendMode(slot.data.blendMode);
         renderProgram.renderTextureMesh(renderState, ixList, vxList, r, g, b, a);
@@ -136,13 +134,12 @@ class SkeletonDisplayObject extends DisplayObject {
         renderState.push(transform, attachment.a * slot.a, slot.data.blendMode);
         renderState.renderTextureQuad(attachment.bitmapData.renderTextureQuad);
         renderState.pop();
-      } else if (attachment is RenderableAttachment) {
-        var renderable = attachment as RenderableAttachment;
-        renderable.updateRenderGeometry(slot);
-        var ixList = renderable.ixList;
-        var vxList = renderable.vxList;
-        var alpha = renderable.a * slot.a;
-        var renderTexture = renderable.bitmapData.renderTexture;
+      } else if (attachment is RenderAttachment) {
+        attachment.updateRenderGeometry(slot);
+        var ixList = attachment.ixList;
+        var vxList = attachment.vxList;
+        var alpha = attachment.a * slot.a;
+        var renderTexture = attachment.bitmapData.renderTexture;
         renderState.push(_identityMatrix, alpha, slot.data.blendMode);
         renderState.renderTextureMesh(renderTexture, ixList, vxList);
         renderState.pop();

@@ -305,7 +305,6 @@ class SkeletonLoader {
         region.g = _toColor(regionColor, 1);
         region.b = _toColor(regionColor, 2);
         region.a = _toColor(regionColor, 3);
-        region.initRenderGeometry();
         region.update();
 
         return region;

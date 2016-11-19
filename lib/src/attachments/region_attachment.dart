@@ -30,9 +30,7 @@
 
 part of stagexl_spine;
 
-class RegionAttachment extends Attachment implements RenderableAttachment {
-
-  final String path;
+class RegionAttachment extends RenderAttachment {
 
   double x = 0.0;
   double y = 0.0;
@@ -43,20 +41,10 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
   double rotation = 0.0;
 
   final Matrix transformationMatrix = new Matrix.fromIdentity();
-  Float32List vertices;
 
-  @override BitmapData bitmapData;
-  @override Float32List vxList;
-  @override Int16List ixList;
-  @override int hullLength = 0;
-  @override int worldVerticesLength = 0;
+  RegionAttachment(String name, String path, BitmapData bitmapData)
+      : super(name, path, bitmapData) {
 
-  @override double r = 1.0;
-  @override double g = 1.0;
-  @override double b = 1.0;
-  @override double a = 1.0;
-
-  RegionAttachment(String name, this.path, this.bitmapData) : super(name) {
     this.initRenderGeometry();
   }
 
@@ -96,26 +84,6 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
   //---------------------------------------------------------------------------
 
   @override
-  void initRenderGeometry() {
-    var renderTextureQuad = bitmapData.renderTextureQuad;
-    this.ixList = new Int16List.fromList(renderTextureQuad.ixList);
-    this.vxList = new Float32List.fromList(renderTextureQuad.vxList);
-    this.worldVerticesLength = this.hullLength = vxList.length >> 1;
-    this.vertices = new Float32List(worldVerticesLength);
-    this.update();
-  }
-
-  @override
-  void updateRenderGeometry(Slot slot) {
-    computeWorldVertices2(slot, 0, worldVerticesLength, vxList, 0, 4);
-  }
-
-  @override
-  void computeWorldVertices(Slot slot, Float32List worldVertices) {
-    computeWorldVertices2(slot, 0, worldVerticesLength, worldVertices, 0, 2);
-  }
-
-  @override
   void computeWorldVertices2(
       Slot slot, int start, int count,
       Float32List worldVertices, int offset, int stride) {
@@ -134,5 +102,15 @@ class RegionAttachment extends Attachment implements RenderableAttachment {
       worldVertices[offset + 0] = x * ma + y * mb + mx;
       worldVertices[offset + 1] = x * mc + y * md + my;
     }
+  }
+
+  @override
+  void initRenderGeometry() {
+    var renderTextureQuad = bitmapData.renderTextureQuad;
+    this.ixList = new Int16List.fromList(renderTextureQuad.ixList);
+    this.vxList = new Float32List.fromList(renderTextureQuad.vxList);
+    this.worldVerticesLength = this.hullLength = vxList.length >> 1;
+    this.vertices = new Float32List(worldVerticesLength);
+    this.update();
   }
 }
