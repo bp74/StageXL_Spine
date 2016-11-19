@@ -283,18 +283,6 @@ class Skeleton {
     }
   }
 
-  /// Updates the vertices necessary to render the skeleton.
-
-  void updateRenderGeometry() {
-    for (var slot in this.drawOrder) {
-      var attachment = slot.attachment;
-      if (attachment is RenderAttachment) {
-        var renderAttachment = attachment as RenderAttachment;
-        renderAttachment.updateRenderGeometry(slot);
-      }
-    }
-  }
-
   /// Sets the bones, constraints, and slots to their setup pose values.
 
   void setToSetupPose() {

@@ -59,11 +59,11 @@ Future main() async {
     for (Float32List vertices in skeletonBounds.verticesList) {
       shape.graphics.beginPath();
       for (int i = 0; i < vertices.length - 1; i += 2) {
-        num x = vertices[i + 0];
-        num y = vertices[i + 1];
+        num x = 0.0 + vertices[i + 0];
+        num y = 0.0 - vertices[i + 1];
         shape.graphics.lineTo(x, y);
       }
-      shape.graphics.lineTo(vertices[0], vertices[1]);
+      shape.graphics.lineTo(vertices[0], 0.0 - vertices[1]);
       shape.graphics.strokeColor(Color.White, 1.0);
     }
   });

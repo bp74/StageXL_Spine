@@ -1,16 +1,21 @@
 part of stagexl_spine;
 
+enum SkeletonBoundsCalculation { None, BoundingBoxes, Hull }
+
 class SkeletonDisplayObject extends DisplayObject {
 
   final Skeleton skeleton;
   final Matrix _skeletonMatrix = new Matrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
   final Matrix _identityMatrix = new Matrix.fromIdentity();
+  final Matrix _transformMatrix = new Matrix.fromIdentity();
+  static final SkeletonBounds _skeletonBounds = new SkeletonBounds();
+
+  SkeletonBoundsCalculation boundsCalculation = SkeletonBoundsCalculation.None;
 
   SkeletonDisplayObject(SkeletonData skeletonData)
       : skeleton = new Skeleton(skeletonData) {
 
     skeleton.updateWorldTransform();
-    skeleton.updateRenderGeometry();
   }
 
   //---------------------------------------------------------------------------
@@ -23,19 +28,31 @@ class SkeletonDisplayObject extends DisplayObject {
     double maxX = double.NEGATIVE_INFINITY;
     double maxY = double.NEGATIVE_INFINITY;
 
-    for (var slot in skeleton.drawOrder) {
-      var attachment = slot.attachment;
-      if (attachment is RenderAttachment) {
-        var renderAttachment = attachment as RenderAttachment;
-        var vxCount = renderAttachment.hullLength >> 1;
-        var vxList = renderAttachment.vxList;
-        for(int i = 0; i < vxCount; i++) {
-          double x = vxList[i * 4 + 0];
-          double y = vxList[i * 4 + 1];
-          if (minX > x) minX = x;
-          if (minY > y) minY = y;
-          if (maxX < x) maxX = x;
-          if (maxY < y) maxY = y;
+    if (boundsCalculation == SkeletonBoundsCalculation.BoundingBoxes) {
+
+      _skeletonBounds.update(this.skeleton, true);
+      minX = _skeletonBounds.minX;
+      minY = _skeletonBounds.minY;
+      maxX = _skeletonBounds.maxX;
+      maxY = _skeletonBounds.maxY;
+
+    } else if (boundsCalculation == SkeletonBoundsCalculation.Hull) {
+
+      for (var slot in skeleton.drawOrder) {
+        var attachment = slot.attachment;
+        if (attachment is RenderAttachment) {
+          var renderAttachment = attachment as RenderAttachment;
+          renderAttachment.updateRenderGeometry(slot);
+          var vxCount = renderAttachment.hullLength >> 1;
+          var vxList = renderAttachment.vxList;
+          for (int i = 0; i < vxCount; i++) {
+            double x = vxList[i * 4 + 0];
+            double y = vxList[i * 4 + 1];
+            if (minX > x) minX = x;
+            if (minY > y) minY = y;
+            if (maxX < x) maxX = x;
+            if (maxY < y) maxY = y;
+          }
         }
       }
     }
@@ -44,6 +61,7 @@ class SkeletonDisplayObject extends DisplayObject {
     minY = minY.isFinite ? minY : 0.0;
     maxX = maxX.isFinite ? maxX : 0.0;
     maxY = maxY.isFinite ? maxY : 0.0;
+
     return new Rectangle<num>(minX, 0.0 - maxY, maxX - minX, maxY - minY);
   }
 
@@ -80,6 +98,7 @@ class SkeletonDisplayObject extends DisplayObject {
       var attachment = slot.attachment;
       if (attachment is RenderAttachment) {
         var renderAttachment = attachment as RenderAttachment;
+        renderAttachment.updateRenderGeometry(slot);
         var ixList = renderAttachment.ixList;
         var vxList = renderAttachment.vxList;
         var r = renderAttachment.r * skeletonR * slot.r;
@@ -100,21 +119,21 @@ class SkeletonDisplayObject extends DisplayObject {
 
   void _renderCanvas(RenderState renderState) {
 
-    var tmpMatrix = new Matrix.fromIdentity();
-
+    Matrix transform = _transformMatrix;
     renderState.push(_skeletonMatrix, skeleton.a, renderState.globalBlendMode);
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
       if (attachment is RegionAttachment) {
         var b = slot.bone;
-        tmpMatrix.setTo(b.a, b.c, b.b, b.d, b.worldX, b.worldY);
-        tmpMatrix.prepend(attachment.transformationMatrix);
-        renderState.push(tmpMatrix, attachment.a * slot.a, slot.data.blendMode);
+        transform.setTo(b.a, b.c, b.b, b.d, b.worldX, b.worldY);
+        transform.prepend(attachment.transformationMatrix);
+        renderState.push(transform, attachment.a * slot.a, slot.data.blendMode);
         renderState.renderTextureQuad(attachment.bitmapData.renderTextureQuad);
         renderState.pop();
       } else if (attachment is RenderAttachment) {
         var renderAttachment = attachment as RenderAttachment;
+        renderAttachment.updateRenderGeometry(slot);
         var ixList = renderAttachment.ixList;
         var vxList = renderAttachment.vxList;
         var alpha = renderAttachment.a * slot.a;
