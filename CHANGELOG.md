@@ -3,6 +3,9 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.8.2
+  * Fixed AnimationState
+
 #### Pub version 0.8.1
   * Code size and performance optimizations
 
