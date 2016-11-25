@@ -112,9 +112,7 @@ class AnimationState extends EventDispatcher {
           }
           continue;
         }
-        _updateMixingFrom(current, delta, true);
       } else {
-        _updateMixingFrom(current, delta, true);
         // Clear the track when there is no next entry, the track end time is reached, and there is no mixingFrom.
         if (current.trackLast >= current.trackEnd && current.mixingFrom == null) {
           _tracks[i] = null;
@@ -124,34 +122,30 @@ class AnimationState extends EventDispatcher {
         }
       }
 
+      _updateMixingFrom(current, delta);
       current.trackTime += currentDelta;
     }
 
     _dispatchTrackEntryEvents();
   }
 
-  void _updateMixingFrom(TrackEntry entry, double delta, bool canEnd) {
+  void _updateMixingFrom(TrackEntry entry, double delta) {
 
     TrackEntry from = entry.mixingFrom;
     if (from == null) return;
 
-    if (canEnd && entry.mixTime >= entry.mixDuration && entry.mixTime > 0) {
+    _updateMixingFrom(from, delta);
+
+    if (entry.mixTime >= entry.mixDuration && from.mixingFrom == null && entry.mixTime > 0) {
+      entry.mixingFrom = null;
       _enqueueTrackEntryEvent(new TrackEntryEndEvent(from));
-      TrackEntry newFrom = from.mixingFrom;
-      entry.mixingFrom = newFrom;
-      if (newFrom == null) return;
-      entry.mixTime = from.mixTime;
-      entry.mixDuration = from.mixDuration;
-      from = newFrom;
+      return;
     }
 
     from.animationLast = from.nextAnimationLast;
     from.trackLast = from.nextTrackLast;
-    double mixingFromDelta = delta * from.timeScale;
-    from.trackTime += mixingFromDelta;
-    entry.mixTime += mixingFromDelta;
-
-    _updateMixingFrom(from, delta, canEnd && from.alpha == 1.0);
+    from.trackTime += delta * from.timeScale;
+    entry.mixTime += delta * entry.timeScale;
   }
 
   void apply(Skeleton skeleton) {
@@ -170,6 +164,8 @@ class AnimationState extends EventDispatcher {
       double mix = current.alpha;
       if (current.mixingFrom != null) {
         mix *= _applyMixingFrom(current, skeleton);
+      } else if (current.trackTime >= current.trackEnd) {
+        mix = 0.0;
       }
 
       // Apply current entry.
@@ -434,11 +430,11 @@ class AnimationState extends EventDispatcher {
     if (current != null) {
       if (current.nextTrackLast == -1) {
         // Don't mix from an entry that was never applied.
-        _tracks[trackIndex] = null;
+        _tracks[trackIndex] = current.mixingFrom;
         _enqueueTrackEntryEvent(new TrackEntryInterruptEvent(current));
         _enqueueTrackEntryEvent(new TrackEntryEndEvent(current));
         _disposeNext(current);
-        current = null;
+        current = current.mixingFrom;
       } else {
         _disposeNext(current);
       }
