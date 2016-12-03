@@ -105,5 +105,20 @@ Future main() async {
   stage.juggler.add(skeletonAnimations[2]);
   stage.juggler.add(skeletonAnimations[3]);
   stage.juggler.add(skeletonAnimations[4]);
+/*
+  var shape = new Shape();
+  shape.addTo(stage);
+  shape.onExitFrame.listen((e) {
+    var animation = skeletonAnimations[4];
+    animation.boundsCalculation = SkeletonBoundsCalculation.Hull;
+    var r = animation.bounds;
+    shape.x = animation.x;
+    shape.y = animation.y;
+    shape.scaleX = animation.scaleX;
+    shape.scaleY = animation.scaleY;
+    shape.graphics.clear();
+    shape.graphics.rect(r.left, r.top, r.width, r.height);
+    shape.graphics.strokeColor(Color.Red, 2.0);
+  });*/
 
 }
