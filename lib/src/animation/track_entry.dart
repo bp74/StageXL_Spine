@@ -50,7 +50,7 @@ class TrackEntry extends EventDispatcher {
   double nextAnimationLast = -1.0;
   double trackTime = 0.0;
   double trackLast = -1.0;
-  double trackEnd = 0.0;
+  double trackEnd = double.MAX_FINITE;
   double nextTrackLast = -1.0;
   double mixTime = 0.0;
   double mixDuration = 0.0;

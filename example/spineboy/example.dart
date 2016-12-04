@@ -64,15 +64,19 @@ Future main() async {
 
   // change the animation on every mouse click
 
-  var animations = ["idle", "idle", "walk", "run", "walk"];
+  var animationNames = ["idle", "idle", "walk", "run", "walk"];
+  var animationState = skeletonAnimation.state;
   var animationIndex = 0;
 
   stage.onMouseClick.listen((me) {
-    animationIndex = (animationIndex + 1) % animations.length;
+    animationIndex = (animationIndex + 1) % animationNames.length;
     if (animationIndex == 1) {
-      skeletonAnimation.state.setAnimationByName(1, "shoot", false);
+      animationState.setEmptyAnimation(1, 0.0);
+      animationState.addAnimationByName(1, "shoot", false, 0.0).mixDuration = 0.2;
+      animationState.addEmptyAnimation(1, 0.2, 0.5);
     } else {
-      skeletonAnimation.state.setAnimationByName(0, animations[animationIndex], true);
+      var animationName = animationNames[animationIndex];
+      animationState.setAnimationByName(0, animationName, true);
     }
   });
 

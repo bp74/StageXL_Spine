@@ -105,7 +105,7 @@ class AnimationState extends EventDispatcher {
           next.delay = 0.0;
           next.trackTime = nextTime + delta * next.timeScale;
           current.trackTime += currentDelta;
-          _setCurrent(i, next);
+          _setCurrent(i, next, true);
           while (next.mixingFrom != null) {
             next.mixTime += currentDelta;
             next = next.mixingFrom;
@@ -270,6 +270,10 @@ class AnimationState extends EventDispatcher {
       Timeline timeline, Skeleton skeleton, double time, double alpha,
       bool setupPose, List<num> timelinesRotation, int i, bool firstFrame) {
 
+    if (firstFrame) {
+      timelinesRotation[i] = 0.0;
+    }
+
     if (alpha == 1.0) {
       timeline.apply(skeleton, 0.0, time, null, 1.0, setupPose, false);
       return;
@@ -307,11 +311,7 @@ class AnimationState extends EventDispatcher {
     double diff = r2 - r1;
 
     if (diff == 0.0) {
-      if (firstFrame) {
-        total = timelinesRotation[i] = 0.0;
-      } else {
-        total = timelinesRotation[i];
-      }
+      total = timelinesRotation[i];
     } else {
       diff = _wrapRotation(diff);
       double lastTotal = firstFrame ? 0.0 : timelinesRotation[i]; // Angle and direction of mix, including loops.
@@ -399,18 +399,20 @@ class AnimationState extends EventDispatcher {
   }
 
 
-  void _setCurrent(int index, TrackEntry current) {
+  void _setCurrent(int index, TrackEntry current, bool interrupt) {
     TrackEntry from = _expandToIndex(index);
     _tracks[index] = current;
 
     if (from != null) {
-      _enqueueTrackEntryEvent(new TrackEntryInterruptEvent(from));
+      if (interrupt) {
+        _enqueueTrackEntryEvent(new TrackEntryInterruptEvent(from));
+      }
       current.mixingFrom = from;
       current.mixTime = 0.0;
       from.timelinesRotation.clear();
 
       // If not completely mixed in, set mixAlpha so mixing out happens from current mix to zero.
-      if (from.mixingFrom != null) {
+      if (from.mixingFrom != null && from.mixDuration > 0.0) {
         current.mixAlpha *= math.min(from.mixTime / from.mixDuration, 1.0);
       }
     }
@@ -426,6 +428,7 @@ class AnimationState extends EventDispatcher {
 
   TrackEntry setAnimation(int trackIndex, Animation animation, bool loop) {
     if (animation == null) throw new ArgumentError("animation cannot be null.");
+    bool interrupt = true;
     TrackEntry current = _expandToIndex(trackIndex);
     if (current != null) {
       if (current.nextTrackLast == -1) {
@@ -435,12 +438,13 @@ class AnimationState extends EventDispatcher {
         _enqueueTrackEntryEvent(new TrackEntryEndEvent(current));
         _disposeNext(current);
         current = current.mixingFrom;
+        interrupt = false;
       } else {
         _disposeNext(current);
       }
     }
     TrackEntry entry = _trackEntry(trackIndex, animation, loop, current);
-    _setCurrent(trackIndex, entry);
+    _setCurrent(trackIndex, entry, interrupt);
     _dispatchTrackEntryEvents();
     return entry;
   }
@@ -463,7 +467,7 @@ class AnimationState extends EventDispatcher {
     TrackEntry entry = _trackEntry(trackIndex, animation, loop, last);
 
     if (last == null) {
-      _setCurrent(trackIndex, entry);
+      _setCurrent(trackIndex, entry, true);
       _dispatchTrackEntryEvents();
     } else {
       last.next = entry;
@@ -515,7 +519,6 @@ class AnimationState extends EventDispatcher {
   TrackEntry _trackEntry(int trackIndex, Animation animation, bool loop, TrackEntry last) {
     TrackEntry entry = new TrackEntry(trackIndex, animation);
     entry.loop = loop;
-    entry.trackEnd = loop ? double.MAX_FINITE : entry.animationEnd;
     entry.mixDuration = last == null ? 0.0 : data.getMix(last.animation, animation);
     return entry;
   }
