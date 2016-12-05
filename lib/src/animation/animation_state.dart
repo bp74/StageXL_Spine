@@ -587,7 +587,7 @@ class AnimationState extends EventDispatcher {
   void _dispatchTrackEntryEvents() {
     if (_eventDispatchDisabled == false) {
       _eventDispatchDisabled = true;
-      _trackEntryEvents.forEach((trackEntryEvent) {
+      _trackEntryEvents.toList().forEach((trackEntryEvent) {
         trackEntryEvent.trackEntry.dispatchEvent(trackEntryEvent);
         this.dispatchEvent(trackEntryEvent);
       });
