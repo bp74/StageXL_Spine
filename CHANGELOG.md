@@ -3,6 +3,10 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.8.5
+  * Don't fire event or complete events when mixDuration is 0
+  * Fixed AnimationState concurrent modification during iteration
+
 #### Pub version 0.8.4
   * Fixed AnimationState
 
