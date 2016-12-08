@@ -204,6 +204,8 @@ class AnimationState extends EventDispatcher {
       }
 
       _queueEvents(current, animationTime);
+      _events.clear();
+
       current.nextAnimationLast = animationTime;
       current.nextTrackLast = current.trackTime;
     }
@@ -261,6 +263,8 @@ class AnimationState extends EventDispatcher {
     }
 
     _queueEvents(from, animationTime);
+    _events.clear();
+
     from.nextAnimationLast = animationTime;
     from.nextTrackLast = from.trackTime;
     return mix;
@@ -363,8 +367,6 @@ class AnimationState extends EventDispatcher {
       if (event.time < animationStart) continue;
       _enqueueTrackEntryEvent(new TrackEntryEventEvent(entry, _events[i]));
     }
-
-    _events.length = 0;
   }
 
   void clearTracks() {
