@@ -262,7 +262,9 @@ class AnimationState extends EventDispatcher {
       }
     }
 
-    _queueEvents(from, animationTime);
+    if (entry.mixDuration > 0)  {
+      _queueEvents(from, animationTime);
+    }
     _events.clear();
 
     from.nextAnimationLast = animationTime;
