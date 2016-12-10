@@ -172,13 +172,13 @@ class SkeletonDisplayObject extends DisplayObject {
 
   //---------------------------------------------------------------------------
 
-  int _windingCount(Float32List vertices, int count, double x, double y) {
+  int _windingCount(Float32List vertices, int length, double x, double y) {
 
-    double ax = vertices[count - 2];
-    double ay = vertices[count - 1];
+    double ax = vertices[length - 2];
+    double ay = vertices[length - 1];
     int wn = 0;
 
-    for (int i = 0; i < count - 1; i += 2) {
+    for (int i = 0; i < length - 1; i += 2) {
       double bx = vertices[i + 0];
       double by = vertices[i + 1];
       if (ay <= y) {
