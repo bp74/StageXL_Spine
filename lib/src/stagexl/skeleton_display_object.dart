@@ -71,7 +71,32 @@ class SkeletonDisplayObject extends DisplayObject {
 
   @override
   DisplayObject hitTestInput(num localX, num localY) {
-    return bounds.contains(localX, localY) ? this : null;
+
+    Float32List vertices = _boundsVertices;
+    double sx = 0.0 + localX;
+    double sy = 0.0 - localY;
+
+    if (boundsCalculation == SkeletonBoundsCalculation.BoundingBoxes) {
+      for (var slot in skeleton.drawOrder) {
+        var attachment = slot.attachment;
+        if (attachment is BoundingBoxAttachment) {
+          var length = attachment.worldVerticesLength;
+          attachment.computeWorldVertices2(slot, 0, length, vertices, 0, 2);
+          if (_windingCount(vertices, length, sx, sy) != 0) return this;
+        }
+      }
+    } else if (boundsCalculation == SkeletonBoundsCalculation.Hull) {
+      for (var slot in skeleton.drawOrder) {
+        var attachment = slot.attachment;
+        if (attachment is RenderAttachment) {
+          var length = attachment.hullLength;
+          attachment.computeWorldVertices2(slot, 0, length, vertices, 0, 2);
+          if (_windingCount(vertices, length, sx, sy) != 0) return this;
+        }
+      }
+    }
+
+    return null;
   }
 
   @override
@@ -116,8 +141,6 @@ class SkeletonDisplayObject extends DisplayObject {
     renderState.pop();
   }
 
-  //---------------------------------------------------------------------------
-
   void _renderCanvas(RenderState renderState) {
 
     Matrix transform = _transformMatrix;
@@ -147,4 +170,26 @@ class SkeletonDisplayObject extends DisplayObject {
     renderState.pop();
   }
 
+  //---------------------------------------------------------------------------
+
+  int _windingCount(Float32List vertices, int count, double x, double y) {
+
+    double ax = vertices[count - 2];
+    double ay = vertices[count - 1];
+    int wn = 0;
+
+    for (int i = 0; i < count - 1; i += 2) {
+      double bx = vertices[i + 0];
+      double by = vertices[i + 1];
+      if (ay <= y) {
+        if (by > y && (bx - ax) * (y - ay) - (x - ax) * (by - ay) > 0) wn++;
+      } else {
+        if (by <= y && (bx - ax) * (y - ay) - (x - ax) * (by - ay) < 0) wn--;
+      }
+      ax = bx;
+      ay = by;
+    }
+
+    return wn;
+  }
 }
