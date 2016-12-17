@@ -64,7 +64,7 @@ class MeshAttachment extends RenderAttachment {
   }
 
   @override
-  bool applyDeform(Attachment sourceAttachment) {
+  bool applyDeform(VertexAttachment sourceAttachment) {
     if (sourceAttachment == this) return true;
     if (sourceAttachment == _parentMesh && inheritDeform) return true;
     return false;
