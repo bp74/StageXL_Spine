@@ -99,71 +99,73 @@ class Skeleton {
   /// constraints, or weighted path attachments are added or removed.
 
   void updateCache () {
-		List<Updatable> updateCache = _updateCache;
-		updateCache.clear();
 
-		List<Bone> bones = this.bones;
-		for (int i = 0; i < bones.length; i++) {
-      bones[i]._sorted = false;
+    _updateCache.clear();
+    _updateCacheReset.clear();
+
+    for (var bone in this.bones) {
+      bone._sorted = false;
     }
 
-		// IK first, lowest hierarchy depth first.
-		List<IkConstraint> ikConstraints = this.ikConstraints;
-		List<TransformConstraint> transformConstraints = this.transformConstraints;
-		List<PathConstraint> pathConstraints = this.pathConstraints;
-		int ikCount = ikConstraints.length;
+    // IK first, lowest hierarchy depth first.
+    List<IkConstraint> ikConstraints = this.ikConstraints;
+    List<TransformConstraint> transformConstraints = this.transformConstraints;
+    List<PathConstraint> pathConstraints = this.pathConstraints;
+    int ikCount = ikConstraints.length;
     int transformCount = transformConstraints.length;
     int pathCount = pathConstraints.length;
-		int constraintCount = ikCount + transformCount + pathCount;
-		
-		outer:			
-		for (int i = 0; i < constraintCount; i++) {
-			for (int ii = 0; ii < ikCount; ii++) {
-        IkConstraint  ikConstraint = ikConstraints[ii];
-				if (ikConstraint.data.order == i) {
-					_sortIkConstraint(ikConstraint);
-					continue outer;
-				}
-			}
-			for (int ii = 0; ii < transformCount; ii++) {
+    int constraintCount = ikCount + transformCount + pathCount;
+
+    outer:
+    for (int i = 0; i < constraintCount; i++) {
+      for (int ii = 0; ii < ikCount; ii++) {
+        IkConstraint ikConstraint = ikConstraints[ii];
+        if (ikConstraint.data.order == i) {
+          _sortIkConstraint(ikConstraint);
+          continue outer;
+        }
+      }
+      for (int ii = 0; ii < transformCount; ii++) {
         TransformConstraint transformConstraint = transformConstraints[ii];
-				if (transformConstraint.data.order == i) {
-					_sortTransformConstraint(transformConstraint);
-					continue outer;
-				}
-			}
-			for (int ii = 0; ii < pathCount; ii++) {
+        if (transformConstraint.data.order == i) {
+          _sortTransformConstraint(transformConstraint);
+          continue outer;
+        }
+      }
+      for (int ii = 0; ii < pathCount; ii++) {
         PathConstraint pathConstraint = pathConstraints[ii];
-				if (pathConstraint.data.order == i) {
-					_sortPathConstraint(pathConstraint);
-					continue outer;
-				}
-			}
-		}
-		
-		for (int i = 0; i < bones.length; i++) {
-      _sortBone(bones[i]);
+        if (pathConstraint.data.order == i) {
+          _sortPathConstraint(pathConstraint);
+          continue outer;
+        }
+      }
     }
-	}
+
+    for (var bone in this.bones) {
+      _sortBone(bone);
+    }
+  }
 
 	void _sortIkConstraint (IkConstraint constraint) {
-		Bone target = constraint.target;
-		_sortBone(target);
+    Bone target = constraint.target;
+    _sortBone(target);
 
-		List<Bone> constrained = constraint.bones;
-		Bone parent = constrained[0];
-		_sortBone(parent);
+    List<Bone> constrained = constraint.bones;
+    Bone parent = constrained[0];
+    _sortBone(parent);
 
-		if (constrained.length > 1) {
-			Bone child = constrained[constrained.length - 1];
-			if (!(_updateCache.indexOf(child) > -1)) _updateCacheReset.add(child);
-		}
+    if (constrained.length > 1) {
+      Bone child = constrained[constrained.length - 1];
+      if (!(_updateCache.indexOf(child) > -1)) {
+        _updateCacheReset.add(child);
+      }
+    }
 
-		_updateCache.add(constraint);
+    _updateCache.add(constraint);
 
-		_sortReset(parent.children);
-		constrained[constrained.length - 1]._sorted = true;
-	}
+    _sortReset(parent.children);
+    constrained[constrained.length - 1]._sorted = true;
+  }
 
 	void _sortPathConstraint (PathConstraint constraint) {
 

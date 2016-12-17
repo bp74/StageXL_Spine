@@ -372,12 +372,13 @@ class AnimationState extends EventDispatcher {
   }
 
   void clearTracks() {
+    var oldEventDispatchDisabled = _eventDispatchDisabled;
     _eventDispatchDisabled = true;
     for (int i = 0; i < _tracks.length; i++) {
       clearTrack(i);
     }
     _tracks.clear();
-    _eventDispatchDisabled = false;
+    _eventDispatchDisabled = oldEventDispatchDisabled;
     _dispatchTrackEntryEvents();
   }
 
@@ -505,12 +506,13 @@ class AnimationState extends EventDispatcher {
   }
 
   void setEmptyAnimations(double mixDuration) {
+    var oldEventDispatchDisabled = _eventDispatchDisabled;
     _eventDispatchDisabled = true;
     for (int i = 0; i < _tracks.length; i++) {
       TrackEntry current = _tracks[i];
       if (current != null) setEmptyAnimation(current.trackIndex, mixDuration);
     }
-    _eventDispatchDisabled = false;
+    _eventDispatchDisabled = oldEventDispatchDisabled;
     _dispatchTrackEntryEvents();
   }
 

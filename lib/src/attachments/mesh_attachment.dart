@@ -63,7 +63,8 @@ class MeshAttachment extends RenderAttachment {
     }
   }
 
-  bool applyFFD(Attachment sourceAttachment) {
+  @override
+  bool applyDeform(Attachment sourceAttachment) {
     if (sourceAttachment == this) return true;
     if (sourceAttachment == _parentMesh && inheritDeform) return true;
     return false;
