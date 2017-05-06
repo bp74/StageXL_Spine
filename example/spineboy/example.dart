@@ -59,8 +59,13 @@ Future main() async {
   skeletonAnimation.y = 520;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
   skeletonAnimation.state.setAnimationByName(0, "idle", true);
-  stage.addChild(skeletonAnimation);
+  skeletonAnimation.boundsCalculation = SkeletonBoundsCalculation.Hull;
+
+  var mouseContainer = new Sprite();
+  mouseContainer.addChild(skeletonAnimation);
+  mouseContainer.mouseCursor = MouseCursor.CROSSHAIR;
   stage.juggler.add(skeletonAnimation);
+  stage.addChild(mouseContainer);
 
   // change the animation on every mouse click
 

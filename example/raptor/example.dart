@@ -18,6 +18,8 @@ Future main() async {
   var stage = new Stage(canvas, width: 1300, height: 1100);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
+  stage.console.visible = true;
+  stage.console.alpha = 0.75;
 
   // load "raptor" skeleton resources
 

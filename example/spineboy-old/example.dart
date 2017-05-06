@@ -42,8 +42,13 @@ Future main() async {
   skeletonAnimation.y = 480;
   skeletonAnimation.state.setAnimationByName(0, "jump", true);
   skeletonAnimation.timeScale = 0.10;
-  stage.addChild(skeletonAnimation);
+  skeletonAnimation.boundsCalculation = SkeletonBoundsCalculation.BoundingBoxes;
+
+  var mouseContainer = new Sprite();
+  mouseContainer.addChild(skeletonAnimation);
+  mouseContainer.mouseCursor = MouseCursor.CROSSHAIR;
   stage.juggler.add(skeletonAnimation);
+  stage.addChild(mouseContainer);
 
   // check and draw the SkeletonBounds at every frame
 
