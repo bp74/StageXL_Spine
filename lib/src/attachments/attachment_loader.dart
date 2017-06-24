@@ -44,4 +44,9 @@ abstract class AttachmentLoader {
   /// @return May be null to not load an attachment.
   PathAttachment newPathAttachment(Skin skin, String name);
 
+  /// @return May be null to not load an attachment
+  PointAttachment newPointAttachment(Skin skin , String name);
+
+  /// @return May be null to not load an attachment
+  ClippingAttachment newClippingAttachment(Skin skin, String name);
 }

@@ -61,14 +61,19 @@ class RotateTimeline extends CurveTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     Bone bone = skeleton.bones[boneIndex];
     double rotation = 0.0;
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) bone.rotation = bone.data.rotation;
+      if (pose == MixPose.setup) {
+        bone.rotation = bone.data.rotation;
+      } else if (pose == MixPose.current) {
+        rotation = bone.data.rotation - bone.rotation;
+        bone.rotation += _wrapRotation(rotation) * alpha;
+      }
       return;
     }
 
@@ -87,7 +92,7 @@ class RotateTimeline extends CurveTimeline {
       rotation = r0 + _wrapRotation(r1 - r0) * percent;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       bone.rotation = bone.data.rotation + _wrapRotation(rotation) * alpha;
     } else {
       rotation = bone.data.rotation - bone.rotation + rotation;

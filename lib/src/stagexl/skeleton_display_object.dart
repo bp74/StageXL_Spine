@@ -115,10 +115,10 @@ class SkeletonDisplayObject extends DisplayObject {
 
     var renderContext = renderState.renderContext as RenderContextWebGL;
     var renderProgram = renderContext.renderProgramTinted;
-    var skeletonR = skeleton.r;
-    var skeletonG = skeleton.g;
-    var skeletonB = skeleton.b;
-    var skeletonA = skeleton.a;
+    var skeletonR = skeleton.color.r;
+    var skeletonG = skeleton.color.g;
+    var skeletonB = skeleton.color.b;
+    var skeletonA = skeleton.color.a;
 
     renderContext.activateRenderProgram(renderProgram);
     renderState.push(_skeletonMatrix, 1.0, renderState.globalBlendMode);
@@ -131,10 +131,10 @@ class SkeletonDisplayObject extends DisplayObject {
         renderContext.activateBlendMode(slot.data.blendMode);
         renderProgram.renderTextureMesh(renderState,
             attachment.ixList, attachment.vxList,
-            attachment.r * skeletonR * slot.r,
-            attachment.g * skeletonG * slot.g,
-            attachment.b * skeletonB * slot.b,
-            attachment.a * skeletonA * slot.a);
+            attachment.color.r * skeletonR * slot.color.r,
+            attachment.color.g * skeletonG * slot.color.g,
+            attachment.color.b * skeletonB * slot.color.b,
+            attachment.color.a * skeletonA * slot.color.a);
       }
     }
 
@@ -144,7 +144,7 @@ class SkeletonDisplayObject extends DisplayObject {
   void _renderCanvas(RenderState renderState) {
 
     Matrix transform = _transformMatrix;
-    renderState.push(_skeletonMatrix, skeleton.a, renderState.globalBlendMode);
+    renderState.push(_skeletonMatrix, skeleton.color.a, renderState.globalBlendMode);
 
     for (var slot in skeleton.drawOrder) {
       var attachment = slot.attachment;
@@ -152,14 +152,14 @@ class SkeletonDisplayObject extends DisplayObject {
         var b = slot.bone;
         transform.setTo(b.a, b.c, b.b, b.d, b.worldX, b.worldY);
         transform.prepend(attachment.transformationMatrix);
-        renderState.push(transform, attachment.a * slot.a, slot.data.blendMode);
+        renderState.push(transform, attachment.color.a * slot.color.a, slot.data.blendMode);
         renderState.renderTextureQuad(attachment.bitmapData.renderTextureQuad);
         renderState.pop();
       } else if (attachment is RenderAttachment) {
         attachment.updateRenderGeometry(slot);
         var ixList = attachment.ixList;
         var vxList = attachment.vxList;
-        var alpha = attachment.a * slot.a;
+        var alpha = attachment.color.a * slot.color.a;
         var renderTexture = attachment.bitmapData.renderTexture;
         renderState.push(_identityMatrix, alpha, slot.data.blendMode);
         renderState.renderTextureMesh(renderTexture, ixList, vxList);

@@ -55,13 +55,13 @@ class DrawOrderTimeline implements Timeline {
 
   @override
   void apply(
-      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-      double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
 
     List<Slot> drawOrder = skeleton.drawOrder;
     List<Slot> slots = skeleton.slots;
 
-    if (mixingOut && setupPose) {
+    if (direction == MixDirection.Out && pose == MixPose.setup) {
       for (int i = 0; i < slots.length; i++) {
         drawOrder[i] = slots[i];
       }
@@ -70,7 +70,7 @@ class DrawOrderTimeline implements Timeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) {
+      if (pose == MixPose.setup) {
         for (int i = 0; i < slots.length; i++) {
           drawOrder[i] = slots[i];
         }

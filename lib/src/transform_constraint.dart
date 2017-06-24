@@ -66,6 +66,14 @@ class TransformConstraint implements Constraint {
 
   @override
   void update () {
+    if (data.local) {
+      if (data.relative) _applyRelativeLocal(); else _applyAbsoluteLocal();
+    } else {
+      if (data.relative) _applyRelativeWorld(); else _applyAbsoluteWorld();
+    }
+  }
+
+  void _applyAbsoluteWorld() {
 
     double rotateMix = this.rotateMix;
     double translateMix = this.translateMix;
@@ -143,6 +151,179 @@ class TransformConstraint implements Constraint {
       }
 
       if (modified) bone.appliedValid = false;
+    }
+  }
+
+  void _applyRelativeWorld() {
+
+    var rotateMix = this.rotateMix;
+    var translateMix = this.translateMix;
+    var scaleMix = this.scaleMix;
+    var shearMix = this.shearMix;
+    var target = this.target;
+    var ta = target.a;
+    var tb = target.b;
+    var tc = target.c;
+    var td = target.d;
+    var degRad = math.PI / 180.0;
+    var degRadReflect = ta * td - tb * tc > 0 ? degRad : -degRad;
+    var offsetRotation = this.data.offsetRotation * degRadReflect;
+    var offsetShearY = this.data.offsetShearY * degRadReflect;
+    var bones = this.bones;
+
+    for (int i = 0; i < bones.length; i++) {
+
+      var bone = bones[i];
+      var modified = false;
+
+      if (rotateMix != 0) {
+        var a = bone.a;
+        var b = bone.b;
+        var c = bone.c;
+        var d = bone.d;
+        var r = math.atan2(tc, ta) + offsetRotation;
+
+        if (r > math.PI) {
+          r -= 2.0 * math.PI;
+        } else if (r < -math.PI) {
+          r += 2.0 * math.PI;
+        }
+
+        r *= rotateMix;
+        var cos = math.cos(r);
+        var sin = math.sin(r);
+        bone._a = cos * a - sin * c;
+        bone._b = cos * b - sin * d;
+        bone._c = sin * a + cos * c;
+        bone._d = sin * b + cos * d;
+        modified = true;
+      }
+
+      if (translateMix != 0) {
+        var temp = _temp;
+        temp[0] = data.offsetX;
+        temp[1] = data.offsetY;
+        target.localToWorld(temp);
+        bone._worldX += temp[0] * translateMix;
+        bone._worldY += temp[1] * translateMix;
+        modified = true;
+      }
+
+      if (scaleMix > 0) {
+        var st = math.sqrt(ta * ta + tc * tc) - 1.0;
+        var sx = (st + this.data.offsetScaleX) * scaleMix + 1.0;
+        var sy = (st + this.data.offsetScaleY) * scaleMix + 1.0;
+        bone._a *= sx;
+        bone._c *= sx;
+        bone._b *= sy;
+        bone._d *= sy;
+        modified = true;
+      }
+
+      if (shearMix > 0) {
+        var r = math.atan2(td, tb) - math.atan2(tc, ta);
+        if (r > math.PI) {
+          r -= 2.0 * math.PI;
+        } else if (r < -math.PI) {
+          r += 2.0 * math.PI;
+        }
+
+        var b = bone.b;
+        var d = bone.d;
+        var s = math.sqrt(b * b + d * d);
+        r = math.atan2(d, b) + (r - math.PI / 2.0 + offsetShearY) * shearMix;
+        bone._b = math.cos(r) * s;
+        bone._d = math.sin(r) * s;
+        modified = true;
+      }
+
+      if (modified) bone.appliedValid = false;
+    }
+  }
+
+  void _applyAbsoluteLocal() {
+
+    var rotateMix = this.rotateMix;
+    var translateMix = this.translateMix;
+    var scaleMix = this.scaleMix;
+    var shearMix = this.shearMix;
+    var target = this.target;
+    if (!target.appliedValid) target._updateAppliedTransform();
+    var bones = this.bones;
+
+    for (int i = 0; i < bones.length; i++) {
+      var bone = bones[i];
+      if (!bone.appliedValid) bone._updateAppliedTransform();
+
+      var rotation = bone.arotation;
+      if (rotateMix != 0.0) {
+        var r = target.arotation - rotation + this.data.offsetRotation;
+        rotation += _wrapRotation(r) * rotateMix;
+      }
+
+      var x = bone.ax;
+      var y = bone.ay;
+      if (translateMix != 0) {
+        x += (target.ax - x + this.data.offsetX) * translateMix;
+        y += (target.ay - y + this.data.offsetY) * translateMix;
+      }
+
+      var scaleX = bone.ascaleX;
+      var scaleY = bone.ascaleY;
+      if (scaleMix > 0.0) {
+        if (scaleX > 0.00001) scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * scaleMix) / scaleX;
+        if (scaleY > 0.00001) scaleY = (scaleY + (target.ascaleY - scaleY + this.data.offsetScaleY) * scaleMix) / scaleY;
+      }
+
+      var shearY = bone.ashearY;
+      if (shearMix > 0.0) {
+        var r = target.ashearY - shearY + this.data.offsetShearY;
+        bone.shearY += _wrapRotation(r) * shearMix;
+      }
+
+      bone.updateWorldTransformWith(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
+    }
+  }
+
+  void _applyRelativeLocal() {
+
+    var rotateMix = this.rotateMix;
+    var translateMix = this.translateMix;
+    var scaleMix = this.scaleMix;
+    var shearMix = this.shearMix;
+    var target = this.target;
+    if (!target.appliedValid) target._updateAppliedTransform();
+    var bones = this.bones;
+
+    for (var i = 0; i < bones.length; i++) {
+      var bone = bones[i];
+      if (!bone.appliedValid) bone._updateAppliedTransform();
+
+      var rotation = bone.arotation;
+      if (rotateMix != 0.0) {
+        rotation += (target.arotation + this.data.offsetRotation) * rotateMix;
+      }
+
+      var x = bone.ax;
+      var y = bone.ay;
+      if (translateMix != 0.0) {
+        x += (target.ax + this.data.offsetX) * translateMix;
+        y += (target.ay + this.data.offsetY) * translateMix;
+      }
+
+      var scaleX = bone.ascaleX;
+      var scaleY = bone.ascaleY;
+      if (scaleMix > 0.0) {
+        if (scaleX > 0.00001) scaleX *= ((target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix) + 1;
+        if (scaleY > 0.00001) scaleY *= ((target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix) + 1;
+      }
+
+      var shearY = bone.ashearY;
+      if (shearMix > 0.0) {
+        shearY += (target.ashearY + this.data.offsetShearY) * shearMix;
+      }
+
+      bone.updateWorldTransformWith(x, y, rotation, scaleX, scaleY, bone.ashearX, shearY);
     }
   }
 

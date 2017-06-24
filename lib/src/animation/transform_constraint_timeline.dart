@@ -74,7 +74,7 @@ class TransformConstraintTimeline extends CurveTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     List<TransformConstraint> tcs = skeleton.transformConstraints;
     TransformConstraint tc = tcs[transformConstraintIndex];
@@ -86,11 +86,16 @@ class TransformConstraintTimeline extends CurveTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) {
+      if (pose == MixPose.setup) {
         tc.rotateMix = data.rotateMix;
         tc.translateMix = data.translateMix;
         tc.scaleMix = data.scaleMix;
         tc.shearMix = data.shearMix;
+      } else if (pose == MixPose.current) {
+        tc.rotateMix += (data.rotateMix - tc.rotateMix) * alpha;
+        tc.translateMix += (data.translateMix - tc.translateMix) * alpha;
+        tc.scaleMix += (data.scaleMix - tc.scaleMix) * alpha;
+        tc.shearMix += (data.shearMix - tc.shearMix) * alpha;
       }
       return;
     }
@@ -122,7 +127,7 @@ class TransformConstraintTimeline extends CurveTimeline {
       she = she0 + (she1 - she0) * percent;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       tc.rotateMix = data.rotateMix + (rot - data.rotateMix) * alpha;
       tc.translateMix = data.translateMix + (tra - data.translateMix) * alpha;
       tc.scaleMix = data.scaleMix + (sca - data.scaleMix) * alpha;

@@ -44,11 +44,7 @@ class Skeleton {
 
   Skin _skin;
 
-  double r = 1.0;
-  double g = 1.0;
-  double b = 1.0;
-  double a = 1.0;
-
+  SpineColor color = new SpineColor(1.0, 1.0, 1.0, 1.0);
   double time = 0.0;
   double x = 0.0;
   double y = 0.0;
@@ -181,8 +177,8 @@ class Skeleton {
       _sortPathConstraintAttachment(data.defaultSkin, slotIndex, slotBone);
     }
 
-		for (int ii = 0; ii < data.skins.length; ii++) {
-      _sortPathConstraintAttachment(data.skins[ii], slotIndex, slotBone);
+		for (int i = 0; i < data.skins.length; i++) {
+      _sortPathConstraintAttachment(data.skins[i], slotIndex, slotBone);
     }
 
     Attachment attachment = slot.attachment;
@@ -191,8 +187,8 @@ class Skeleton {
     }
 
 		List<Bone> constrained = constraint.bones;
-		for (int ii = 0; ii < constrained.length; ii++) {
-      _sortBone(constrained[ii]);
+		for (int i = 0; i < constrained.length; i++) {
+      _sortBone(constrained[i]);
     }
 
 		_updateCache.add(constraint);
@@ -200,8 +196,8 @@ class Skeleton {
 		for (int ii = 0; ii < constrained.length; ii++) {
       _sortReset(constrained[ii].children);
     }
-		for (int ii = 0; ii < constrained.length; ii++) {
-      constrained[ii]._sorted = true;
+		for (int i = 0; i < constrained.length; i++) {
+      constrained[i]._sorted = true;
     }
 	}
 
@@ -210,18 +206,26 @@ class Skeleton {
 
 		List<Bone> constrained = constraint.bones;
 
-		for (int ii = 0; ii < constrained.length; ii++) {
-      _sortBone(constrained[ii]);
+    if (constraint.data.local) {
+      for (int i = 0; i < constrained.length; i++) {
+        Bone child  = constrained[i];
+        _sortBone(child.parent);
+        if (!(_updateCache.indexOf(child) > -1)) _updateCacheReset.add(child);
+      }
+    } else {
+      for (int i = 0; i < constrained.length; i++) {
+        _sortBone(constrained[i]);
+      }
     }
 
 		_updateCache.add(constraint);
 
-		for (int ii = 0; ii < constrained.length; ii++) {
-      _sortReset(constrained[ii].children);
+		for (int i = 0; i < constrained.length; i++) {
+      _sortReset(constrained[i].children);
     }
 
-		for (int ii = 0; ii < constrained.length; ii++) {
-      constrained[ii]._sorted = true;
+		for (int i = 0; i < constrained.length; i++) {
+      constrained[i]._sorted = true;
     }
 	}	
 
@@ -463,6 +467,49 @@ class Skeleton {
   void update(double delta) {
     time += delta;
   }
+
+  /*
+  public function getBounds(offset : Vector.<Number>, size : Vector.<Number>, temp : Vector.<Number>) : void {
+			if (offset == null) throw new ArgumentError("offset cannot be null.");
+			if (size == null) throw new ArgumentError("size cannot be null.");
+			var drawOrder : Vector.<Slot> = this.drawOrder;
+			var minX : Number = Number.POSITIVE_INFINITY;
+			var minY : Number = Number.POSITIVE_INFINITY;
+			var maxX : Number = Number.NEGATIVE_INFINITY;
+			var maxY : Number = Number.NEGATIVE_INFINITY;
+			for (var i : int = 0, n : int = drawOrder.length; i < n; i++) {
+				var slot : Slot = drawOrder[i];
+				var verticesLength : int = 0;
+				var vertices : Vector.<Number> = null;
+				var attachment : Attachment = slot.attachment;
+				if (attachment is RegionAttachment) {
+					verticesLength = 8;
+					temp.length = verticesLength;
+					vertices = temp;
+					(attachment as RegionAttachment).computeWorldVertices(slot.bone, vertices, 0, 2);
+				} else if (attachment is MeshAttachment) {
+					var mesh : MeshAttachment = attachment as MeshAttachment;
+					verticesLength = mesh.worldVerticesLength;
+					temp.length = verticesLength;
+					vertices = temp;
+					mesh.computeWorldVertices(slot, 0, verticesLength, vertices, 0, 2);
+				}
+				if (vertices != null) {
+					for (var ii : int = 0, nn : int = vertices.length; ii < nn; ii += 8) {
+						var x : Number = vertices[ii], y : Number = vertices[ii + 1];
+						minX = Math.min(minX, x);
+						minY = Math.min(minY, y);
+						maxX = Math.max(maxX, x);
+						maxY = Math.max(maxY, y);
+					}
+				}
+			}
+			offset[0] = minX;
+			offset[1] = minY;
+			size[0] = maxX - minX;
+			size[1] = maxY - minY;
+		}
+ */
 
   @override
   String toString() => this.data.name ?? super.toString();

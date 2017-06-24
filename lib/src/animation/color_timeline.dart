@@ -71,7 +71,7 @@ class ColorTimeline extends CurveTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     Slot slot = skeleton.slots[slotIndex];
     double r = 0.0;
@@ -80,12 +80,12 @@ class ColorTimeline extends CurveTimeline {
     double a = 0.0;
 
     if (time < frames[0]) {
-      // Time is before first frame.
-      if (setupPose) {
-        slot.r = slot.data.r;
-        slot.g = slot.data.g;
-        slot.b = slot.data.b;
-        slot.a = slot.data.a;
+      if (pose == MixPose.setup) {
+        slot.color.setFromColor(slot.data.color);
+      } else if (pose == MixPose.current) {
+        var color = slot.color;
+        var setup = slot.data.color;
+        color.add((setup.r - color.r) * alpha, (setup.g - color.g) * alpha, (setup.b - color.b) * alpha, (setup.a - color.a) * alpha);
       }
       return;
     }
@@ -118,20 +118,15 @@ class ColorTimeline extends CurveTimeline {
     }
 
     if (alpha == 1.0) {
-      slot.r = r;
-      slot.g = g;
-      slot.b = b;
-      slot.a = a;
-    } else if (setupPose) {
-      slot.r = slot.data.r;
-      slot.g = slot.data.g;
-      slot.b = slot.data.b;
-      slot.a = slot.data.a;
+      slot.color.setFrom(r, g, b, a);
     } else {
-      slot.r = slot.r + (r - slot.r) * alpha;
-      slot.g = slot.g + (g - slot.g) * alpha;
-      slot.b = slot.b + (b - slot.b) * alpha;
-      slot.a = slot.a + (a - slot.a) * alpha;
+      if (pose == MixPose.setup) {
+        slot.color.setFromColor(slot.data.color);
+      }
+      slot.color.r += (r - slot.color.r) * alpha;
+      slot.color.g += (g - slot.color.g) * alpha;
+      slot.color.b += (b - slot.color.b) * alpha;
+      slot.color.a += (a - slot.color.a) * alpha;
     }
   }
 }

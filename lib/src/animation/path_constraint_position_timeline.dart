@@ -62,7 +62,7 @@ class PathConstraintPositionTimeline extends CurveTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose , MixDirection direction) {
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = constraint.data;
@@ -70,7 +70,11 @@ class PathConstraintPositionTimeline extends CurveTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) constraint.position = data.position;
+      if (pose == MixPose.setup) {
+        constraint.position = data.position;
+      } else if (pose == MixPose.current) {
+        constraint.position += (constraint.data.position - constraint.position) * alpha;
+      }
       return;
     }
 
@@ -89,7 +93,7 @@ class PathConstraintPositionTimeline extends CurveTimeline {
       p = p0 + (p1 - p0) * percent;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       constraint.position = data.position + (p - data.position) * alpha;
     } else {
       constraint.position = constraint.position + (p - constraint.position) * alpha;

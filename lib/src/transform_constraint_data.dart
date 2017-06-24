@@ -38,6 +38,9 @@ class TransformConstraintData {
   BoneData target;
 
   int order = 0;
+  bool relative = false;
+  bool local = false;
+
   double translateMix = 0.0;
   double rotateMix = 0.0;
   double scaleMix = 0.0;

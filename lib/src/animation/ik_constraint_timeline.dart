@@ -64,7 +64,7 @@ class IkConstraintTimeline extends CurveTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
     IkConstraintData data = constraint.data;
@@ -73,9 +73,12 @@ class IkConstraintTimeline extends CurveTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) {
+      if (pose == MixPose.setup) {
         constraint.mix = data.mix;
         constraint.bendDirection = data.bendDirection;
+      } else if (pose == MixPose.current) {
+        constraint.mix += (constraint.data.mix - constraint.mix) * alpha;
+        constraint.bendDirection = constraint.data.bendDirection;
       }
       return;
     }
@@ -98,12 +101,12 @@ class IkConstraintTimeline extends CurveTimeline {
       b = b0;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       constraint.mix = data.mix + (m - data.mix) * alpha;
-      constraint.bendDirection = mixingOut ? data.bendDirection : b.toInt();
+      constraint.bendDirection = direction == MixDirection.Out ? data.bendDirection : b.toInt();
     } else {
       constraint.mix = constraint.mix + (m - constraint.mix) * alpha;
-      constraint.bendDirection = mixingOut ? constraint.bendDirection : b.toInt();
+      if (direction == MixDirection.In) constraint.bendDirection = b.toInt();
     }
   }
 }

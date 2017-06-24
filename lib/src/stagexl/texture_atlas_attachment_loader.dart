@@ -32,4 +32,14 @@ class TextureAtlasAttachmentLoader implements AttachmentLoader {
   PathAttachment newPathAttachment(Skin skin, String name) {
     return new PathAttachment(name);
   }
+
+  @override
+  PointAttachment newPointAttachment(Skin skin , String name) {
+    return new PointAttachment(name);
+  }
+
+  @override
+  ClippingAttachment newClippingAttachment(Skin skin, String name) {
+    return new ClippingAttachment(name);
+  }
 }

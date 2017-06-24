@@ -48,7 +48,7 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = constraint.data;
@@ -56,7 +56,11 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) constraint.spacing = data.spacing;
+      if (pose == MixPose.setup) {
+        constraint.spacing = data.spacing;
+      } else if (pose == MixPose.current) {
+        constraint.spacing += (constraint.data.spacing - constraint.spacing) * alpha;
+      }
       return;
     }
 
@@ -75,7 +79,7 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
       s = s0 + (s1 - s0) * percent;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       constraint.spacing = data.spacing + (s - data.spacing) * alpha;
     } else {
       constraint.spacing = constraint.spacing + (s - constraint.spacing) * alpha;

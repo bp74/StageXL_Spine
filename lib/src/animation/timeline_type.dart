@@ -49,4 +49,5 @@ class TimelineType {
   static final TimelineType pathConstraintPosition = new TimelineType(11);
   static final TimelineType pathConstraintSpacing = new TimelineType(12);
   static final TimelineType pathConstraintMix = new TimelineType(13);
+  static final TimelineType twoColor = new TimelineType(14);
 }

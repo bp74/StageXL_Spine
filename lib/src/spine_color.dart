@@ -30,60 +30,61 @@
 
 part of stagexl_spine;
 
-class AttachmentTimeline implements Timeline {
+class SpineColor {
 
-  final Float32List frames; // time, ...
-  final List<String> attachmentNames;
-  int slotIndex = 0;
+  //static final Color WHITE = new Color(1.0, 1.0, 1.0, 1.0);
+  //static final Color RED = new Color(1.0, 0.0, 0.0, 1.0);
+  //static final Color GREEN = new Color(0.0, 1.0, 0.0, 1.0);
+  //static final Color BLUE = new Color(0.0, 0.0, 1.0, 1.0);
+  //static final Color MAGENTA = new Color(1.0, 0.0, 1.0, 1.0);
 
-  AttachmentTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        attachmentNames = new List<String>.filled(frameCount, null);
+  double r = 0.0;
+  double g = 0.0;
+  double b = 0.0;
+  double a = 0.0;
 
-  int get frameCount => frames.length;
+  SpineColor (this.r, this.g, this.b, [this.a = 0.0]);
 
-  @override
-  int getPropertyId() {
-    return (TimelineType.attachment.ordinal << 24) + slotIndex;
+  SpineColor setFrom(double r, double g , double b , double a ) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+    this.clamp();
+    return this;
   }
 
-  /// Sets the time and value of the specified keyframe.
-  ///
-  void setFrame(int frameIndex, double time, String attachmentName) {
-    frames[frameIndex] = time.toDouble();
-    attachmentNames[frameIndex] = attachmentName;
+  SpineColor setFromColor(SpineColor c) {
+    this.r = c.r;
+    this.g = c.g;
+    this.b = c.b;
+    this.a = c.a;
+    return this;
   }
 
-  @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
-      double alpha, MixPose pose, MixDirection direction) {
+  SpineColor setFromString(String hex) {
+    hex = hex.startsWith('#') ? hex.substring(1) : hex;
+    this.r = int.parse(hex.substring(0, 2), radix: 16) / 255.0;
+    this.g = int.parse(hex.substring(2, 4), radix: 16) / 255.0;
+    this.b = int.parse(hex.substring(4, 6), radix: 16) / 255.0;
+    this.a = (hex.length != 8 ? 255 : int.parse(hex.substring(6, 8), radix: 16)) / 255.0;
+    return this;
+  }
 
-    String attachmentName;
-    Slot slot = skeleton.slots[slotIndex];
+  SpineColor add(double r, double g, double b, double a) {
+    this.r += r;
+    this.g += g;
+    this.b += b;
+    this.a += a;
+    this.clamp();
+    return this;
+  }
 
-    if (direction == MixDirection.Out && pose == MixPose.setup) {
-      attachmentName = slot.data.attachmentName;
-      slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
-      return;
-    }
-
-    if (time < frames[0]) {
-      // Time is before first frame.
-      if (pose == MixPose.setup) {
-        attachmentName = slot.data.attachmentName;
-        slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
-      }
-      return;
-    }
-
-    int frameIndex = (time >= frames.last)
-      ? frames.length - 1 // Time is after last frame.
-      : Animation.binarySearch(frames, time, 1) - 1;
-
-    attachmentName = attachmentNames[frameIndex];
-    skeleton.slots[slotIndex].attachment = (attachmentName != null)
-        ? skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName)
-        : null;
+  SpineColor clamp() {
+    if (this.r < 0.0) this.r = 0.0; else if (this.r > 1.0) this.r = 1.0;
+    if (this.g < 0.0) this.g = 0.0; else if (this.g > 1.0) this.g = 1.0;
+    if (this.b < 0.0) this.b = 0.0; else if (this.b > 1.0) this.b = 1.0;
+    if (this.a < 0.0) this.a = 0.0; else if (this.a > 1.0) this.a = 1.0;
+    return this;
   }
 }

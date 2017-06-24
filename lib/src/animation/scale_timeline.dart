@@ -50,7 +50,7 @@ class ScaleTimeline extends TranslateTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
@@ -58,9 +58,12 @@ class ScaleTimeline extends TranslateTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) {
+      if (pose == MixPose.setup) {
         bone.scaleX = bone.data.scaleX;
         bone.scaleY = bone.data.scaleY;
+      } else if (pose == MixPose.current) {
+        bone.scaleX += (bone.data.scaleX - bone.scaleX) * alpha;
+        bone.scaleY += (bone.data.scaleY - bone.scaleY) * alpha;
       }
       return;
     }
@@ -90,10 +93,10 @@ class ScaleTimeline extends TranslateTimeline {
     } else {
       x = x * bone.data.scaleX;
       y = y * bone.data.scaleY;
-      double bx = setupPose ? bone.data.scaleX : bone.scaleX;
-      double by = setupPose ? bone.data.scaleY : bone.scaleY;
-      double mx = mixingOut ? x.abs() * bx.sign : bx.abs() * x.sign;
-      double my = mixingOut ? y.abs() * by.sign : by.abs() * y.sign;
+      double bx = pose == MixPose.setup ? bone.data.scaleX : bone.scaleX;
+      double by = pose == MixPose.setup ? bone.data.scaleY : bone.scaleY;
+      double mx = direction == MixDirection.Out ? x.abs() * bx.sign : bx.abs() * x.sign;
+      double my = direction == MixDirection.Out ? y.abs() * by.sign : by.abs() * y.sign;
       bone.scaleX = bx + (mx - bx) * alpha;
       bone.scaleY = by + (my - by) * alpha;
     }

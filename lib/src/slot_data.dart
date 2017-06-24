@@ -36,10 +36,8 @@ class SlotData {
   final String name;
   final BoneData boneData;
 
-  double r = 1.0;
-  double g = 1.0;
-  double b = 1.0;
-  double a = 1.0;
+  SpineColor color = new SpineColor(1.0, 1.0, 1.0, 1.0);
+  SpineColor darkColor;
 
   String attachmentName;
   BlendMode blendMode = BlendMode.NORMAL;

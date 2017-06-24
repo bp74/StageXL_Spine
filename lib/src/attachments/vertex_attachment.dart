@@ -32,6 +32,9 @@ part of stagexl_spine;
 
 class VertexAttachment extends Attachment {
 
+  static int _nextID = 0;
+  final int id = (_nextID++ & 65535) << 11;
+
   Int16List bones;
   Float32List vertices;
   int worldVerticesLength = 0;

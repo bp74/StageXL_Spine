@@ -109,11 +109,7 @@ class SkeletonLoader {
 
       var slotIndex = skeletonData.slots.length;
       SlotData slotData = new SlotData(slotIndex, slotName, boneData);
-      String slotDataColor = _getString(slotMap, "color", "FFFFFFFF");
-      slotData.r = _toColor(slotDataColor, 0);
-      slotData.g = _toColor(slotDataColor, 1);
-      slotData.b = _toColor(slotDataColor, 2);
-      slotData.a = _toColor(slotDataColor, 3);
+      slotData.color.setFromString(_getString(slotMap, "color", "FFFFFFFF"));
       slotData.attachmentName = _getString(slotMap, "attachment", null);
 
       switch(_getString(slotMap, "blend", "normal")) {
@@ -169,6 +165,8 @@ class SkeletonLoader {
       if (target == null) throw new StateError("Target bone not found: $targetName");
 
       constraintData.target = target;
+      constraintData.local = _getBool(constraintMap, "local", false);
+      constraintData.relative = _getBool(constraintMap, "relative", false);
       constraintData.order = _getInt(constraintMap, "order", 0);
       constraintData.offsetRotation = _getDouble(constraintMap, "rotation", 0.0);
       constraintData.offsetX = _getDouble(constraintMap, "x", 0.0);
@@ -230,7 +228,7 @@ class SkeletonLoader {
         var slotIndex = skeletonData.findSlotIndex(slotName);
         var slotEntry = skinMap[slotName];
         for (String attachmentName in slotEntry.keys) {
-          var attachment = readAttachment(slotEntry[attachmentName], skin, slotIndex, attachmentName);
+          var attachment = readAttachment(slotEntry[attachmentName], skin, slotIndex, attachmentName, skeletonData);
           if (attachment != null) skin.addAttachment(slotIndex, attachmentName, attachment);
         }
       }
@@ -277,7 +275,7 @@ class SkeletonLoader {
 
   //---------------------------------------------------------------------------
 
-  Attachment readAttachment(Map map, Skin skin, int slotIndex, String name) {
+  Attachment readAttachment(Map map, Skin skin, int slotIndex, String name, SkeletonData skeletonData) {
 
     name = _getString(map, "name", name);
 
@@ -292,8 +290,6 @@ class SkeletonLoader {
         var region = attachmentLoader.newRegionAttachment(skin, name, path);
         if (region == null) return null;
 
-        var regionColor = _getString(map, "color", "FFFFFFFF");
-
         region.x = _getDouble(map, "x", 0.0);
         region.y = _getDouble(map, "y", 0.0);
         region.scaleX = _getDouble(map, "scaleX", 1.0);
@@ -301,10 +297,7 @@ class SkeletonLoader {
         region.rotation = _getDouble(map, "rotation", 0.0);
         region.width = _getDouble(map, "width", 0.0);
         region.height = _getDouble(map, "height", 0.0);
-        region.r = _toColor(regionColor, 0);
-        region.g = _toColor(regionColor, 1);
-        region.b = _toColor(regionColor, 2);
-        region.a = _toColor(regionColor, 3);
+        region.color.setFromString(_getString(map, "color", "FFFFFFFF"));
         region.update();
 
         return region;
@@ -319,11 +312,7 @@ class SkeletonLoader {
         var mesh = attachmentLoader.newMeshAttachment(skin, name, path);
         if (mesh == null) return null;
 
-        var meshColor = _getString(map, "color", "FFFFFFFF");
-        mesh.r = _toColor(meshColor, 0);
-        mesh.g = _toColor(meshColor, 1);
-        mesh.b = _toColor(meshColor, 2);
-        mesh.a = _toColor(meshColor, 3);
+        mesh.color.setFromString(_getString(map, "color", "FFFFFFFF"));
         mesh.width = _getDouble(map, "width", 0.0);
         mesh.height = _getDouble(map, "height", 0.0);
 
@@ -370,6 +359,35 @@ class SkeletonLoader {
         _readVertices(map, path, vertexCount << 1);
 
         return path;
+
+      case AttachmentType.point:
+
+        var point = attachmentLoader.newPointAttachment(skin, name);
+        if (point == null) return null;
+
+        point.x = _getDouble(map, "x", 0.0);
+        point.y = _getDouble(map, "y", 0.0);
+        point.rotation = _getDouble(map, "rotation", 0.0);
+        point.color.setFromString(_getString(map, "color", "FFFFFFFF"));
+        return point;
+
+      case AttachmentType.clipping:
+
+        var clip  = attachmentLoader.newClippingAttachment(skin, name);
+        if (clip == null) return null;
+
+        var end = _getString(map, "end", null);
+        var vertexCount = _getInt(map, "vertexCount", 0);
+
+        if (end != null) {
+          var slot = skeletonData.findSlot(end);
+          if (slot == null) throw new StateError("Clipping end slot not found: " + end);
+          clip.endSlot = slot;
+        }
+
+        clip.color.setFromString(_getString(map, "color", "FFFFFFFF"));
+        _readVertices(map, clip, vertexCount << 1);
+        return clip;
     }
 
     return null;
@@ -425,7 +443,23 @@ class SkeletonLoader {
 
         List values = slotMap[timelineName];
 
-        if (timelineName == "color") {
+        if (timelineName == "attachment") {
+
+          AttachmentTimeline attachmentTimeline  = new AttachmentTimeline(values.length);
+          attachmentTimeline.slotIndex = slotIndex;
+
+          int frameIndex = 0;
+          for (Map valueMap in values) {
+            var time = _getDouble(valueMap, "time", 0.0);
+            var name = _getString(valueMap, "name", null);
+            attachmentTimeline.setFrame(frameIndex, time, name);
+            frameIndex++;
+          }
+
+          timelines.add(attachmentTimeline);
+          duration = math.max(duration, attachmentTimeline.frames[attachmentTimeline.frameCount - 1]);
+
+        } else if (timelineName == "color") {
 
           ColorTimeline colorTimeline = new ColorTimeline(values.length);
           colorTimeline.slotIndex = slotIndex;
@@ -433,12 +467,9 @@ class SkeletonLoader {
           int frameIndex = 0;
           for (Map valueMap in values) {
             double time = _getDouble(valueMap, "time", 0.0);
-            String color = _getString(valueMap, "color", "FFFFFFFF");
-            double r = _toColor(color, 0);
-            double g = _toColor(color, 1);
-            double b = _toColor(color, 2);
-            double a = _toColor(color, 3);
-            colorTimeline.setFrame(frameIndex, time, r, g, b, a);
+            SpineColor color = new SpineColor(1.0, 1.0, 1.0, 1.0);
+            color.setFromString(_getString(valueMap, "color", "FFFFFFFF"));
+            colorTimeline.setFrame(frameIndex, time, color.r, color.g, color.b, color.a);
             _readCurve(valueMap, colorTimeline, frameIndex);
             frameIndex++;
           }
@@ -446,20 +477,24 @@ class SkeletonLoader {
           timelines.add(colorTimeline);
           duration = math.max(duration, colorTimeline.frames[(colorTimeline.frameCount - 1) * ColorTimeline._ENTRIES]);
 
-        } else if (timelineName == "attachment") {
+        } else if (timelineName == "twoColor") {
 
-          AttachmentTimeline attachmentTimeline = new AttachmentTimeline(values.length);
-          attachmentTimeline.slotIndex = slotIndex;
+          var twoColorTimeline = new TwoColorTimeline(values.length);
+          twoColorTimeline.slotIndex = slotIndex;
 
           int frameIndex = 0;
           for (Map valueMap in values) {
-            double time = _getDouble(valueMap, "time", 0.0);
-            String name = _getString(valueMap, "name", null);
-            attachmentTimeline.setFrame(frameIndex++, time, name);
+            var cl = new SpineColor(1.0, 1.0, 1.0, 1.0);
+            var cd = new SpineColor(1.0, 1.0, 1.0, 1.0);
+            cl.setFromString(_getString(valueMap, "light", "FFFFFFFF"));
+            cd.setFromString(_getString(valueMap, "dark", "FFFFFFFF"));
+            twoColorTimeline.setFrame(frameIndex, valueMap["time"], cl.r, cl.g, cl.b, cl.a, cd.r, cd.g, cd.b);
+            _readCurve(valueMap, twoColorTimeline, frameIndex);
+            frameIndex++;
           }
 
-          timelines.add(attachmentTimeline);
-          duration = math.max(duration, attachmentTimeline.frames[attachmentTimeline.frameCount - 1]);
+          timelines.add(twoColorTimeline);
+          duration = math.max(duration, twoColorTimeline.frames[(twoColorTimeline.frameCount - 1) * TwoColorTimeline._ENTRIES]);
 
         } else {
 
@@ -769,7 +804,7 @@ class SkeletonLoader {
         var eventData = skeletonData.findEvent(eventMap["name"]);
         if (eventData == null) throw new StateError("Event not found: ${eventMap["name"]}");
         var eventTime = _getDouble(eventMap, "time", 0.0);
-        var event = new Event(eventTime, eventData);
+        var event = new SpineEvent(eventTime, eventData);
         event.intValue = _getInt(eventMap, "int", eventData.intValue);
         event.floatValue = _getDouble(eventMap, "float", eventData.floatValue);
         event.stringValue = _getString(eventMap, "string", eventData.stringValue);
@@ -799,14 +834,6 @@ class SkeletonLoader {
       double cy2 = curve[3].toDouble();
       timeline.setCurve(frameIndex, cx1, cy1, cx2, cy2);
     }
-  }
-
-  double _toColor(String hexString, int colorIndex) {
-    if (hexString.length != 8) {
-      throw new ArgumentError("Color hexidecimal length must be 8, recieved: $hexString");
-    }
-    var substring = hexString.substring(colorIndex * 2, colorIndex * 2 + 2);
-    return int.parse(substring, radix: 16) / 255;
   }
 
   Float32List _getFloat32List(Map map, String name) {

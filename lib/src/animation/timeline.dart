@@ -34,8 +34,8 @@ abstract class Timeline {
 
   /// Sets the value(s) for the specified time.
   void apply(
-      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-      double alpha, bool setupPose, bool mixingOut);
+      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction);
 
   int getPropertyId();
 }

@@ -45,7 +45,7 @@ class Animation {
   ///
   void apply(
       Skeleton skeleton, double lastTime, double time, bool loop,
-      List<Event> events, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> events, double alpha, MixPose pose, MixDirection direction) {
 
     if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
 
@@ -55,7 +55,7 @@ class Animation {
     }
 
     for (int i = 0; i < timelines.length; i++) {
-      timelines[i].apply(skeleton, lastTime, time, events, alpha, setupPose, mixingOut);
+      timelines[i].apply(skeleton, lastTime, time, events, alpha, pose, direction);
     }
   }
 

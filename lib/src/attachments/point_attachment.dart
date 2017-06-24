@@ -30,60 +30,26 @@
 
 part of stagexl_spine;
 
-class AttachmentTimeline implements Timeline {
+class PointAttachment extends VertexAttachment {
 
-  final Float32List frames; // time, ...
-  final List<String> attachmentNames;
-  int slotIndex = 0;
+  double x = 0.0;
+  double y = 0.0;
+  double rotation = 0.0;
+  SpineColor color = new SpineColor(0.38, 0.94, 0.0, 1.0);
 
-  AttachmentTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        attachmentNames = new List<String>.filled(frameCount, null);
+  PointAttachment(String name) : super(name);
 
-  int get frameCount => frames.length;
-
-  @override
-  int getPropertyId() {
-    return (TimelineType.attachment.ordinal << 24) + slotIndex;
+  Point<double> computeWorldPosition(Bone bone) {
+    var x = this.x * bone.a + this.y * bone.b + bone.worldX;
+    var y = this.x * bone.c + this.y * bone.d + bone.worldY;
+    return new Point<double>(x, y);
   }
 
-  /// Sets the time and value of the specified keyframe.
-  ///
-  void setFrame(int frameIndex, double time, String attachmentName) {
-    frames[frameIndex] = time.toDouble();
-    attachmentNames[frameIndex] = attachmentName;
-  }
-
-  @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
-      double alpha, MixPose pose, MixDirection direction) {
-
-    String attachmentName;
-    Slot slot = skeleton.slots[slotIndex];
-
-    if (direction == MixDirection.Out && pose == MixPose.setup) {
-      attachmentName = slot.data.attachmentName;
-      slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
-      return;
-    }
-
-    if (time < frames[0]) {
-      // Time is before first frame.
-      if (pose == MixPose.setup) {
-        attachmentName = slot.data.attachmentName;
-        slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
-      }
-      return;
-    }
-
-    int frameIndex = (time >= frames.last)
-      ? frames.length - 1 // Time is after last frame.
-      : Animation.binarySearch(frames, time, 1) - 1;
-
-    attachmentName = attachmentNames[frameIndex];
-    skeleton.slots[slotIndex].attachment = (attachmentName != null)
-        ? skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName)
-        : null;
+  double computeWorldRotation(Bone bone) {
+    double cos = _cosDeg(this.rotation);
+    double sin = _sinDeg(this.rotation);
+    double x = cos * bone.a + sin * bone.b;
+    double y = cos * bone.c + sin * bone.d;
+    return _toDeg(math.atan2(y, x));
   }
 }

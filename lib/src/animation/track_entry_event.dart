@@ -59,6 +59,6 @@ class TrackEntryCompleteEvent extends TrackEntryEvent {
 }
 
 class TrackEntryEventEvent extends TrackEntryEvent {
-  final Event event;
+  final SpineEvent event;
   TrackEntryEventEvent(TrackEntry trackEntry, this.event) : super("event", trackEntry);
 }

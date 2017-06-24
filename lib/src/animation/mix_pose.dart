@@ -30,19 +30,4 @@
 
 part of stagexl_spine;
 
-class Event {
-
-  final double time;
-  final EventData data;
-
-  int intValue;
-  double floatValue;
-  String stringValue;
-
-  Event(this.time, this.data) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
-  }
-
-  @override
-  String toString() => data.name;
-}
+enum MixPose { setup, current, currentLayered }

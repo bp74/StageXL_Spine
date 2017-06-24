@@ -35,10 +35,8 @@ class Slot {
   final SlotData data;
   final Bone bone;
 
-  double r = 1.0;
-  double g = 1.0;
-  double b = 1.0;
-  double a = 1.0;
+  SpineColor color;
+  SpineColor darkColor;
 
   Attachment _attachment;
   double _attachmentTime = 0.0;
@@ -47,6 +45,8 @@ class Slot {
   Slot(this.data, this.bone) {
     if (data == null) throw new ArgumentError("data cannot be null.");
     if (bone == null) throw new ArgumentError("bone cannot be null.");
+    color = new SpineColor(1.0, 1.0, 1.0, 1.0);
+    darkColor = data.darkColor == null ? null : new SpineColor(1.0, 1.0, 1.0, 1.0);
     setToSetupPose();
   }
 
@@ -69,10 +69,8 @@ class Slot {
   }
 
   void setToSetupPose() {
-    r = data.r;
-    g = data.g;
-    b = data.b;
-    a = data.a;
+    color.setFromColor(data.color);
+    if (darkColor != null) darkColor.setFromColor(this.data.darkColor);
     if (data.attachmentName == null) {
       attachment = null;
     } else {

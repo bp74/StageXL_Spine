@@ -50,7 +50,7 @@ class ShearTimeline extends TranslateTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
@@ -58,9 +58,12 @@ class ShearTimeline extends TranslateTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) {
+      if (pose == MixPose.setup) {
         bone.shearX = bone.data.shearX;
         bone.shearY = bone.data.shearY;
+      } else if (pose == MixPose.current) {
+        bone.shearX += (bone.data.shearX - bone.shearX) * alpha;
+        bone.shearY += (bone.data.shearY - bone.shearY) * alpha;
       }
       return;
     }
@@ -84,7 +87,7 @@ class ShearTimeline extends TranslateTimeline {
       y = y0 + (y1 - y0) * percent;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       bone.shearX = bone.data.shearX + x * alpha;
       bone.shearY = bone.data.shearY + y * alpha;
     } else {

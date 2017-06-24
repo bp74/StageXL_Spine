@@ -45,7 +45,7 @@ class DeformTimeline extends CurveTimeline {
 
   @override
   int getPropertyId() {
-    return (TimelineType.deform.ordinal << 24) + slotIndex;
+    return (TimelineType.deform.ordinal << 27) + attachment.id + slotIndex;
   }
 
   /// Sets the time and value of the specified keyframe.
@@ -57,28 +57,36 @@ class DeformTimeline extends CurveTimeline {
 
   @override
   void apply(
-      Skeleton skeleton, double lastTime, double time, List<Event> firedEvents,
-      double alpha, bool setupPose, bool mixingOut) {
+      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
 
     Slot slot = skeleton.slots[slotIndex];
     if (slot.attachment is! VertexAttachment) return;
+
     VertexAttachment vertexAttachment = slot.attachment;
     if (vertexAttachment.applyDeform(attachment) == false) return;
-
-    if (time < frames[0]) {
-      // Time is before first frame.
-      if (setupPose) slot.attachmentVertices = new Float32List(0);
-      return;
-    }
 
     int vertexCount = frameVertices[0].length;
     Float32List targetVertices = slot.attachmentVertices;
     Float32List vertexAttachmentVertices = vertexAttachment.vertices;
 
     if (targetVertices.length != vertexCount) {
-      alpha = 1.0; // Don't mix from uninitialized slot vertices.
+      if (pose != MixPose.setup) alpha = 1.0;
       targetVertices = new Float32List(vertexCount);
       slot.attachmentVertices = targetVertices;
+    }
+
+    if (time < frames[0]) {
+      if (pose == MixPose.setup) {
+        targetVertices = new Float32List(0);
+        slot.attachmentVertices = targetVertices;
+      } else if (pose == MixPose.current) {
+        alpha = 1.0 - alpha;
+        for (int i = 0; i < vertexCount; i++) {
+          targetVertices[i] *= alpha;
+        }
+      }
+      return;
     }
 
     if (time >= frames[frames.length - 1]) {
@@ -89,7 +97,7 @@ class DeformTimeline extends CurveTimeline {
         for (int i = 0; i < vertexCount; i++) {
           targetVertices[i] = lastVertices[i];
         }
-      } else if (setupPose == false) {
+      } else if (pose != MixPose.setup) {
         // Vertex positions or deform offsets, with alpha.
         for (int i = 0; i < vertexCount; i++) {
           double v0 = targetVertices[i];
@@ -127,7 +135,7 @@ class DeformTimeline extends CurveTimeline {
         double v0 = v0List[i];
         targetVertices[i] = v0 + (v1List[i] - v0) * percent;
       }
-    } else if (setupPose == false) {
+    } else if (pose != MixPose.setup) {
       // Vertex positions or deform offsets, with alpha.
       for (int i = 0; i < vertexCount; i++) {
         double v0 = v0List[i];

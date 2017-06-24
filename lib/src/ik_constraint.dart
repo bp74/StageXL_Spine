@@ -204,44 +204,35 @@ class IkConstraint implements Constraint {
         }
       }
 
-      double minAngle = 0.0;
-      double minDist = double.MAX_FINITE;
-      double minX = 0.0;
+      double minAngle = math.PI;
+      double minX = l1 - a;
+      double minDist = minX * minX;
       double minY = 0.0;
       double maxAngle = 0.0;
-      double maxDist = 0.0;
-      double maxX = 0.0;
+      double maxX = l1 + a;
+      double maxDist = maxX * maxX;
       double maxY = 0.0;
-      x = l1 + a;
-      d = x * x;
-      if (d > maxDist) {
-        maxAngle = 0.0;
-        maxDist = d;
-        maxX = x;
+
+      c = -a * l1 / (aa - bb);
+      if (c >= -1.0 && c <= 1.0) {
+        c = math.acos(c);
+        x = a * math.cos(c) + l1;
+        y = b * math.sin(c);
+        d = x * x + y * y;
+        if (d < minDist) {
+          minAngle = c;
+          minDist = d;
+          minX = x;
+          minY = y;
+        }
+        if (d > maxDist) {
+          maxAngle = c;
+          maxDist = d;
+          maxX = x;
+          maxY = y;
+        }
       }
-      x = l1 - a;
-      d = x * x;
-      if (d < minDist) {
-        minAngle = math.PI;
-        minDist = d;
-        minX = x;
-      }
-      double angle = math.acos(-a * l1 / (aa - bb));
-      x = a * math.cos(angle) + l1;
-      y = b * math.sin(angle);
-      d = x * x + y * y;
-      if (d < minDist) {
-        minAngle = angle;
-        minDist = d;
-        minX = x;
-        minY = y;
-      }
-      if (d > maxDist) {
-        maxAngle = angle;
-        maxDist = d;
-        maxX = x;
-        maxY = y;
-      }
+
       if (dd <= (minDist + maxDist) / 2) {
         a1 = ta - math.atan2(minY * bendDir, minX);
         a2 = minAngle * bendDir;

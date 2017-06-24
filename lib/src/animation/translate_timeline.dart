@@ -64,7 +64,7 @@ class TranslateTimeline extends CurveTimeline {
   @override
   void apply(
       Skeleton skeleton, double lastTime, double time,
-      List<Event> firedEvents, double alpha, bool setupPose, bool mixingOut) {
+      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
 
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
@@ -72,9 +72,12 @@ class TranslateTimeline extends CurveTimeline {
 
     if (time < frames[0]) {
       // Time is before first frame.
-      if (setupPose) {
+      if (pose == MixPose.setup) {
         bone.x = bone.data.x;
         bone.y = bone.data.y;
+      } else if (pose == MixPose.current) {
+        bone.x += (bone.data.x - bone.x) * alpha;
+        bone.y += (bone.data.y - bone.y) * alpha;
       }
       return;
     }
@@ -98,7 +101,7 @@ class TranslateTimeline extends CurveTimeline {
       y = y0 + (y1 - y0) * percent;
     }
 
-    if (setupPose) {
+    if (pose == MixPose.setup) {
       bone.x = bone.data.x + x * alpha;
       bone.y = bone.data.y + y * alpha;
     } else {

@@ -34,7 +34,8 @@ class TrackEntry extends EventDispatcher {
 
   final int trackIndex;
   final Animation animation;
-  final List<bool> timelinesFirst = new List<bool>();
+  final List<int> timelineData = new List<int>();
+  final List<TrackEntry> timelineDipMix = new List<TrackEntry>();
   final List<num> timelinesRotation = new List<num>();
 
   TrackEntry next;
@@ -54,7 +55,8 @@ class TrackEntry extends EventDispatcher {
   double nextTrackLast = -1.0;
   double mixTime = 0.0;
   double mixDuration = 0.0;
-  double mixAlpha = 1.0;
+  double interruptAlpha = 1.0;
+  double totalAlpha = 0.0;
   double timeScale = 1.0;
   double delay = 0.0;
   double alpha = 1.0;
@@ -64,16 +66,6 @@ class TrackEntry extends EventDispatcher {
   }
 
   //---------------------------------------------------------------------------
-
-  double getAnimationTime() {
-    if (loop) {
-      double duration = animationEnd - animationStart;
-      if (duration == 0.0) return animationStart;
-      return trackTime.remainder(duration) + animationStart;
-    } else {
-      return math.min(trackTime + animationStart, animationEnd);
-    }
-  }
 
   EventStream<TrackEntryStartEvent> get onTrackStart {
     return const EventStreamProvider<TrackEntryStartEvent>("start").forTarget(this);
@@ -97,6 +89,67 @@ class TrackEntry extends EventDispatcher {
 
   EventStream<TrackEntryEventEvent> get onTrackEvent {
     return const EventStreamProvider<TrackEntryEventEvent>("event").forTarget(this);
+  }
+
+  //---------------------------------------------------------------------------
+
+  double getAnimationTime() {
+    if (loop) {
+      double duration = animationEnd - animationStart;
+      if (duration == 0.0) return animationStart;
+      return trackTime.remainder(duration) + animationStart;
+    } else {
+      return math.min(trackTime + animationStart, animationEnd);
+    }
+  }
+
+
+  TrackEntry setTimelineData (TrackEntry to, List<TrackEntry> mixingToArray, Set<int> propertyIDs) {
+
+    if (to != null) mixingToArray.add(to);
+    var lastEntry = mixingFrom?.setTimelineData(this, mixingToArray, propertyIDs) ?? this;
+    if (to != null) mixingToArray.removeLast();
+
+    int timelinesCount = animation.timelines.length;
+
+    this.timelineData.length = timelinesCount;
+    this.timelineData.fillRange(0, timelinesCount, 0);
+
+    this.timelineDipMix.length = timelinesCount;
+    this.timelineDipMix.fillRange(0, timelinesCount, null);
+
+    outer:
+    for (int i = 0; i < timelinesCount; i++) {
+      int id = animation.timelines[i].getPropertyId();
+      if (propertyIDs.contains(id)) {
+        propertyIDs.add(id);
+        this.timelineData[i] = AnimationState.SUBSEQUENT;
+      } else if (to == null || to._hasTimeline(id) == false) {
+        this.timelineData[i] = AnimationState.FIRST;
+      } else {
+        for (int ii = mixingToArray.length - 1; ii >= 0; ii--) {
+          var entry  = mixingToArray[ii];
+          if (entry._hasTimeline(id) == false) {
+            if (entry.mixDuration > 0) {
+              this.timelineData[i] = AnimationState.DIP_MIX;
+              this.timelineDipMix[i] = entry;
+              continue outer;
+            }
+            break;
+          }
+        }
+        this.timelineData[i] = AnimationState.DIP;
+      }
+    }
+    return lastEntry;
+  }
+
+  bool _hasTimeline (int id) {
+    var timelines = animation.timelines;
+    for (int i = 0; i < timelines.length; i++) {
+      if (timelines[i].getPropertyId() == id) return true;
+    }
+    return false;
   }
 
   void resetRotationDirection() {

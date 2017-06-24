@@ -36,5 +36,7 @@ enum AttachmentType {
   boundingbox,
   mesh,
   linkedmesh,
-  path
+  path,
+  point,
+  clipping
 }

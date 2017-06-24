@@ -106,13 +106,13 @@ class PathConstraint implements Constraint {
       }
 
       for (int i = 0; i < spacesCount - 1;) {
-        Bone bone = bones[i];
-        double length = bone.data.length;
-        double x = length * bone.a;
-        double y = length * bone.c;
-        length = math.sqrt(x * x + y * y);
+        Bone bone  = bones[i];
+        double setupLength = bone.data.length;
+        double x = setupLength * bone.a;
+        double y = setupLength * bone.c;
+        double length  = math.sqrt(x * x + y * y);
         if (scale) lengths[i] = length;
-        spaces[++i] = lengthSpacing ? math.max(0.0, length + spacing) : spacing;
+        spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
       }
     } else {
       for (int i = 1; i < spacesCount; i++) {
