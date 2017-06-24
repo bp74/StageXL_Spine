@@ -11,11 +11,11 @@ Raptor (<http://www.stagexl.org/show/spine/raptor/example.html>)
 Tank (<http://www.stagexl.org/show/spine/tank/example.html>)  
 Stretchyman (<http://www.stagexl.org/show/spine/stretchyman/example.html>)  
 SpineBoy (<http://www.stagexl.org/show/spine/spineboy/example.html>)  
-Goblins (<http://www.stagexl.org/show/spine/goblins/example.html>)
+Goblins (<http://www.stagexl.org/show/spine/goblins/example.html>)  
 PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)  
-Hero (<http://www.stagexl.org/show/spine/hero/example.html>)
-Coin (<http://www.stagexl.org/show/spine/coin/example.html>)
-Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)    
+Hero (<http://www.stagexl.org/show/spine/hero/example.html>)  
+Coin (<http://www.stagexl.org/show/spine/coin/example.html>)  
+Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)  
 
 ## Spine Runtime
 
