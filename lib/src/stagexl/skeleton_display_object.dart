@@ -9,7 +9,8 @@ class SkeletonDisplayObject extends DisplayObject {
   final Matrix _identityMatrix = new Matrix.fromIdentity();
   final Matrix _transformMatrix = new Matrix.fromIdentity();
 
-  static final Float32List _boundsVertices = new Float32List(2048);
+  static final Float32List _vertices = new Float32List(2048);
+  static final SkeletonClipping _clipping = new SkeletonClipping();
 
   SkeletonBoundsCalculation boundsCalculation = SkeletonBoundsCalculation.None;
 
@@ -24,7 +25,7 @@ class SkeletonDisplayObject extends DisplayObject {
   @override
   Rectangle<num> get bounds {
 
-    Float32List vertices = _boundsVertices;
+    Float32List vertices = _vertices;
     int offset = 0;
 
     if (boundsCalculation == SkeletonBoundsCalculation.BoundingBoxes) {
@@ -72,7 +73,7 @@ class SkeletonDisplayObject extends DisplayObject {
   @override
   DisplayObject hitTestInput(num localX, num localY) {
 
-    Float32List vertices = _boundsVertices;
+    Float32List vertices = _vertices;
     double sx = 0.0 + localX;
     double sy = 0.0 - localY;
 
@@ -119,12 +120,18 @@ class SkeletonDisplayObject extends DisplayObject {
     var skeletonG = skeleton.color.g;
     var skeletonB = skeleton.color.b;
     var skeletonA = skeleton.color.a;
+    var slots = skeleton.drawOrder;
+    var vertices = _vertices;
+    var clipping = _clipping;
 
+    ClippingAttachment clippingAttachment;
     renderContext.activateRenderProgram(renderProgram);
     renderState.push(_skeletonMatrix, 1.0, renderState.globalBlendMode);
 
-    for (var slot in skeleton.drawOrder) {
+    for (int s = 0; s < slots.length; s++) {
+      var slot = slots[s];
       var attachment = slot.attachment;
+
       if (attachment is RenderAttachment) {
         attachment.updateRenderGeometry(slot);
         renderContext.activateRenderTexture(attachment.bitmapData.renderTexture);
@@ -135,6 +142,21 @@ class SkeletonDisplayObject extends DisplayObject {
             attachment.color.g * skeletonG * slot.color.g,
             attachment.color.b * skeletonB * slot.color.b,
             attachment.color.a * skeletonA * slot.color.a);
+      } else if (attachment is ClippingAttachment) {
+        var length = attachment.worldVerticesLength;
+        attachment.computeWorldVertices2(slot, 0, length, vertices, 0, 2);
+        clipping.vertices = vertices.buffer.asFloat32List(0, length);
+        renderContext.beginRenderMask(renderState, clipping);
+        renderContext.activateRenderProgram(renderProgram);
+        clippingAttachment = attachment;
+      }
+
+      if (clippingAttachment != null) {
+        if (s == slots.length - 1 || clippingAttachment.endSlot == slot.data) {
+          renderContext.endRenderMask(renderState, clipping);
+          renderContext.activateRenderProgram(renderProgram);
+          clippingAttachment = null;
+        }
       }
     }
 
@@ -143,11 +165,19 @@ class SkeletonDisplayObject extends DisplayObject {
 
   void _renderCanvas(RenderState renderState) {
 
-    Matrix transform = _transformMatrix;
+    var renderContext = renderState.renderContext as RenderContextCanvas;
+    var vertices = _vertices;
+    var clipping = _clipping;
+    var transform = _transformMatrix;
+    var slots = skeleton.drawOrder;
+
+    ClippingAttachment clippingAttachment;
     renderState.push(_skeletonMatrix, skeleton.color.a, renderState.globalBlendMode);
 
-    for (var slot in skeleton.drawOrder) {
+    for (int s = 0; s < slots.length; s++) {
+      var slot = slots[s];
       var attachment = slot.attachment;
+
       if (attachment is RegionAttachment) {
         var b = slot.bone;
         transform.setTo(b.a, b.c, b.b, b.d, b.worldX, b.worldY);
@@ -164,6 +194,19 @@ class SkeletonDisplayObject extends DisplayObject {
         renderState.push(_identityMatrix, alpha, slot.data.blendMode);
         renderState.renderTextureMesh(renderTexture, ixList, vxList);
         renderState.pop();
+      } else if (attachment is ClippingAttachment) {
+        var length = attachment.worldVerticesLength;
+        attachment.computeWorldVertices2(slot, 0, length, vertices, 0, 2);
+        clipping.vertices = vertices.buffer.asFloat32List(0, length);
+        renderContext.beginRenderMask(renderState, clipping);
+        clippingAttachment = attachment;
+      }
+
+      if (clippingAttachment != null) {
+        if (s == slots.length - 1 || clippingAttachment.endSlot == slot.data) {
+          renderContext.endRenderMask(renderState, clipping);
+          clippingAttachment = null;
+        }
       }
     }
 

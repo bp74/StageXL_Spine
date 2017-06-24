@@ -71,5 +71,6 @@ part 'src/attachments/render_attachment.dart';
 part 'src/attachments/vertex_attachment.dart';
 
 part 'src/stagexl/skeleton_animation.dart';
+part 'src/stagexl/skeleton_clipping.dart';
 part 'src/stagexl/skeleton_display_object.dart';
 part 'src/stagexl/texture_atlas_attachment_loader.dart';
