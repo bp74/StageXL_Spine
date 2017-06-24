@@ -112,6 +112,11 @@ class SkeletonLoader {
       slotData.color.setFromString(_getString(slotMap, "color", "FFFFFFFF"));
       slotData.attachmentName = _getString(slotMap, "attachment", null);
 
+      if (slotMap.containsKey("dark")) {
+        slotData.darkColor = new SpineColor(1.0, 1.0, 1.0, 0.0);
+        slotData.darkColor.setFromString(_getString(slotMap, "dark", "FFFFFF"));
+      }
+
       switch(_getString(slotMap, "blend", "normal")) {
         case "normal": slotData.blendMode = BlendMode.NORMAL; break;
         case "additive": slotData.blendMode = BlendMode.ADD; break;
