@@ -11,18 +11,18 @@ Raptor (<http://www.stagexl.org/show/spine/raptor/example.html>)
 Tank (<http://www.stagexl.org/show/spine/tank/example.html>)  
 Stretchyman (<http://www.stagexl.org/show/spine/stretchyman/example.html>)  
 SpineBoy (<http://www.stagexl.org/show/spine/spineboy/example.html>)  
-SpineBoy Mesh (<http://www.stagexl.org/show/spine/spineboy-mesh/example.html>)  
-Goblins (<http://www.stagexl.org/show/spine/goblins-ffd/example.html>)  
+Goblins (<http://www.stagexl.org/show/spine/goblins/example.html>)
 PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)  
-Hero (<http://www.stagexl.org/show/spine/hero/example.html>)  
+Hero (<http://www.stagexl.org/show/spine/hero/example.html>)
+Coin (<http://www.stagexl.org/show/spine/coin/example.html>)
 Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)    
 
 ## Spine Runtime
 
-Based on the spine-as3 runtime (2016-12-17)
-This runtime supports the export format and features of Spine v3.5.    
+Based on the spine-as3 runtime (2017-06-24)
+This runtime supports the export format and features of Spine v3.6.
 
-<https://github.com/EsotericSoftware/spine-runtimes/tree/master/spine-as3>  
+<https://github.com/EsotericSoftware/spine-runtimes/tree/3.6/spine-as3>
 
 ## Spine License
   
