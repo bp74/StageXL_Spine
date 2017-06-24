@@ -87,11 +87,11 @@ Future main() async {
     print("${e.trackEntry.trackIndex} event: ${e.trackEntry}, $text");
   });
 
-  // play the "portal" animation, wait for it, then play the "idle" animation
+  // start with the "portal" animation continue with the "idle" animation
 
   var portalAnimation = skeletonAnimation.state.setAnimationByName(0, "portal", false);
+  skeletonAnimation.state.addAnimationByName(0, "idle", true, portalAnimation.animation.duration);
   await portalAnimation.onTrackComplete.first;
-  skeletonAnimation.state.addAnimationByName(0, "idle", true, 0.0);
 
   // change the animation on every mouse click
 

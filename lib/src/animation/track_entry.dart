@@ -45,21 +45,24 @@ class TrackEntry extends EventDispatcher {
   double eventThreshold = 0.0;
   double attachmentThreshold = 0.0;
   double drawOrderThreshold = 0.0;
+
   double animationStart = 0.0;
   double animationEnd = 0.0;
   double animationLast = -1.0;
   double nextAnimationLast = -1.0;
+
+  double delay = 0.0;
   double trackTime = 0.0;
   double trackLast = -1.0;
-  double trackEnd = double.MAX_FINITE;
   double nextTrackLast = -1.0;
+  double trackEnd = double.MAX_FINITE;
+  double timeScale = 1.0;
+
+  double alpha = 1.0;
+  double interruptAlpha = 1.0;
   double mixTime = 0.0;
   double mixDuration = 0.0;
-  double interruptAlpha = 1.0;
   double totalAlpha = 0.0;
-  double timeScale = 1.0;
-  double delay = 0.0;
-  double alpha = 1.0;
 
   TrackEntry(this.trackIndex, this.animation) {
     this.animationEnd = this.animation.duration;
@@ -121,8 +124,7 @@ class TrackEntry extends EventDispatcher {
     outer:
     for (int i = 0; i < timelinesCount; i++) {
       int id = animation.timelines[i].getPropertyId();
-      if (propertyIDs.contains(id)) {
-        propertyIDs.add(id);
+      if (propertyIDs.add(id) == false) {
         this.timelineData[i] = AnimationState.SUBSEQUENT;
       } else if (to == null || to._hasTimeline(id) == false) {
         this.timelineData[i] = AnimationState.FIRST;

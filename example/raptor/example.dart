@@ -49,11 +49,11 @@ Future main() async {
 
   stage.onMouseClick.listen((me) {
     var state = skeletonAnimation.state;
-    var roarAnimation = state.addAnimationByName(0, "roar", false, 0.0);
-    roarAnimation.mixDuration = 0.2;
+    var roarAnimation = state.setAnimationByName(0, "roar", false);
+    roarAnimation.mixDuration = 0.25;
     roarAnimation.onTrackComplete.first.then((_) {
       var walkAnimation = state.setAnimationByName(0, "walk", true);
-      walkAnimation.mixDuration = 0.2;
+      walkAnimation.mixDuration = 1.0;
     });
   });
 

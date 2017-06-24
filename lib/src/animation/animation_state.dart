@@ -46,7 +46,7 @@ class AnimationState extends EventDispatcher {
   final List<TrackEntry> _mixingTo = new List<TrackEntry>();
 
   bool _eventDispatchDisabled = false;
-  bool animationsChanged = false;
+  bool _animationsChanged = false;
   double timeScale = 1.0;
 
   //----------------------------------------------------------------------------
@@ -170,7 +170,7 @@ class AnimationState extends EventDispatcher {
   bool apply(Skeleton skeleton) {
 
     if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
-    if (animationsChanged) _animationsChanged();
+    if (_animationsChanged) _animationsHasChanged();
 
     List<SpineEvent> events = _events;
     bool applied = false;
@@ -256,7 +256,7 @@ class AnimationState extends EventDispatcher {
     List<Timeline> timelines = from.animation.timelines;
     List<num> timelinesRotation = from.timelinesRotation;
     List<int> timelineData = from.timelineData;
-    List<TrackEntry >timelineDipMix = from.timelineDipMix;
+    List<TrackEntry> timelineDipMix = from.timelineDipMix;
 
     var firstFrame = timelinesRotation.length == 0;
     if (firstFrame) {
@@ -577,14 +577,14 @@ class AnimationState extends EventDispatcher {
     entry.next = null;
   }
 
-  void _animationsChanged() {
-    this.animationsChanged = false;
-    List<TrackEntry> mixingTo = _mixingTo;
+  void _animationsHasChanged() {
+    _animationsChanged = false;
+    _propertyIDs.clear();
     TrackEntry lastEntry;
     for (int i = 0; i < _tracks.length; i++) {
       var entry = _tracks[i];
       if (entry != null) {
-        entry.setTimelineData(lastEntry, mixingTo, _propertyIDs);
+        entry.setTimelineData(lastEntry, _mixingTo, _propertyIDs);
         lastEntry = entry;
       }
     }
@@ -592,9 +592,8 @@ class AnimationState extends EventDispatcher {
 
   void _enqueueTrackEntryEvent(TrackEntryEvent trackEntryEvent) {
     _trackEntryEvents.add(trackEntryEvent);
-    if (trackEntryEvent is TrackEntryStartEvent ||
-        trackEntryEvent is TrackEntryEndEvent) {
-      this.animationsChanged = true;
+    if (trackEntryEvent is TrackEntryStartEvent || trackEntryEvent is TrackEntryEndEvent) {
+      _animationsChanged = true;
     }
   }
 
