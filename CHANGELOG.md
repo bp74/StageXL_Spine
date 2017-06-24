@@ -3,6 +3,10 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.9.0
+  * Added new features of Spine v3.6
+  * Updated examples to Spine 3.6
+
 #### Pub version 0.8.6
   * Fixed MeshAttachment.applyDeform
   * Fixed Skeleton.updateCache
