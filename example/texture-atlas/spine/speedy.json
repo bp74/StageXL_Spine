@@ -1,15 +1,15 @@
 {
-"skeleton": { "hash": "E5R9cboxfxSjYUhqQd9WdsoQ5E0", "spine": "3.5.25", "width": 196.03, "height": 305.44, "images": "./images/" },
+"skeleton": { "hash": "++mhVwX8YdvkuwbhyKGjdWVylW8", "spine": "3.6.36", "width": 196.03, "height": 305.44, "images": "./images/" },
 "bones": [
 	{ "name": "root" },
 	{ "name": "hip", "parent": "root", "x": -0.03, "y": 51.91 },
 	{ "name": "torso", "parent": "hip", "length": 76, "rotation": 89.47, "y": 29.84 },
-	{ "name": "torso_singleton", "parent": "torso", "x": 29.02, "y": 0.48 },
-	{ "name": "belt ends", "parent": "torso_singleton", "rotation": -7.18, "x": -26.76, "y": -23.48 },
+	{ "name": "torso-singleton", "parent": "torso", "x": 29.02, "y": 0.48 },
+	{ "name": "belt ends", "parent": "torso-singleton", "rotation": -7.18, "x": -26.76, "y": -23.48 },
 	{ "name": "head", "parent": "torso", "length": 108.01, "rotation": 2.73, "x": 86.99, "y": 1.38 },
-	{ "name": "head_singleton", "parent": "head", "x": -0.04, "y": 0.17 },
-	{ "name": "hair1", "parent": "head_singleton", "rotation": -2.15, "x": 95.03, "y": -24.73 },
-	{ "name": "hair2", "parent": "head_singleton", "x": 94.45, "y": -33.64 },
+	{ "name": "head-singleton", "parent": "head", "x": -0.04, "y": 0.17 },
+	{ "name": "hair1", "parent": "head-singleton", "rotation": -2.15, "x": 95.03, "y": -24.73 },
+	{ "name": "hair2", "parent": "head-singleton", "x": 94.45, "y": -33.64 },
 	{ "name": "hood end1", "parent": "head", "rotation": -1.79, "x": 55.74, "y": 34.38 },
 	{ "name": "hood end2", "parent": "head", "rotation": -16.61, "x": 61.54, "y": 41.59 },
 	{ "name": "left foot", "parent": "hip", "length": 61.43, "rotation": -12.11, "x": 2.45, "y": -37.2 },
@@ -48,8 +48,8 @@
 	{ "name": "left hand", "bone": "left hand", "attachment": "left-hand" },
 	{ "name": "hood end2", "bone": "hood end2", "attachment": "hood-end2a" },
 	{ "name": "hood end1", "bone": "hood end1", "attachment": "hood-end1a" },
-	{ "name": "torso", "bone": "torso_singleton", "attachment": "torso" },
-	{ "name": "head", "bone": "head_singleton", "attachment": "head" },
+	{ "name": "torso", "bone": "torso-singleton", "attachment": "torso" },
+	{ "name": "head", "bone": "head-singleton", "attachment": "head" },
 	{ "name": "left foot", "bone": "left foot", "attachment": "left-foot" },
 	{ "name": "right foot", "bone": "right foot", "attachment": "right-foot" },
 	{ "name": "belt ends", "bone": "belt ends", "attachment": "belt-ends" },
@@ -116,7 +116,6 @@
 			"hood end1": {
 				"attachment": [
 					{ "time": 0, "name": "hood-end1b" },
-					{ "time": 0.1, "name": "hood-end1b" },
 					{ "time": 0.1333, "name": "hood-end1a" },
 					{ "time": 0.1667, "name": "hood-end1d" },
 					{ "time": 0.2, "name": "hood-end1e" },
@@ -125,13 +124,11 @@
 					{ "time": 0.3667, "name": "hood-end1d" },
 					{ "time": 0.4, "name": "hood-end1a" },
 					{ "time": 0.4333, "name": "hood-end1b" },
-					{ "time": 0.5333, "name": "hood-end1b" },
 					{ "time": 0.5667, "name": "hood-end1a" },
 					{ "time": 0.6, "name": "hood-end1d" },
 					{ "time": 0.6333, "name": "hood-end1e" },
 					{ "time": 0.6667, "name": "hood-end1f" },
 					{ "time": 0.7333, "name": "hood-end1e" },
-					{ "time": 0.7667, "name": "hood-end1e" },
 					{ "time": 0.8, "name": "hood-end1d" },
 					{ "time": 0.8333, "name": "hood-end1a" },
 					{ "time": 0.8667, "name": "hood-end1b" }
@@ -140,7 +137,6 @@
 			"hood end2": {
 				"attachment": [
 					{ "time": 0, "name": "hood-end2b" },
-					{ "time": 0.0333, "name": "hood-end2b" },
 					{ "time": 0.0667, "name": "hood-end2a" },
 					{ "time": 0.1, "name": "hood-end2d" },
 					{ "time": 0.1333, "name": "hood-end2e" },
@@ -149,7 +145,6 @@
 					{ "time": 0.3, "name": "hood-end2d" },
 					{ "time": 0.3333, "name": "hood-end2a" },
 					{ "time": 0.3667, "name": "hood-end2b" },
-					{ "time": 0.4667, "name": "hood-end2b" },
 					{ "time": 0.5, "name": "hood-end2a" },
 					{ "time": 0.5333, "name": "hood-end2d" },
 					{ "time": 0.5667, "name": "hood-end2e" },
@@ -475,16 +470,7 @@
 					{ "time": 0.8667, "x": -6.24, "y": -1.04 }
 				]
 			},
-			"root": {
-				"rotate": [
-					{ "time": 0, "angle": 0, "curve": "stepped" },
-					{ "time": 0.8667, "angle": 0 }
-				]
-			},
 			"hip": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				],
 				"translate": [
 					{ "time": 0, "x": 0, "y": 5 },
 					{
@@ -536,7 +522,7 @@
 					{ "time": 0.8667, "x": 1.077, "y": 1 }
 				]
 			},
-			"torso_singleton": {
+			"torso-singleton": {
 				"translate": [
 					{ "time": 0, "x": -4.19, "y": 0 },
 					{ "time": 0.2667, "x": -1.82, "y": 0 },
@@ -575,7 +561,7 @@
 					{ "time": 0.8667, "angle": 16.2 }
 				]
 			},
-			"head_singleton": {
+			"head-singleton": {
 				"scale": [
 					{ "time": 0, "x": 1, "y": 1 },
 					{ "time": 0.0667, "x": 0.91, "y": 1.13 },
@@ -860,7 +846,7 @@
 					{ "time": 0.8667, "x": 0.06, "y": 0 }
 				]
 			},
-			"torso_singleton": {
+			"torso-singleton": {
 				"translate": [
 					{ "time": 0, "x": -4.19, "y": 0 },
 					{ "time": 0.2667, "x": -1.82, "y": 0 },
@@ -990,7 +976,7 @@
 					{ "time": 0.8, "x": 0, "y": 5.72 }
 				]
 			},
-			"torso_singleton": {
+			"torso-singleton": {
 				"rotate": [
 					{ "time": 0, "angle": 0, "curve": "stepped" },
 					{ "time": 0.8, "angle": 0 }

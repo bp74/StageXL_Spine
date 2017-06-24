@@ -13,22 +13,22 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 600, height: 400);
+  var stage = new Stage(canvas, width: 480, height: 600);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  // load "powerup" skeleton resources
+  // load "goblins-ffd" skeleton resources
 
   var resourceManager = new ResourceManager();
   var libgdx = TextureAtlasFormat.LIBGDX;
-  resourceManager.addTextFile("powerup", "spine/powerup-pro.json");
-  resourceManager.addTextureAtlas("powerup", "spine/powerup-pro.atlas", libgdx);
+  resourceManager.addTextFile("goblins", "spine/goblins.json");
+  resourceManager.addTextureAtlas("goblins", "spine/goblins.atlas", libgdx);
   await resourceManager.load();
 
   // load Spine skeleton
 
-  var spineJson = resourceManager.getTextFile("powerup");
-  var textureAtlas = resourceManager.getTextureAtlas("powerup");
+  var spineJson = resourceManager.getTextFile("goblins");
+  var textureAtlas = resourceManager.getTextureAtlas("goblins");
   var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
   var skeletonLoader = new SkeletonLoader(attachmentLoader);
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);
@@ -37,10 +37,23 @@ Future main() async {
   // create the display object showing the skeleton animation
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
-  skeletonAnimation.x = 300;
-  skeletonAnimation.y = 320;
-  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
-  skeletonAnimation.state.setAnimationByName(0, "bounce", true);
+  skeletonAnimation.x = 240;
+  skeletonAnimation.y = 560;
+  skeletonAnimation.scaleX = skeletonAnimation.scaleY = 1.5;
+  skeletonAnimation.state.setAnimationByName(0, "walk", true);
+  skeletonAnimation.skeleton.skinName = "goblin";
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);
+
+  // feature: change the skin used for the skeleton
+
+  //skeletonAnimation.skeleton.skinName = "goblin";
+  //skeletonAnimation.skeleton.skinName = "goblingirl";
+
+  // feature: change the attachments assigned to slots
+
+  //skeletonAnimation.skeleton.setAttachment("left hand item", "dagger");
+  //skeletonAnimation.skeleton.setAttachment("right hand item", null);
+  //skeletonAnimation.skeleton.setAttachment("right hand item 2", null);
+
 }

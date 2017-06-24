@@ -2,11 +2,11 @@
 <data version="1.0">
     <struct type="Settings">
         <key>fileFormatVersion</key>
-        <int>3</int>
+        <int>4</int>
         <key>texturePackerVersion</key>
-        <string>4.0.0b1</string>
+        <string>4.4.0</string>
         <key>fileName</key>
-        <string>D:/GitHub/bp74/StageXL_Spine/example/raptor/atlas3/raptor.tps</string>
+        <string>C:/GitHub/bp74/StageXL_Spine/example/raptor/atlas3/raptor.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -29,8 +29,6 @@
         </array>
         <key>allowRotation</key>
         <true/>
-        <key>premultiplyAlpha</key>
-        <false/>
         <key>shapeDebug</key>
         <false/>
         <key>dpi</key>
@@ -49,6 +47,8 @@
         <uint>32768</uint>
         <key>etc1CompressionQuality</key>
         <enum type="SettingsBase::Etc1CompressionQuality">ETC1_QUALITY_LOW_PERCEPTUAL</enum>
+        <key>etc2CompressionQuality</key>
+        <enum type="SettingsBase::Etc2CompressionQuality">ETC2_QUALITY_LOW_PERCEPTUAL</enum>
         <key>dxtCompressionMode</key>
         <enum type="SettingsBase::DxtCompressionMode">DXT_PERCEPTUAL</enum>
         <key>jxrColorFormat</key>
@@ -81,6 +81,8 @@
         <uint>101</uint>
         <key>textureSubPath</key>
         <string></string>
+        <key>atfFormats</key>
+        <string></string>
         <key>textureFormat</key>
         <enum type="SettingsBase::TextureFormat">png</enum>
         <key>borderPadding</key>
@@ -99,8 +101,6 @@
             <key>height</key>
             <int>-1</int>
         </QSize>
-        <key>reduceBorderArtifacts</key>
-        <false/>
         <key>algorithmSettings</key>
         <struct type="AlgorithmSettings">
             <key>algorithm</key>
@@ -110,8 +110,6 @@
             <key>sizeConstraints</key>
             <enum type="AlgorithmSettings::SizeConstraints">AnySize</enum>
             <key>forceSquared</key>
-            <false/>
-            <key>forceWordAligned</key>
             <false/>
             <key>maxRects</key>
             <struct type="AlgorithmMaxRectsSettings">
@@ -124,6 +122,11 @@
                 <enum type="AlgorithmBasicSettings::SortBy">Best</enum>
                 <key>order</key>
                 <enum type="AlgorithmBasicSettings::Order">Ascending</enum>
+            </struct>
+            <key>polygon</key>
+            <struct type="AlgorithmPolygonSettings">
+                <key>alignToGrid</key>
+                <uint>1</uint>
             </struct>
         </struct>
         <key>andEngine</key>
@@ -156,6 +159,8 @@
         <false/>
         <key>outputFormat</key>
         <enum type="SettingsBase::OutputFormat">RGBA8888</enum>
+        <key>alphaHandling</key>
+        <enum type="SettingsBase::AlphaHandling">ClearTransparentPixels</enum>
         <key>contentProtection</key>
         <struct type="ContentProtection">
             <key>key</key>
@@ -167,7 +172,7 @@
         <false/>
         <key>prependSmartFolderName</key>
         <false/>
-        <key>cleanTransparentPixels</key>
+        <key>autodetectAnimations</key>
         <true/>
         <key>globalSpriteSettings</key>
         <struct type="SpriteSettings">
@@ -187,50 +192,568 @@
             <int>509</int>
             <key>heuristicMask</key>
             <false/>
-            <key>pivotPoint</key>
-            <enum type="SpriteSettings::PivotPoint">Center</enum>
+            <key>defaultPivotPoint</key>
+            <point_f>0.5,0.5</point_f>
+            <key>writePivotPoints</key>
+            <false/>
         </struct>
+        <key>individualSpriteSettings</key>
+        <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-arm.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>23,14,46,29</rect>
+                <key>scale9Paddings</key>
+                <rect>23,14,46,29</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-bracer.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>19,14,39,28</rect>
+                <key>scale9Paddings</key>
+                <rect>19,14,39,28</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-hand.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,17,36,34</rect>
+                <key>scale9Paddings</key>
+                <rect>18,17,36,34</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-knee.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,34,49,67</rect>
+                <key>scale9Paddings</key>
+                <rect>24,34,49,67</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-thigh.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>20,12,39,24</rect>
+                <key>scale9Paddings</key>
+                <rect>20,12,39,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/dust01.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,18,48,37</rect>
+                <key>scale9Paddings</key>
+                <rect>24,18,48,37</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/dust02.png</key>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-open-hand.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>22,22,43,44</rect>
+                <key>scale9Paddings</key>
+                <rect>22,22,43,44</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/dust03.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>16,13,31,26</rect>
+                <key>scale9Paddings</key>
+                <rect>16,13,31,26</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/eyes-open.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>23,22,47,45</rect>
+                <key>scale9Paddings</key>
+                <rect>23,22,47,45</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-arm.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,15,48,30</rect>
+                <key>scale9Paddings</key>
+                <rect>24,15,48,30</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-bracer.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>20,15,41,29</rect>
+                <key>scale9Paddings</key>
+                <rect>20,15,41,29</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-hand.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>21,19,41,38</rect>
+                <key>scale9Paddings</key>
+                <rect>21,19,41,38</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-thigh.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>29,15,57,29</rect>
+                <key>scale9Paddings</key>
+                <rect>29,15,57,29</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/gun-nohand.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>53,51,105,102</rect>
+                <key>scale9Paddings</key>
+                <rect>53,51,105,102</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/gun.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>53,52,107,103</rect>
+                <key>scale9Paddings</key>
+                <rect>53,52,107,103</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/head.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>68,75,136,149</rect>
+                <key>scale9Paddings</key>
+                <rect>68,75,136,149</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/lower-leg.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>37,49,73,98</rect>
+                <key>scale9Paddings</key>
+                <rect>37,49,73,98</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/mouth-grind.png</key>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/mouth-smile.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>23,15,47,30</rect>
+                <key>scale9Paddings</key>
+                <rect>23,15,47,30</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/neck.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,10,18,21</rect>
+                <key>scale9Paddings</key>
+                <rect>9,10,18,21</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-arm-back.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>41,43,82,86</rect>
+                <key>scale9Paddings</key>
+                <rect>41,43,82,86</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-body.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>316,143,632,285</rect>
+                <key>scale9Paddings</key>
+                <rect>316,143,632,285</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-front-arm.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>41,51,81,102</rect>
+                <key>scale9Paddings</key>
+                <rect>41,51,81,102</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-front-leg.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>96,129,191,257</rect>
+                <key>scale9Paddings</key>
+                <rect>96,129,191,257</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-hindleg-back.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>85,107,169,215</rect>
+                <key>scale9Paddings</key>
+                <rect>85,107,169,215</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-horn-back.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>88,38,176,77</rect>
+                <key>scale9Paddings</key>
+                <rect>88,38,176,77</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-horn.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>91,40,182,80</rect>
+                <key>scale9Paddings</key>
+                <rect>91,40,182,80</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-jaw-tooth.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,24,37,48</rect>
+                <key>scale9Paddings</key>
+                <rect>18,24,37,48</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-jaw.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>76,72,153,143</rect>
+                <key>scale9Paddings</key>
+                <rect>76,72,153,143</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-mouth-inside.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>18,21,36,41</rect>
+                <key>scale9Paddings</key>
+                <rect>18,21,36,41</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-noshadow.png</key>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-w-shadow.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>82,94,163,188</rect>
+                <key>scale9Paddings</key>
+                <rect>82,94,163,188</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-strap-front.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>29,47,57,95</rect>
+                <key>scale9Paddings</key>
+                <rect>29,47,57,95</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-strap-rear.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>27,37,54,74</rect>
+                <key>scale9Paddings</key>
+                <rect>27,37,54,74</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-tail-shadow.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>94,32,189,63</rect>
+                <key>scale9Paddings</key>
+                <rect>94,32,189,63</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-tongue.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>43,32,86,64</rect>
+                <key>scale9Paddings</key>
+                <rect>43,32,86,64</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/stirrup-back.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>22,17,44,35</rect>
+                <key>scale9Paddings</key>
+                <rect>22,17,44,35</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/stirrup-front.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>22,25,45,50</rect>
+                <key>scale9Paddings</key>
+                <rect>22,25,45,50</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/stirrup-strap.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,23,49,46</rect>
+                <key>scale9Paddings</key>
+                <rect>24,23,49,46</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/torso.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>27,46,54,91</rect>
+                <key>scale9Paddings</key>
+                <rect>27,46,54,91</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../../../../Program Files (x86)/Spine/examples/raptor/images/visor.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>65,42,131,84</rect>
+                <key>scale9Paddings</key>
+                <rect>65,42,131,84</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+        </map>
         <key>fileList</key>
         <array>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/back_arm.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/back_bracer.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/back_hand.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/back_knee.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/back_thigh.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/eyes_closed.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/eyes_open.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/eyes_surprised.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/front_arm.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/front_bracer.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/front_hand.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/front_open_hand.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/front_thigh.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/gun.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/gun_nohand.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/head.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/lower_leg.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/mouth_grind.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/mouth_oooo.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/mouth_smile.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/neck.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_arm_back.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_body.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_front_arm.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_front_leg.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_hindleg_back.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_horn.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_horn_back.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_jaw.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_saddle_noshadow.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_saddle_strap_front.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_saddle_strap_rear.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_saddle_w_shadow.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/raptor_tongue.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/stirrup_back.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/stirrup_front.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/stirrup_strap.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/torso.png</filename>
-            <filename>C:/Program Files (x86)/Spine/examples/raptor/images/visor.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/visor.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-arm.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-bracer.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-hand.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-knee.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/back-thigh.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/dust01.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/dust02.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/dust03.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/eyes-open.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-arm.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-bracer.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-hand.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-open-hand.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/front-thigh.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/gun.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/gun-nohand.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/head.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/lower-leg.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/mouth-grind.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/mouth-smile.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/neck.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-arm-back.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-body.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-front-arm.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-front-leg.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-hindleg-back.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-horn.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-horn-back.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-jaw.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-jaw-tooth.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-mouth-inside.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-noshadow.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-strap-front.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-strap-rear.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-saddle-w-shadow.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-tail-shadow.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/raptor-tongue.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/stirrup-back.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/stirrup-front.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/stirrup-strap.png</filename>
+            <filename>../../../../../../Program Files (x86)/Spine/examples/raptor/images/torso.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
@@ -252,5 +775,7 @@
         <string></string>
         <key>normalMapSheetFileName</key>
         <filename></filename>
+        <key>exporterProperties</key>
+        <map type="ExporterProperties"/>
     </struct>
 </data>

@@ -9,7 +9,6 @@ Future main() async {
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.Azure;
-  StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
 
@@ -24,22 +23,22 @@ Future main() async {
 
   var resourceManager = new ResourceManager();
   resourceManager.addTextureAtlas("combined", "atlas/combined.json");
-  resourceManager.addTextFile("goblins-mesh-spine", "spine/goblins-mesh.json");
-  resourceManager.addTextFile("goblins-mesh-atlas", "atlas/goblins-mesh.atlas");
-  resourceManager.addTextFile("hero-mesh-spine", "spine/hero-mesh.json");
-  resourceManager.addTextFile("hero-mesh-atlas", "atlas/hero-mesh.atlas");
+  resourceManager.addTextFile("goblins-spine", "spine/goblins.json");
+  resourceManager.addTextFile("goblins-atlas", "spine/goblins.atlas");
+  resourceManager.addTextFile("hero-spine", "spine/hero.json");
+  resourceManager.addTextFile("hero-atlas", "spine/hero.atlas");
   resourceManager.addTextFile("raptor-spine", "spine/raptor.json");
-  resourceManager.addTextFile("raptor-atlas", "atlas/raptor.atlas");
+  resourceManager.addTextFile("raptor-atlas", "spine/raptor.atlas");
   resourceManager.addTextFile("speedy-spine", "spine/speedy.json");
-  resourceManager.addTextFile("speedy-atlas", "atlas/speedy.atlas");
-  resourceManager.addTextFile("spineboy-hoverboard-spine", "spine/spineboy-hover.json");
-  resourceManager.addTextFile("spineboy-hoverboard-atlas", "atlas/spineboy-hoverboard.atlas");
+  resourceManager.addTextFile("speedy-atlas", "spine/speedy.atlas");
+  resourceManager.addTextFile("spineboy-spine", "spine/spineboy.json");
+  resourceManager.addTextFile("spineboy-atlas", "spine/spineboy.atlas");
   await resourceManager.load();
 
   //---------------------------------------------------------------------------
   // load Spine skeletons from combined texture and the individual definitions
 
-  var names = ["goblins-mesh", "hero-mesh", "raptor", "speedy", "spineboy-hoverboard"];
+  var names = ["goblins", "hero", "raptor", "speedy", "spineboy"];
   var skeletonAnimations = new List<SkeletonAnimation>();
 
   for (var name in names) {
@@ -75,7 +74,7 @@ Future main() async {
     ..x = 150..y = 320;
 
   skeletonAnimations[1] // hero-mesh
-    ..state.setAnimationByName(0, "Walk", true)
+    ..state.setAnimationByName(0, "walk", true)
     ..scaleX = 0.7 ..scaleY = 0.7
     ..x = 260..y = 390;
 
@@ -89,8 +88,8 @@ Future main() async {
     ..scaleX = 0.65 ..scaleY = 0.65
     ..x = 550 ..y = 390;
 
-  skeletonAnimations[4] // spineboy-hoverboard
-    ..state.setAnimationByName(0, "fly", true)
+  skeletonAnimations[4] // spineboy
+    ..state.setAnimationByName(0, "hoverboard", true)
     ..scaleX = 0.32 ..scaleY = 0.32
     ..x = 660 ..y = 320;
 

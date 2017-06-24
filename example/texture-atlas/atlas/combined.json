@@ -1,18 +1,18 @@
 {"frames": [
 
 {
-	"filename": "goblins-mesh.png",
-	"frame": {"x":2,"y":731,"w":509,"h":254},
+	"filename": "goblins.png",
+	"frame": {"x":816,"y":2,"w":431,"h":267},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":1,"w":509,"h":254},
-	"sourceSize": {"w":512,"h":256},
+	"spriteSourceSize": {"x":1,"y":1,"w":431,"h":267},
+	"sourceSize": {"w":433,"h":269},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "hero-mesh.png",
-	"frame": {"x":506,"y":211,"w":500,"h":267},
-	"rotated": true,
+	"filename": "hero.png",
+	"frame": {"x":1249,"y":2,"w":500,"h":267},
+	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":1,"w":500,"h":267},
 	"sourceSize": {"w":502,"h":269},
@@ -20,29 +20,29 @@
 },
 {
 	"filename": "raptor.png",
-	"frame": {"x":2,"y":211,"w":502,"h":518},
+	"frame": {"x":2,"y":546,"w":1918,"h":288},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":1,"w":502,"h":518},
-	"sourceSize": {"w":504,"h":520},
+	"spriteSourceSize": {"x":1,"y":1,"w":1918,"h":288},
+	"sourceSize": {"w":1920,"h":290},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
 	"filename": "speedy.png",
-	"frame": {"x":838,"y":2,"w":816,"h":130},
-	"rotated": true,
+	"frame": {"x":2,"y":2,"w":812,"h":131},
+	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":1,"w":816,"h":130},
-	"sourceSize": {"w":819,"h":132},
+	"spriteSourceSize": {"x":1,"y":1,"w":812,"h":131},
+	"sourceSize": {"w":814,"h":133},
 	"pivot": {"x":0.5,"y":0.5}
 },
 {
-	"filename": "spineboy-hoverboard.png",
-	"frame": {"x":2,"y":2,"w":834,"h":207},
+	"filename": "spineboy.png",
+	"frame": {"x":2,"y":271,"w":1760,"h":273},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":1,"y":1,"w":834,"h":207},
-	"sourceSize": {"w":836,"h":209},
+	"spriteSourceSize": {"x":1,"y":1,"w":1760,"h":273},
+	"sourceSize": {"w":1762,"h":275},
 	"pivot": {"x":0.5,"y":0.5}
 }],
 "meta": {
@@ -50,8 +50,8 @@
 	"version": "1.0",
 	"image": "combined.png",
 	"format": "RGBA8888",
-	"size": {"w":970,"h":987},
+	"size": {"w":1922,"h":836},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:21fbe0f83a8d3ab152758cbccdefea01:f0ed4a13ec1cef5ba853da0e9e2ddec2:3095d46931c42493d5042f9206258520$"
+	"smartupdate": "$TexturePacker:SmartUpdate:199428d0f5dee86697c2f97140285c27:c5c007e99fc803ff1c101a18f93a53bd:3095d46931c42493d5042f9206258520$"
 }
 }

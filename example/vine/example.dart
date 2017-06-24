@@ -40,7 +40,7 @@ Future main() async {
   skeletonAnimation.x = 300;
   skeletonAnimation.y = 950;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.8;
-  skeletonAnimation.state.setAnimationByName(0, "animation", true);
+  skeletonAnimation.state.setAnimationByName(0, "grow", true);
 
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);

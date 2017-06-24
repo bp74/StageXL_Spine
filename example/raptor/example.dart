@@ -10,7 +10,6 @@ Future main() async {
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
   StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
-  StageXL.bitmapDataLoadOptions.webp = true;
 
   // init Stage and RenderLoop
 
@@ -47,6 +46,16 @@ Future main() async {
   skeletonAnimation.y = 1000;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.8;
   skeletonAnimation.state.setAnimationByName(0, "walk", true);
+
+  stage.onMouseClick.listen((me) {
+    var state = skeletonAnimation.state;
+    var roarAnimation = state.addAnimationByName(0, "roar", false, 0.0);
+    roarAnimation.mixDuration = 0.2;
+    roarAnimation.onTrackComplete.first.then((_) {
+      var walkAnimation = state.setAnimationByName(0, "walk", true);
+      walkAnimation.mixDuration = 0.2;
+    });
+  });
 
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);

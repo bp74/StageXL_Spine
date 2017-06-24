@@ -47,6 +47,7 @@ Future main() async {
   // configure Spine animation mix
 
   var animationStateData = new AnimationStateData(skeletonData);
+  animationStateData.setMixByName("portal", "idle", 0.2);
   animationStateData.setMixByName("idle", "walk", 0.2);
   animationStateData.setMixByName("walk", "run", 0.2);
   animationStateData.setMixByName("run", "walk", 0.2);
@@ -58,7 +59,6 @@ Future main() async {
   skeletonAnimation.x = 240;
   skeletonAnimation.y = 520;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
-  skeletonAnimation.state.setAnimationByName(0, "idle", true);
   skeletonAnimation.boundsCalculation = SkeletonBoundsCalculation.Hull;
 
   var mouseContainer = new Sprite();
@@ -67,26 +67,7 @@ Future main() async {
   stage.juggler.add(skeletonAnimation);
   stage.addChild(mouseContainer);
 
-  // change the animation on every mouse click
-
-  var animationNames = ["idle", "idle", "walk", "run", "walk"];
-  var animationState = skeletonAnimation.state;
-  var animationIndex = 0;
-
-  stage.onMouseClick.listen((me) {
-    animationIndex = (animationIndex + 1) % animationNames.length;
-    if (animationIndex == 1) {
-      animationState.setEmptyAnimation(1, 0.0);
-      animationState.addAnimationByName(1, "shoot", false, 0.0).mixDuration = 0.2;
-      animationState.addEmptyAnimation(1, 0.2, 0.5);
-    } else {
-      var animationName = animationNames[animationIndex];
-      animationState.setAnimationByName(0, animationName, true);
-    }
-  });
-
   // register track events
-
 
   skeletonAnimation.state.onTrackStart.listen((TrackEntryStartEvent e) {
     print("${e.trackEntry.trackIndex} start: ${e.trackEntry}");
@@ -106,16 +87,27 @@ Future main() async {
     print("${e.trackEntry.trackIndex} event: ${e.trackEntry}, $text");
   });
 
-  // Test other animations defined in this Spine animation
-  // For best visual appearance please check the animation mix setup.
+  // play the "portal" animation, wait for it, then play the "idle" animation
 
-  //skeletonAnimation.state.setAnimationByName(0, "idle", false);
-  //skeletonAnimation.state.addAnimationByName(0, "death", false, 0);
-  //skeletonAnimation.state.addAnimationByName(0, "hit", false, 0);
-  //skeletonAnimation.state.addAnimationByName(0, "jump", false, 0);
-  //skeletonAnimation.state.addAnimationByName(0, "run", false, 0);
-  //skeletonAnimation.state.addAnimationByName(0, "shoot", false, 0);
-  //skeletonAnimation.state.addAnimationByName(0, "test", false, 0);
-  //skeletonAnimation.state.addAnimationByName(0, "walk", false, 0);
+  var portalAnimation = skeletonAnimation.state.setAnimationByName(0, "portal", false);
+  await portalAnimation.onTrackComplete.first;
+  skeletonAnimation.state.addAnimationByName(0, "idle", true, 0.0);
 
+  // change the animation on every mouse click
+
+  var animationNames = ["idle", "idle", "walk", "run", "walk"];
+  var animationState = skeletonAnimation.state;
+  var animationIndex = 0;
+
+  stage.onMouseClick.listen((me) {
+    animationIndex = (animationIndex + 1) % animationNames.length;
+    if (animationIndex == 1) {
+      animationState.setEmptyAnimation(1, 0.0);
+      animationState.addAnimationByName(1, "shoot", false, 0.0).mixDuration = 0.2;
+      animationState.addEmptyAnimation(1, 0.2, 0.5);
+    } else {
+      var animationName = animationNames[animationIndex];
+      animationState.setAnimationByName(0, animationName, true);
+    }
+  });
 }

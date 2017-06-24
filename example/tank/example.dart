@@ -13,7 +13,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 1600, height: 800);
+  var stage = new Stage(canvas, width: 2000, height: 800);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -37,7 +37,7 @@ Future main() async {
   // create the display object showing the skeleton animation
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
-  skeletonAnimation.x = 1600;
+  skeletonAnimation.x = 2300;
   skeletonAnimation.y = 700;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.5;
   skeletonAnimation.state.setAnimationByName(0, "drive", true);

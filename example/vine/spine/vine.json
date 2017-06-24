@@ -1,5 +1,5 @@
 {
-"skeleton": { "hash": "e1SBmLxoqHBP7jcRP74aKzny5TE", "spine": "3.5.25", "width": 227.33, "height": 841.07, "images": "./images/" },
+"skeleton": { "hash": "boFJgJKL13sWIDeeDo1FAGPNris", "spine": "3.6.36", "width": 227.33, "height": 841.07, "images": "./images/" },
 "bones": [
 	{ "name": "root" },
 	{ "name": "vine1", "parent": "root", "length": 74, "rotation": 90, "x": 339.1, "y": -467.15, "color": "f700ffff" },
@@ -58,16 +58,16 @@
 	}
 },
 "animations": {
-	"animation": {
+	"grow": {
 		"slots": {
 			"vine": {
 				"color": [
 					{
 						"time": 0,
-						"color": "ffcb73ff",
+						"color": "ffcb73fe",
 						"curve": [ 0.25, 0, 0.75, 1 ]
 					},
-					{ "time": 10.3667, "color": "fefaffff" }
+					{ "time": 10.3667, "color": "fefafffe" }
 				]
 			}
 		},
@@ -266,46 +266,6 @@
 						"curve": [ 0.25, 0, 0.75, 1 ]
 					},
 					{ "time": 11.4333, "x": 1, "y": 0.924 }
-				]
-			},
-			"vine6": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine7": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine8": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine9": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine10": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine11": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine12": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
-				]
-			},
-			"vine13": {
-				"rotate": [
-					{ "time": 0, "angle": 0 }
 				]
 			}
 		}

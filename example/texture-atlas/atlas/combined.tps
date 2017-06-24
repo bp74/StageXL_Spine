@@ -2,11 +2,11 @@
 <data version="1.0">
     <struct type="Settings">
         <key>fileFormatVersion</key>
-        <int>3</int>
+        <int>4</int>
         <key>texturePackerVersion</key>
-        <string>3.8.0</string>
+        <string>4.4.0</string>
         <key>fileName</key>
-        <string>D:/GitHub/bp74/StageXL_Spine/example/texture-atlas/atlas/combined.tps</string>
+        <string>C:/GitHub/bp74/StageXL_Spine/example/texture-atlas/atlas/combined.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -29,8 +29,6 @@
         </array>
         <key>allowRotation</key>
         <true/>
-        <key>premultiplyAlpha</key>
-        <false/>
         <key>shapeDebug</key>
         <false/>
         <key>dpi</key>
@@ -43,10 +41,14 @@
         <false/>
         <key>pvrCompressionQuality</key>
         <enum type="SettingsBase::PvrCompressionQuality">PVR_QUALITY_NORMAL</enum>
+        <key>atfCompressData</key>
+        <false/>
         <key>mipMapMinSize</key>
         <uint>32768</uint>
         <key>etc1CompressionQuality</key>
         <enum type="SettingsBase::Etc1CompressionQuality">ETC1_QUALITY_LOW_PERCEPTUAL</enum>
+        <key>etc2CompressionQuality</key>
+        <enum type="SettingsBase::Etc2CompressionQuality">ETC2_QUALITY_LOW_PERCEPTUAL</enum>
         <key>dxtCompressionMode</key>
         <enum type="SettingsBase::DxtCompressionMode">DXT_PERCEPTUAL</enum>
         <key>jxrColorFormat</key>
@@ -79,6 +81,8 @@
         <uint>101</uint>
         <key>textureSubPath</key>
         <string></string>
+        <key>atfFormats</key>
+        <string></string>
         <key>textureFormat</key>
         <enum type="SettingsBase::TextureFormat">png</enum>
         <key>borderPadding</key>
@@ -86,7 +90,7 @@
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
-            <int>1024</int>
+            <int>2048</int>
             <key>height</key>
             <int>1024</int>
         </QSize>
@@ -97,8 +101,6 @@
             <key>height</key>
             <int>-1</int>
         </QSize>
-        <key>reduceBorderArtifacts</key>
-        <false/>
         <key>algorithmSettings</key>
         <struct type="AlgorithmSettings">
             <key>algorithm</key>
@@ -108,8 +110,6 @@
             <key>sizeConstraints</key>
             <enum type="AlgorithmSettings::SizeConstraints">AnySize</enum>
             <key>forceSquared</key>
-            <false/>
-            <key>forceWordAligned</key>
             <false/>
             <key>maxRects</key>
             <struct type="AlgorithmMaxRectsSettings">
@@ -122,6 +122,11 @@
                 <enum type="AlgorithmBasicSettings::SortBy">Best</enum>
                 <key>order</key>
                 <enum type="AlgorithmBasicSettings::Order">Ascending</enum>
+            </struct>
+            <key>polygon</key>
+            <struct type="AlgorithmPolygonSettings">
+                <key>alignToGrid</key>
+                <uint>1</uint>
             </struct>
         </struct>
         <key>andEngine</key>
@@ -154,6 +159,8 @@
         <false/>
         <key>outputFormat</key>
         <enum type="SettingsBase::OutputFormat">RGBA8888</enum>
+        <key>alphaHandling</key>
+        <enum type="SettingsBase::AlphaHandling">ClearTransparentPixels</enum>
         <key>contentProtection</key>
         <struct type="ContentProtection">
             <key>key</key>
@@ -165,7 +172,7 @@
         <false/>
         <key>prependSmartFolderName</key>
         <false/>
-        <key>cleanTransparentPixels</key>
+        <key>autodetectAnimations</key>
         <true/>
         <key>globalSpriteSettings</key>
         <struct type="SpriteSettings">
@@ -173,26 +180,98 @@
             <double>1</double>
             <key>scaleMode</key>
             <enum type="ScaleMode">Smooth</enum>
-            <key>innerPadding</key>
-            <uint>0</uint>
             <key>extrude</key>
             <uint>0</uint>
             <key>trimThreshold</key>
             <uint>1</uint>
+            <key>trimMargin</key>
+            <uint>1</uint>
             <key>trimMode</key>
             <enum type="SpriteSettings::TrimMode">Trim</enum>
+            <key>tracerTolerance</key>
+            <int>200</int>
             <key>heuristicMask</key>
             <false/>
-            <key>pivotPoint</key>
-            <enum type="SpriteSettings::PivotPoint">Center</enum>
+            <key>defaultPivotPoint</key>
+            <point_f>0.5,0.5</point_f>
+            <key>writePivotPoints</key>
+            <false/>
         </struct>
+        <key>individualSpriteSettings</key>
+        <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../spine/goblins.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>108,67,217,135</rect>
+                <key>scale9Paddings</key>
+                <rect>108,67,217,135</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../spine/hero.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>126,67,251,135</rect>
+                <key>scale9Paddings</key>
+                <rect>126,67,251,135</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../spine/raptor.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>480,73,960,145</rect>
+                <key>scale9Paddings</key>
+                <rect>480,73,960,145</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../spine/speedy.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>204,33,407,67</rect>
+                <key>scale9Paddings</key>
+                <rect>204,33,407,67</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../spine/spineboy.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>441,69,881,138</rect>
+                <key>scale9Paddings</key>
+                <rect>441,69,881,138</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+        </map>
         <key>fileList</key>
         <array>
-            <filename>spineboy-hoverboard.png</filename>
-            <filename>goblins-mesh.png</filename>
-            <filename>hero-mesh.png</filename>
-            <filename>raptor.png</filename>
-            <filename>speedy.png</filename>
+            <filename>../spine/goblins.png</filename>
+            <filename>../spine/hero.png</filename>
+            <filename>../spine/raptor.png</filename>
+            <filename>../spine/speedy.png</filename>
+            <filename>../spine/spineboy.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
@@ -214,5 +293,7 @@
         <string></string>
         <key>normalMapSheetFileName</key>
         <filename></filename>
+        <key>exporterProperties</key>
+        <map type="ExporterProperties"/>
     </struct>
 </data>

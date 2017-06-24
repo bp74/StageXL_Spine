@@ -21,8 +21,8 @@ Future main() async {
 
   var resourceManager = new ResourceManager();
   var libgdx = TextureAtlasFormat.LIBGDX;
-  resourceManager.addTextFile("hero", "spine/hero-mesh.json");
-  resourceManager.addTextureAtlas("hero", "spine/hero-mesh.atlas", libgdx);
+  resourceManager.addTextFile("hero", "spine/hero.json");
+  resourceManager.addTextureAtlas("hero", "spine/hero.atlas", libgdx);
   await resourceManager.load();
 
   // Add TextField to show user information
@@ -47,24 +47,24 @@ Future main() async {
   // configure Spine animation mix
 
   var animationStateData = new AnimationStateData(skeletonData);
-  animationStateData.setMixByName("Idle", "Walk", 0.2);
-  animationStateData.setMixByName("Walk", "Run", 0.2);
-  animationStateData.setMixByName("Run", "Attack", 0.2);
-  animationStateData.setMixByName("Attack", "Crouch", 0.2);
-  animationStateData.setMixByName("Crouch", "Idle", 0.2);
+  animationStateData.setMixByName("idle", "walk", 0.2);
+  animationStateData.setMixByName("walk", "run", 0.2);
+  animationStateData.setMixByName("run", "attack", 0.2);
+  animationStateData.setMixByName("attack", "crouch", 0.2);
+  animationStateData.setMixByName("crouch", "idle", 0.2);
 
   // create the display object showing the skeleton animation
 
   var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 180;
   skeletonAnimation.y = 400;
-  skeletonAnimation.state.setAnimationByName(0, "Idle", true);
+  skeletonAnimation.state.setAnimationByName(0, "idle", true);
   stage.addChild(skeletonAnimation);
   stage.juggler.add(skeletonAnimation);
 
   // change the animation on every mouse click
 
-  var animations = ["Idle", "Walk", "Run", "Attack", "Crouch"];
+  var animations = ["idle", "walk", "run", "attack", "crouch"];
   var animationIndex = 0;
 
   stage.onMouseClick.listen((me) {

@@ -484,11 +484,12 @@ class SkeletonLoader {
 
           int frameIndex = 0;
           for (Map valueMap in values) {
+            var time = _getDouble(valueMap, "time", 0.0);
             var cl = new SpineColor(1.0, 1.0, 1.0, 1.0);
             var cd = new SpineColor(1.0, 1.0, 1.0, 1.0);
             cl.setFromString(_getString(valueMap, "light", "FFFFFFFF"));
             cd.setFromString(_getString(valueMap, "dark", "FFFFFFFF"));
-            twoColorTimeline.setFrame(frameIndex, valueMap["time"], cl.r, cl.g, cl.b, cl.a, cd.r, cd.g, cd.b);
+            twoColorTimeline.setFrame(frameIndex, time, cl.r, cl.g, cl.b, cl.a, cd.r, cd.g, cd.b);
             _readCurve(valueMap, twoColorTimeline, frameIndex);
             frameIndex++;
           }
