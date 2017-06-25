@@ -68,11 +68,9 @@ class VertexAttachment extends Attachment {
     Float32List vertices = this.vertices;
     Int16List bones = this.bones;
 
-    bool df = deform.length > 0;
-
     if (bones == null) {
 
-      vertices = df ? deform : vertices;
+      vertices = deform.length == 0 ? vertices : deform;
 
       Bone bone = slot.bone;
       double x = bone.worldX;
@@ -90,6 +88,35 @@ class VertexAttachment extends Attachment {
         double vy = vertices[vi + 1];
         worldVertices[wi + 0] = vx * a + vy * b + x;
         worldVertices[wi + 1] = vx * c + vy * d + y;
+      }
+
+    } else if (deform.length == 0) {
+
+      int vi = 0; // vertices index
+      int bi = 0; // bones index
+      int wi = offset; // world vertices index
+
+      for (int i = 0; i < start; i += 2) {
+        int boneCount = bones[bi];
+        bi += boneCount + 1;
+        vi += boneCount * 3;
+      }
+
+      for (int i = 0; i < count; i += 2, wi += stride) {
+        double x = 0.0;
+        double y = 0.0;
+        int boneCount = bones[bi++];
+        int boneFinal = bi + boneCount;
+        for (; bi < boneFinal; bi += 1, vi += 3) {
+          Bone bone = skeletonBones[bones[bi]];
+          double vx = vertices[vi + 0];
+          double vy = vertices[vi + 1];
+          double vw = vertices[vi + 2];
+          x += (vx * bone.a + vy * bone.b + bone.worldX) * vw;
+          y += (vx * bone.c + vy * bone.d + bone.worldY) * vw;
+        }
+        worldVertices[wi + 0] = x;
+        worldVertices[wi + 1] = y;
       }
 
     } else {
@@ -113,8 +140,8 @@ class VertexAttachment extends Attachment {
         int boneFinal = bi + boneCount;
         for (; bi < boneFinal; bi += 1, vi += 3, di += 2) {
           Bone bone = skeletonBones[bones[bi]];
-          double vx = df ? vertices[vi + 0] + deform[di + 0] : vertices[vi + 0];
-          double vy = df ? vertices[vi + 1] + deform[di + 1] : vertices[vi + 1];
+          double vx = vertices[vi + 0] + deform[di + 0];
+          double vy = vertices[vi + 1] + deform[di + 1];
           double vw = vertices[vi + 2];
           x += (vx * bone.a + vy * bone.b + bone.worldX) * vw;
           y += (vx * bone.c + vy * bone.d + bone.worldY) * vw;
