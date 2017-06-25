@@ -35,7 +35,7 @@ class Slot {
   final SlotData data;
   final Bone bone;
 
-  SpineColor color;
+  SpineColor color = new SpineColor(1.0, 1.0, 1.0, 1.0);
   SpineColor darkColor;
 
   Attachment _attachment;
@@ -45,7 +45,6 @@ class Slot {
   Slot(this.data, this.bone) {
     if (data == null) throw new ArgumentError("data cannot be null.");
     if (bone == null) throw new ArgumentError("bone cannot be null.");
-    color = new SpineColor(1.0, 1.0, 1.0, 1.0);
     darkColor = data.darkColor == null ? null : new SpineColor(1.0, 1.0, 1.0, 1.0);
     setToSetupPose();
   }
