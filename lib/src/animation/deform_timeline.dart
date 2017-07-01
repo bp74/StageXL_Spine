@@ -68,19 +68,33 @@ class DeformTimeline extends CurveTimeline {
 
     int vertexCount = frameVertices[0].length;
     Float32List targetVertices = slot.attachmentVertices;
-    Float32List vertexAttachmentVertices = vertexAttachment.vertices;
+    Float32List setupVertices = vertexAttachment.vertices;
 
     if (targetVertices.length != vertexCount) {
-      if (pose != MixPose.setup) alpha = 1.0;
       targetVertices = new Float32List(vertexCount);
       slot.attachmentVertices = targetVertices;
     }
 
     if (time < frames[0]) {
-      if (pose == MixPose.setup) {
-        targetVertices = new Float32List(0);
-        slot.attachmentVertices = targetVertices;
+      if (pose == MixPose.setup && vertexAttachment.bones == null) {
+        // Unweighted vertex positions (setup pose).
+        for (int i = 0; i < vertexCount; i++) {
+          targetVertices[i] = setupVertices[i];
+        }
+      } else if (pose == MixPose.setup) {
+        // Weighted deform offsets (zeros).
+        for (int i = 0; i < vertexCount; i++) {
+          targetVertices[i] = 0.0;
+        }
+      } else if (pose == MixPose.current && alpha == 1.0) {
+        // do nothing
+      } else if (pose == MixPose.current && vertexAttachment.bones == null) {
+        // Unweighted vertex positions.
+        for (int i = 0; i < vertexCount; i++) {
+          targetVertices[i] += (setupVertices[i] - targetVertices[i]) * alpha;
+        }
       } else if (pose == MixPose.current) {
+        // Weighted deform offsets.
         alpha = 1.0 - alpha;
         for (int i = 0; i < vertexCount; i++) {
           targetVertices[i] *= alpha;
@@ -107,7 +121,7 @@ class DeformTimeline extends CurveTimeline {
       } else if (vertexAttachment.bones == null) {
         // Unweighted vertex positions, with alpha.
         for (int i = 0; i < vertexCount; i++) {
-          double v0 = vertexAttachmentVertices[i];
+          double v0 = setupVertices[i];
           double v1 = lastVertices[i];
           targetVertices[i] = v0 + (v1 - v0) * alpha;
         }
@@ -148,7 +162,7 @@ class DeformTimeline extends CurveTimeline {
       for (int i = 0; i < vertexCount; i++) {
         double v0 = v0List[i];
         double v1 = v1List[i];
-        double vx = vertexAttachmentVertices[i];
+        double vx = setupVertices[i];
         targetVertices[i] = vx + (v0 + (v1 - v0) * percent - vx) * alpha;
       }
     } else {

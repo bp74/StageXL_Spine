@@ -580,13 +580,8 @@ class AnimationState extends EventDispatcher {
   void _animationsHasChanged() {
     _animationsChanged = false;
     _propertyIDs.clear();
-    TrackEntry lastEntry;
     for (int i = 0; i < _tracks.length; i++) {
-      var entry = _tracks[i];
-      if (entry != null) {
-        entry.setTimelineData(lastEntry, _mixingTo, _propertyIDs);
-        lastEntry = entry;
-      }
+      _tracks[i]?.setTimelineData(null, _mixingTo, _propertyIDs);
     }
   }
 
