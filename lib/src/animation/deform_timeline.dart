@@ -66,42 +66,42 @@ class DeformTimeline extends CurveTimeline {
     VertexAttachment vertexAttachment = slot.attachment;
     if (vertexAttachment.applyDeform(attachment) == false) return;
 
-    int vertexCount = frameVertices[0].length;
-    Float32List targetVertices = slot.attachmentVertices;
-    Float32List setupVertices = vertexAttachment.vertices;
+    var vertexCount = frameVertices[0].length;
+    var targetVertices = slot.attachmentVertices;
+    if (targetVertices.length == 0) alpha = 1.0;
+    var setupVertices = vertexAttachment.vertices;
 
-    if (targetVertices.length != vertexCount) {
-      targetVertices = new Float32List(vertexCount);
-      slot.attachmentVertices = targetVertices;
-    }
+    //-----------------------
 
     if (time < frames[0]) {
-      if (pose == MixPose.setup && vertexAttachment.bones == null) {
-        // Unweighted vertex positions (setup pose).
-        for (int i = 0; i < vertexCount; i++) {
-          targetVertices[i] = setupVertices[i];
-        }
-      } else if (pose == MixPose.setup) {
-        // Weighted deform offsets (zeros).
-        for (int i = 0; i < vertexCount; i++) {
-          targetVertices[i] = 0.0;
-        }
-      } else if (pose == MixPose.current && alpha == 1.0) {
+      if (pose == MixPose.setup) {
+        targetVertices = _resizeList(targetVertices, 0);
+      } else if (pose != MixPose.current) {
         // do nothing
-      } else if (pose == MixPose.current && vertexAttachment.bones == null) {
+      } else if (alpha == 1.0) {
+        targetVertices = _resizeList(targetVertices, 0);
+      } else if (vertexAttachment.bones == null) {
         // Unweighted vertex positions.
+        targetVertices = _resizeList(targetVertices, vertexCount);
         for (int i = 0; i < vertexCount; i++) {
           targetVertices[i] += (setupVertices[i] - targetVertices[i]) * alpha;
         }
-      } else if (pose == MixPose.current) {
+      } else {
         // Weighted deform offsets.
+        targetVertices = _resizeList(targetVertices, vertexCount);
         alpha = 1.0 - alpha;
         for (int i = 0; i < vertexCount; i++) {
           targetVertices[i] *= alpha;
         }
       }
+      slot.attachmentVertices = targetVertices;
       return;
     }
+
+    //-----------------------
+
+    targetVertices = _resizeList(targetVertices, vertexCount);
+    slot.attachmentVertices = targetVertices;
 
     if (time >= frames[frames.length - 1]) {
       // Time is after last frame.
@@ -133,6 +133,8 @@ class DeformTimeline extends CurveTimeline {
       }
       return;
     }
+
+    //-----------------------
 
     // Interpolate between the previous frame and the current frame.
     int frame = Animation.binarySearch1(frames, time);
@@ -173,5 +175,14 @@ class DeformTimeline extends CurveTimeline {
         targetVertices[i] = (v0 + (v1 - v0) * percent) * alpha;
       }
     }
+  }
+
+  Float32List _resizeList(Float32List oldList, int length) {
+    if (oldList.length == length) return oldList;
+    var newList = new Float32List(length);
+    for (int i = 0; i < newList.length && i < oldList.length; i++) {
+      newList[i] = oldList[i];
+    }
+    return newList;
   }
 }

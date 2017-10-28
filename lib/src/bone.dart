@@ -178,17 +178,16 @@ class Bone implements Updatable {
         double lb = scaleY * _cosDeg(90.0 + shearY);
         double lc = scaleX * _sinDeg(shearX);
         double ld = scaleY * _sinDeg(90.0 + shearY);
+        if (data.transformMode != TransformMode.noScaleOrReflection) {
+          if (pa * pd - pb * pc < 0.0) {
+            zb = -zb;
+            zd = -zd;
+          }
+        }
         _a = za * la + zb * lc;
         _b = za * lb + zb * ld;
         _c = zc * la + zd * lc;
         _d = zc * lb + zd * ld;
-
-        if (data.transformMode != TransformMode.noScaleOrReflection) {
-          if (pa * pd - pb * pc < 0.0) {
-            _b = -_b;
-            _d = -_d;
-          }
-        }
         break;
     }
 	}

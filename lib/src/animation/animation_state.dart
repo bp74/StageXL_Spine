@@ -152,7 +152,8 @@ class AnimationState extends EventDispatcher {
 
     // Require mixTime > 0 to ensure the mixing from entry was applied at least once.
     if (to.mixTime > 0 && (to.mixTime >= to.mixDuration || to.timeScale == 0)) {
-      if (from.totalAlpha == 0) {
+      // Require totalAlpha == 0 to ensure mixing is complete, unless mixDuration == 0 (the transition is a single frame).
+      if (from.totalAlpha == 0 || to.mixDuration == 0) {
         to.mixingFrom = from.mixingFrom;
         to.interruptAlpha = from.interruptAlpha;
         _enqueueTrackEntryEvent(new TrackEntryEndEvent(from));
@@ -242,6 +243,7 @@ class AnimationState extends EventDispatcher {
     if (to.mixDuration == 0.0) {
       // Single frame mix to undo mixingFrom changes.
       mix = 1.0;
+      currentPose = MixPose.setup;
     } else {
       mix = to.mixTime / to.mixDuration;
       if (mix > 1.0) mix = 1.0;

@@ -36,6 +36,8 @@ class PathConstraint implements Constraint {
   static const int _BEFORE = -2;
   static const int _AFTER = -3;
 
+  static const double _epsilon = 0.00001;
+
   final PathConstraintData data;
   final List<Bone> bones = new List<Bone>();
 
@@ -108,11 +110,16 @@ class PathConstraint implements Constraint {
       for (int i = 0; i < spacesCount - 1;) {
         Bone bone  = bones[i];
         double setupLength = bone.data.length;
-        double x = setupLength * bone.a;
-        double y = setupLength * bone.c;
-        double length  = math.sqrt(x * x + y * y);
-        if (scale) lengths[i] = length;
-        spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
+        if (setupLength < _epsilon) {
+          if (scale) lengths[i] = 0.0;
+          spaces[++i] = 0.0;
+        } else {
+          double x = setupLength * bone.a;
+          double y = setupLength * bone.c;
+          double length  = math.sqrt(x * x + y * y);
+          if (scale) lengths[i] = length;
+          spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
+        }
       }
     } else {
       for (int i = 1; i < spacesCount; i++) {
