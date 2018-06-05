@@ -55,7 +55,7 @@ class TrackEntry extends EventDispatcher {
   double trackTime = 0.0;
   double trackLast = -1.0;
   double nextTrackLast = -1.0;
-  double trackEnd = double.MAX_FINITE;
+  double trackEnd = double.maxFinite;
   double timeScale = 1.0;
 
   double alpha = 1.0;

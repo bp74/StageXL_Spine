@@ -1,10 +1,10 @@
 part of stagexl_spine;
 
 /// multiplier for degrees to radians conversion
-double _deg2rad = math.PI / 180.0;
+double _deg2rad = math.pi / 180.0;
 
 /// multiplier for radians to degrees conversion
-double _rad2deg = 180.0 / math.PI;
+double _rad2deg = 180.0 / math.pi;
 
 /// calculate cos based on degrees
 double _cosDeg(double deg) => math.cos(_deg2rad * deg);

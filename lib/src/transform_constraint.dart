@@ -103,7 +103,7 @@ class TransformConstraint implements Constraint {
         double d = bone.d;
         double r = math.atan2(tc, ta) - math.atan2(c, a) + offsetRotation;
 
-        if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
+        if (r > math.pi) r -= math.pi * 2; else if (r < -math.pi) r += math.pi * 2;
         r *= rotateMix;
         double cos = math.cos(r);
         double sin = math.sin(r);
@@ -142,7 +142,7 @@ class TransformConstraint implements Constraint {
         double d = bone.d;
         double by = math.atan2(d, b);
         double r = math.atan2(td, tb) - math.atan2(tc, ta) - (by - math.atan2(bone.c, bone.a));
-        if (r > math.PI) r -= math.PI * 2; else if (r < -math.PI) r += math.PI * 2;
+        if (r > math.pi) r -= math.pi * 2; else if (r < -math.pi) r += math.pi * 2;
         r = by + (r + offsetShearY) * shearMix;
         double s = math.sqrt(b * b + d * d);
         bone._b = math.cos(r) * s;
@@ -165,7 +165,7 @@ class TransformConstraint implements Constraint {
     var tb = target.b;
     var tc = target.c;
     var td = target.d;
-    var degRad = math.PI / 180.0;
+    var degRad = math.pi / 180.0;
     var degRadReflect = ta * td - tb * tc > 0 ? degRad : -degRad;
     var offsetRotation = this.data.offsetRotation * degRadReflect;
     var offsetShearY = this.data.offsetShearY * degRadReflect;
@@ -183,10 +183,10 @@ class TransformConstraint implements Constraint {
         var d = bone.d;
         var r = math.atan2(tc, ta) + offsetRotation;
 
-        if (r > math.PI) {
-          r -= 2.0 * math.PI;
-        } else if (r < -math.PI) {
-          r += 2.0 * math.PI;
+        if (r > math.pi) {
+          r -= 2.0 * math.pi;
+        } else if (r < -math.pi) {
+          r += 2.0 * math.pi;
         }
 
         r *= rotateMix;
@@ -222,16 +222,16 @@ class TransformConstraint implements Constraint {
 
       if (shearMix > 0) {
         var r = math.atan2(td, tb) - math.atan2(tc, ta);
-        if (r > math.PI) {
-          r -= 2.0 * math.PI;
-        } else if (r < -math.PI) {
-          r += 2.0 * math.PI;
+        if (r > math.pi) {
+          r -= 2.0 * math.pi;
+        } else if (r < -math.pi) {
+          r += 2.0 * math.pi;
         }
 
         var b = bone.b;
         var d = bone.d;
         var s = math.sqrt(b * b + d * d);
-        r = math.atan2(d, b) + (r - math.PI / 2.0 + offsetShearY) * shearMix;
+        r = math.atan2(d, b) + (r - math.pi / 2.0 + offsetShearY) * shearMix;
         bone._b = math.cos(r) * s;
         bone._d = math.sin(r) * s;
         modified = true;

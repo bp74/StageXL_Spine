@@ -196,10 +196,10 @@ class PathConstraint implements Constraint {
           r += offsetRotation;
         }
 
-        if (r > math.PI) {
-          r -= (math.PI * 2);
-        } else if (r < -math.PI) {
-          r += (math.PI * 2);
+        if (r > math.pi) {
+          r -= (math.pi * 2);
+        } else if (r < -math.pi) {
+          r += (math.pi * 2);
         }
 
         r *= rotateMix;

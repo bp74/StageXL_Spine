@@ -171,7 +171,7 @@ class Bone implements Updatable {
         za *= s;
         zc *= s;
         s = math.sqrt(za * za + zc * zc);
-        double r = math.PI / 2.0 + math.atan2(zc, za);
+        double r = math.pi / 2.0 + math.atan2(zc, za);
         double zb = math.cos(r) * s;
         double zd = math.sin(r) * s;
         double la = scaleX * _cosDeg(shearX);

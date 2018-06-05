@@ -39,14 +39,14 @@ class SkeletonLoader {
 
   /// Parameter 'object' must be a String or Map.
   ///
-  SkeletonData readSkeletonData(dynamic object, [String name = null]) {
+  SkeletonData readSkeletonData(dynamic object, [String name]) {
 
     Map root;
 
     if (object == null) {
       throw new ArgumentError("object cannot be null.");
     } else if (object is String) {
-      root = JSON.decode(object);
+      root = jsonDecode(object);
     } else if (object is Map) {
       root = object;
     } else {
