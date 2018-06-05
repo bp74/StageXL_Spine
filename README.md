@@ -3,6 +3,8 @@ StageXL_Spine
 
 The Spine runtime for the StageXL library.
 
+*NOTE:* as of version 0.10.0-dev, `StageXL_Spine` requires a Dart 2 SDK. 
+
 [![Build Status](https://travis-ci.org/bp74/StageXL_Spine.svg?branch=master)](https://travis-ci.org/bp74/StageXL_Spine)
 
 ## Examples
