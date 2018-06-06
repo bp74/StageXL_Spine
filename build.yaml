@@ -18,7 +18,7 @@ targets:
           - example/spineboy/example.dart
           - example/stretchyman/example.dart
           - example/tank/example.dart
-          - example/texture-atlas/example.dart
+          - example/texture_atlas/example.dart
           - example/vine/example.dart
         dev_options:
           compiler: dartdevc
