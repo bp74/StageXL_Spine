@@ -48,10 +48,10 @@ class SkeletonDisplayObject extends DisplayObject {
       }
     }
 
-    double minX = double.INFINITY;
-    double minY = double.INFINITY;
-    double maxX = double.NEGATIVE_INFINITY;
-    double maxY = double.NEGATIVE_INFINITY;
+    double minX = double.infinity;
+    double minY = double.infinity;
+    double maxX = double.negativeInfinity;
+    double maxY = double.negativeInfinity;
 
     for (int i = 0; i < offset - 1; i += 2) {
       double x = vertices[i + 0];

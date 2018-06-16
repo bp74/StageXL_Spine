@@ -87,19 +87,19 @@ class SkeletonBounds {
     if (updateAabb) {
       aabbCompute();
     } else {
-      minX = double.NEGATIVE_INFINITY;
-      minY = double.NEGATIVE_INFINITY;
-      maxX = double.INFINITY;
-      maxY = double.INFINITY;
+      minX = double.negativeInfinity;
+      minY = double.negativeInfinity;
+      maxX = double.infinity;
+      maxY = double.infinity;
     }
   }
 
   void aabbCompute() {
 
-    double minX = double.INFINITY;
-    double minY = double.INFINITY;
-    double maxX = double.NEGATIVE_INFINITY;
-    double maxY = double.NEGATIVE_INFINITY;
+    double minX = double.infinity;
+    double minY = double.infinity;
+    double maxX = double.negativeInfinity;
+    double maxY = double.negativeInfinity;
 
     for (int i = 0; i < verticesList.length; i++) {
       Float32List polygon = verticesList[i];

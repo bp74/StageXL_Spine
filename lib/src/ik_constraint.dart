@@ -78,7 +78,7 @@ class IkConstraint implements Constraint {
 	static void apply1 (Bone bone, double targetX, double targetY, double alpha) {
 		if (!bone.appliedValid) bone._updateAppliedTransform();
 		Bone p = bone.parent;
-    double rad2deg = 180.0 / math.PI;
+    double rad2deg = 180.0 / math.pi;
 		double id = 1.0 / (p.a * p.d - p.b * p.c);
 		double x = targetX - p.worldX;
     double y = targetY - p.worldY;
@@ -204,7 +204,7 @@ class IkConstraint implements Constraint {
         }
       }
 
-      double minAngle = math.PI;
+      double minAngle = math.pi;
       double minX = l1 - a;
       double minDist = minX * minX;
       double minY = 0.0;

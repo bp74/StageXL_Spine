@@ -64,7 +64,7 @@ class EventTimeline implements Timeline {
 
     if (lastTime > time) {
       // Fire events after last time for looped animations.
-      apply(skeleton, lastTime, double.MAX_FINITE, firedEvents, alpha, pose, direction);
+      apply(skeleton, lastTime, double.maxFinite, firedEvents, alpha, pose, direction);
       lastTime = -1.0;
     } else if (lastTime >= frames[frameCount - 1]) {
       // Last time is after last frame.
