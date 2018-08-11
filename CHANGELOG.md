@@ -3,8 +3,8 @@
 This file contains highlights of what changes on each version of the StageXL_Spine
 package. This file is normally updated whenever we push a new version to pub.
 
-#### Pub version 0.10.0-dev
-  * Raised dependency to StageXL 1.3.2-dev
+#### Pub version 0.10.0
+  * Raised dependency to StageXL 1.4.0
   * Ready for Dart 2.0
   
 #### Pub version 0.9.0
