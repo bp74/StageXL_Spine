@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class SpineEvent {
-
   final double time;
   final EventData data;
 
@@ -40,7 +39,7 @@ class SpineEvent {
   String stringValue;
 
   SpineEvent(this.time, this.data) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
+    if (data == null) throw ArgumentError("data cannot be null.");
   }
 
   @override

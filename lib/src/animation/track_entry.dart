@@ -31,12 +31,11 @@
 part of stagexl_spine;
 
 class TrackEntry extends EventDispatcher {
-
   final int trackIndex;
   final Animation animation;
-  final List<int> timelineData = new List<int>();
-  final List<TrackEntry> timelineDipMix = new List<TrackEntry>();
-  final List<num> timelinesRotation = new List<num>();
+  final List<int> timelineData = List<int>();
+  final List<TrackEntry> timelineDipMix = List<TrackEntry>();
+  final List<num> timelinesRotation = List<num>();
 
   TrackEntry next;
   TrackEntry mixingFrom;
@@ -106,9 +105,7 @@ class TrackEntry extends EventDispatcher {
     }
   }
 
-
-  TrackEntry setTimelineData (TrackEntry to, List<TrackEntry> mixingToArray, Set<int> propertyIDs) {
-
+  TrackEntry setTimelineData(TrackEntry to, List<TrackEntry> mixingToArray, Set<int> propertyIDs) {
     if (to != null) mixingToArray.add(to);
     var lastEntry = mixingFrom?.setTimelineData(this, mixingToArray, propertyIDs) ?? this;
     if (to != null) mixingToArray.removeLast();
@@ -130,7 +127,7 @@ class TrackEntry extends EventDispatcher {
         this.timelineData[i] = AnimationState.FIRST;
       } else {
         for (int ii = mixingToArray.length - 1; ii >= 0; ii--) {
-          var entry  = mixingToArray[ii];
+          var entry = mixingToArray[ii];
           if (entry._hasTimeline(id) == false) {
             if (entry.mixDuration > 0) {
               this.timelineData[i] = AnimationState.DIP_MIX;
@@ -146,7 +143,7 @@ class TrackEntry extends EventDispatcher {
     return lastEntry;
   }
 
-  bool _hasTimeline (int id) {
+  bool _hasTimeline(int id) {
     var timelines = animation.timelines;
     for (int i = 0; i < timelines.length; i++) {
       if (timelines[i].getPropertyId() == id) return true;

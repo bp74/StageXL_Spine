@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -13,13 +12,13 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 2000, height: 800);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 2000, height: 800);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load "raptor" skeleton resources
 
-  var resourceManager = new ResourceManager();
+  var resourceManager = ResourceManager();
   var format = TextureAtlasFormat.LIBGDX;
   resourceManager.addTextFile("tank", "spine/tank.json");
   resourceManager.addTextureAtlas("tank", "spine/tank.atlas", format);
@@ -29,14 +28,14 @@ Future main() async {
 
   var spineJson = resourceManager.getTextFile("tank");
   var textureAtlas = resourceManager.getTextureAtlas("tank");
-  var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
-  var skeletonLoader = new SkeletonLoader(attachmentLoader);
+  var attachmentLoader = TextureAtlasAttachmentLoader(textureAtlas);
+  var skeletonLoader = SkeletonLoader(attachmentLoader);
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);
-  var animationStateData = new AnimationStateData(skeletonData);
+  var animationStateData = AnimationStateData(skeletonData);
 
   // create the display object showing the skeleton animation
 
-  var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
+  var skeletonAnimation = SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 2300;
   skeletonAnimation.y = 700;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.5;

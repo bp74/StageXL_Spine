@@ -31,11 +31,10 @@
 part of stagexl_spine;
 
 class Bone implements Updatable {
-
   final BoneData data;
   final Skeleton skeleton;
   final Bone parent;
-  final List<Bone> children = new List<Bone>();
+  final List<Bone> children = List<Bone>();
 
   double x = 0.0;
   double y = 0.0;
@@ -64,8 +63,8 @@ class Bone implements Updatable {
   bool _sorted = false;
 
   Bone(this.data, this.skeleton, this.parent) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+    if (data == null) throw ArgumentError("data cannot be null.");
+    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
     setToSetupPose();
   }
 
@@ -83,11 +82,9 @@ class Bone implements Updatable {
     updateWorldTransformWith(x, y, rotation, scaleX, scaleY, shearX, shearY);
   }
 
-	/// Computes the world SRT using the parent bone and the specified local SRT.
-	void updateWorldTransformWith (
-      double x, double y, double rotation,
-      double scaleX, double scaleY, double shearX, double shearY) {
-
+  /// Computes the world SRT using the parent bone and the specified local SRT.
+  void updateWorldTransformWith(double x, double y, double rotation, double scaleX, double scaleY,
+      double shearX, double shearY) {
     ax = x;
     ay = y;
     arotation = rotation;
@@ -98,7 +95,8 @@ class Bone implements Updatable {
     appliedValid = true;
 
     Bone parent = this.parent;
-    if (parent == null) { // Root bone.
+    if (parent == null) {
+      // Root bone.
       _a = scaleX * _cosDeg(rotation + shearX);
       _b = scaleY * _cosDeg(rotation + 90.0 + shearY);
       _c = scaleX * _sinDeg(rotation + shearX);
@@ -190,7 +188,7 @@ class Bone implements Updatable {
         _d = zc * lb + zd * ld;
         break;
     }
-	}
+  }
 
   void setToSetupPose() {
     x = data.x;
@@ -234,11 +232,11 @@ class Bone implements Updatable {
     return _toDeg(math.atan2(pa * d - pc * b, pd * b - pb * d));
   }
 
-  void rotateWorld (double degrees) {
+  void rotateWorld(double degrees) {
     double a = this.a;
     double b = this.b;
     double c = this.c;
-	  double d = this.d;
+    double d = this.d;
     double cos = _cosDeg(degrees);
     double sin = _sinDeg(degrees);
     _a = cos * a - sin * c;
@@ -248,7 +246,7 @@ class Bone implements Updatable {
     this.appliedValid = false;
   }
 
-	/// Computes the individual applied transform values from the world transform.
+  /// Computes the individual applied transform values from the world transform.
   /// This can be useful to perform processing using the applied transform after
   /// the world transform has been modified directly (eg, by a constraint).
   ///
@@ -256,9 +254,8 @@ class Bone implements Updatable {
   /// versus 180 rotation.
 
   void _updateAppliedTransform() {
-
     this.appliedValid = true;
-		Bone parent = this.parent;
+    Bone parent = this.parent;
 
     if (parent == null) {
       ax = worldX;
@@ -268,10 +265,10 @@ class Bone implements Updatable {
       ascaleY = math.sqrt(b * b + d * d);
       ashearX = 0.0;
       ashearY = _toDeg(math.atan2(a * b + c * d, a * d - b * c));
-			return;
-		}
+      return;
+    }
 
-		double pa = parent.a;
+    double pa = parent.a;
     double pb = parent.b;
     double pc = parent.c;
     double pd = parent.d;
@@ -290,23 +287,23 @@ class Bone implements Updatable {
     double rc = id * c - ic * a;
     double rd = id * d - ic * b;
 
-		this.ashearX = 0.0;
+    this.ashearX = 0.0;
     this.ascaleX = math.sqrt(ra * ra + rc * rc);
 
-		if (this.ascaleX > 0.0001) {
+    if (this.ascaleX > 0.0001) {
       double det = ra * rd - rb * rc;
-			this.ascaleY = det / this.ascaleX;
+      this.ascaleY = det / this.ascaleX;
       this.ashearY = _toDeg(math.atan2(ra * rb + rc * rd, det));
       this.arotation = _toDeg(math.atan2(rc, ra));
-		} else {
-			this.ascaleX = 0.0;
+    } else {
+      this.ascaleX = 0.0;
       this.ascaleY = math.sqrt(rb * rb + rd * rd);
       this.ashearY = 0.0;
       this.arotation = 90.0 - _toDeg(math.atan2(rd, rb));
-		}
-	}
-	
-  void worldToLocal (Float32List world) {
+    }
+  }
+
+  void worldToLocal(Float32List world) {
     double invDet = 1.0 / (a * d - b * c);
     double x = world[0] - worldX;
     double y = world[1] - worldY;
@@ -314,7 +311,7 @@ class Bone implements Updatable {
     world[1] = y * a * invDet - x * c * invDet;
   }
 
-  void localToWorld (Float32List local) {
+  void localToWorld(Float32List local) {
     double localX = local[0];
     double localY = local[1];
     local[0] = localX * a + localY * b + worldX;

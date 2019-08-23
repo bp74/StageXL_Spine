@@ -31,14 +31,13 @@
 part of stagexl_spine;
 
 class AttachmentTimeline implements Timeline {
-
   final Float32List frames; // time, ...
   final List<String> attachmentNames;
   int slotIndex = 0;
 
   AttachmentTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        attachmentNames = new List<String>.filled(frameCount, null);
+      : frames = Float32List(frameCount),
+        attachmentNames = List<String>.filled(frameCount, null);
 
   int get frameCount => frames.length;
 
@@ -55,16 +54,16 @@ class AttachmentTimeline implements Timeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
-
     String attachmentName;
     Slot slot = skeleton.slots[slotIndex];
 
     if (direction == MixDirection.Out && pose == MixPose.setup) {
       attachmentName = slot.data.attachmentName;
-      slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
+      slot.attachment = attachmentName == null
+          ? null
+          : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
       return;
     }
 
@@ -72,14 +71,16 @@ class AttachmentTimeline implements Timeline {
       // Time is before first frame.
       if (pose == MixPose.setup) {
         attachmentName = slot.data.attachmentName;
-        slot.attachment = attachmentName == null ? null : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
+        slot.attachment = attachmentName == null
+            ? null
+            : skeleton.getAttachmentForSlotIndex(slotIndex, attachmentName);
       }
       return;
     }
 
     int frameIndex = (time >= frames.last)
-      ? frames.length - 1 // Time is after last frame.
-      : Animation.binarySearch(frames, time, 1) - 1;
+        ? frames.length - 1 // Time is after last frame.
+        : Animation.binarySearch(frames, time, 1) - 1;
 
     attachmentName = attachmentNames[frameIndex];
     skeleton.slots[slotIndex].attachment = (attachmentName != null)

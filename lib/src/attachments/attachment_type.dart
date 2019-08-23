@@ -30,13 +30,4 @@
 
 part of stagexl_spine;
 
-enum AttachmentType {
-  region,
-  regionsequence,
-  boundingbox,
-  mesh,
-  linkedmesh,
-  path,
-  point,
-  clipping
-}
+enum AttachmentType { region, regionsequence, boundingbox, mesh, linkedmesh, path, point, clipping }

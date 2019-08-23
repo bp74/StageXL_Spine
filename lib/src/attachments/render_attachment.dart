@@ -31,14 +31,13 @@
 part of stagexl_spine;
 
 abstract class RenderAttachment extends VertexAttachment {
-
   final String path;
 
   BitmapData bitmapData;
   Float32List vxList;
   Int16List ixList;
   int hullLength = 0;
-  SpineColor color = new SpineColor(1.0, 1.0, 1.0, 1.0);
+  SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
 
   RenderAttachment(String name, this.path, this.bitmapData) : super(name);
 

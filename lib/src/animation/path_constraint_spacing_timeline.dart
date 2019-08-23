@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
-
   static const int _ENTRIES = 2;
   static const int _PREV_TIME = -2;
   static const int _PREV_VALUE = -1;
@@ -46,10 +45,8 @@ class PathConstraintSpacingTimeline extends PathConstraintPositionTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     PathConstraint constraint = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = constraint.data;
     double s = 0.0;

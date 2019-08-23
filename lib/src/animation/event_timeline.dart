@@ -31,16 +31,15 @@
 part of stagexl_spine;
 
 class EventTimeline implements Timeline {
-
   final Float32List frames; // time, ...
   final List<SpineEvent> events;
 
   EventTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        events = new List<SpineEvent>(frameCount);
+      : frames = Float32List(frameCount),
+        events = List<SpineEvent>(frameCount);
 
   @override
-  int getPropertyId () {
+  int getPropertyId() {
     return TimelineType.event.ordinal << 24;
   }
 
@@ -56,10 +55,8 @@ class EventTimeline implements Timeline {
   /// Fires events for frames > lastTime and <= time.
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
-
     if (firedEvents == null) return;
 
     if (lastTime > time) {
@@ -87,7 +84,7 @@ class EventTimeline implements Timeline {
       }
     }
 
-    while(frame < frameCount && time >= frames[frame]) {
+    while (frame < frameCount && time >= frames[frame]) {
       firedEvents.add(events[frame]);
       frame++;
     }

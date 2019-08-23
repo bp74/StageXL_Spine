@@ -31,17 +31,16 @@
 part of stagexl_spine;
 
 class DeformTimeline extends CurveTimeline {
-
   final Float32List frames;
   final List<Float32List> frameVertices;
 
   int slotIndex = 0;
   VertexAttachment attachment;
 
-  DeformTimeline (int frameCount)
-    : frames = new Float32List(frameCount),
-      frameVertices = new List<Float32List>(frameCount),
-      super(frameCount);
+  DeformTimeline(int frameCount)
+      : frames = Float32List(frameCount),
+        frameVertices = List<Float32List>(frameCount),
+        super(frameCount);
 
   @override
   int getPropertyId() {
@@ -56,10 +55,8 @@ class DeformTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
-
     Slot slot = skeleton.slots[slotIndex];
     if (slot.attachment is! VertexAttachment) return;
 
@@ -68,7 +65,7 @@ class DeformTimeline extends CurveTimeline {
 
     var vertexCount = frameVertices[0].length;
     var targetVertices = slot.attachmentVertices;
-    if (targetVertices.length == 0) alpha = 1.0;
+    if (targetVertices.isEmpty) alpha = 1.0;
     var setupVertices = vertexAttachment.vertices;
 
     //-----------------------
@@ -179,7 +176,7 @@ class DeformTimeline extends CurveTimeline {
 
   Float32List _resizeList(Float32List oldList, int length) {
     if (oldList.length == length) return oldList;
-    var newList = new Float32List(length);
+    var newList = Float32List(length);
     for (int i = 0; i < newList.length && i < oldList.length; i++) {
       newList[i] = oldList[i];
     }

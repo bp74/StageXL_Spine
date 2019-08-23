@@ -29,9 +29,8 @@
  *****************************************************************************/
 
 part of stagexl_spine;
- 
-class PathConstraint implements Constraint {
 
+class PathConstraint implements Constraint {
   static const int _NONE = -1;
   static const int _BEFORE = -2;
   static const int _AFTER = -3;
@@ -39,7 +38,7 @@ class PathConstraint implements Constraint {
   static const double _epsilon = 0.00001;
 
   final PathConstraintData data;
-  final List<Bone> bones = new List<Bone>();
+  final List<Bone> bones = List<Bone>();
 
   Slot target;
   double position = 0.0;
@@ -47,17 +46,16 @@ class PathConstraint implements Constraint {
   double rotateMix = 0.0;
   double translateMix = 0.0;
 
-  Float32List _spaces = new Float32List(0);
-  Float32List _positions = new Float32List(0);
-  Float32List _world = new Float32List(0);
-  Float32List _curves = new Float32List(0);
-  Float32List _lengths = new Float32List(0);
-  Float32List _segments = new Float32List(10);
+  Float32List _spaces = Float32List(0);
+  Float32List _positions = Float32List(0);
+  Float32List _world = Float32List(0);
+  Float32List _curves = Float32List(0);
+  Float32List _lengths = Float32List(0);
+  Float32List _segments = Float32List(10);
 
   PathConstraint(this.data, Skeleton skeleton) {
-
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+    if (data == null) throw ArgumentError("data cannot be null.");
+    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
 
     for (BoneData boneData in data.bones) {
       bones.add(skeleton.findBone(boneData.name));
@@ -76,7 +74,6 @@ class PathConstraint implements Constraint {
 
   @override
   void update() {
-
     if (target.attachment is! PathAttachment) return;
     PathAttachment attachment = target.attachment;
 
@@ -98,19 +95,19 @@ class PathConstraint implements Constraint {
     int spacesCount = tangents ? boneCount : boneCount + 1;
 
     List<Bone> bones = this.bones;
-    if (_spaces.length != spacesCount) _spaces = new Float32List(spacesCount);
+    if (_spaces.length != spacesCount) _spaces = Float32List(spacesCount);
     Float32List spaces = _spaces;
     Float32List lengths;
     double spacing = this.spacing;
 
     if (scale || lengthSpacing) {
       if (scale) {
-        if (_lengths.length != boneCount) _lengths = new Float32List(boneCount);
+        if (_lengths.length != boneCount) _lengths = Float32List(boneCount);
         lengths = _lengths;
       }
 
       for (int i = 0; i < spacesCount - 1;) {
-        Bone bone  = bones[i];
+        Bone bone = bones[i];
         double setupLength = bone.data.length;
         if (setupLength < _epsilon) {
           if (scale) lengths[i] = 0.0;
@@ -118,7 +115,7 @@ class PathConstraint implements Constraint {
         } else {
           double x = setupLength * bone.a;
           double y = setupLength * bone.c;
-          double length  = math.sqrt(x * x + y * y);
+          double length = math.sqrt(x * x + y * y);
           if (scale) lengths[i] = length;
           spaces[++i] = (lengthSpacing ? setupLength + spacing : spacing) * length / setupLength;
         }
@@ -129,10 +126,8 @@ class PathConstraint implements Constraint {
       }
     }
 
-    Float32List positions = _computeWorldPositions(
-        attachment, spacesCount, tangents,
-        data.positionMode == PositionMode.percent,
-        spacingMode == SpacingMode.percent);
+    Float32List positions = _computeWorldPositions(attachment, spacesCount, tangents,
+        data.positionMode == PositionMode.percent, spacingMode == SpacingMode.percent);
 
     double boneX = positions[0];
     double boneY = positions[1];
@@ -216,16 +211,15 @@ class PathConstraint implements Constraint {
     }
   }
 
-  Float32List _computeWorldPositions(PathAttachment path, int spacesCount,
-      bool tangents, bool percentPosition, bool percentSpacing) {
-
+  Float32List _computeWorldPositions(PathAttachment path, int spacesCount, bool tangents,
+      bool percentPosition, bool percentSpacing) {
     Slot target = this.target;
     double position = this.position;
     Float32List spaces = _spaces;
 
     int positionCount = spacesCount * 3 + 2;
     if (_positions.length != positionCount) {
-      _positions = new Float32List(positionCount);
+      _positions = Float32List(positionCount);
     }
 
     Float32List out = _positions;
@@ -241,11 +235,12 @@ class PathConstraint implements Constraint {
       double pathLength = lengths[curveCount];
       if (percentPosition) position *= pathLength;
       if (percentSpacing) {
-        for (int i = 0; i < spacesCount; i++)
+        for (int i = 0; i < spacesCount; i++) { 
           spaces[i] *= pathLength;
+        }
       }
 
-      if (_world.length != 8) _world = new Float32List(8);
+      if (_world.length != 8) _world = Float32List(8);
       world = _world;
       int o = 0, curve = 0;
 
@@ -277,9 +272,9 @@ class PathConstraint implements Constraint {
         for (;; curve++) {
           double length = lengths[curve];
           if (p > length && curve < lengths.length - 1) continue;
-          if (curve == 0)
+          if (curve == 0) {
             p /= length;
-          else {
+          } else {
             double prev = lengths[curve - 1];
             p = (p - prev) / (length - prev);
           }
@@ -296,10 +291,8 @@ class PathConstraint implements Constraint {
           }
         }
 
-        _addCurvePosition(p,
-            world[0], world[1], world[2], world[3],
-            world[4], world[5], world[6], world[7],
-            out, o, tangents || (i > 0 && space == 0));
+        _addCurvePosition(p, world[0], world[1], world[2], world[3], world[4], world[5], world[6],
+            world[7], out, o, tangents || (i > 0 && space == 0));
       }
       return out;
     }
@@ -308,7 +301,7 @@ class PathConstraint implements Constraint {
 
     if (closed) {
       verticesLength += 2;
-      if (_world.length != verticesLength) _world = new Float32List(verticesLength);
+      if (_world.length != verticesLength) _world = Float32List(verticesLength);
       world = _world;
       path.computeWorldVertices2(target, 2, verticesLength - 4, world, 0, 2);
       path.computeWorldVertices2(target, 0, 2, world, verticesLength - 4, 2);
@@ -317,14 +310,14 @@ class PathConstraint implements Constraint {
     } else {
       curveCount--;
       verticesLength -= 4;
-      if (_world.length != verticesLength) _world = new Float32List(verticesLength);
+      if (_world.length != verticesLength) _world = Float32List(verticesLength);
       world = _world;
       path.computeWorldVertices2(target, 2, verticesLength, world, 0, 2);
     }
 
     // Curve lengths.
 
-    if (_curves.length != curveCount) _curves = new Float32List(curveCount);
+    if (_curves.length != curveCount) _curves = Float32List(curveCount);
 
     Float32List curves = _curves;
     double pathLength = 0.0;
@@ -407,9 +400,9 @@ class PathConstraint implements Constraint {
       for (;; curve++) {
         double length = curves[curve];
         if (p > length && curve < curves.length - 1) continue;
-        if (curve == 0)
+        if (curve == 0) {
           p /= length;
-        else {
+        } else {
           double prev = curves[curve - 1];
           p = (p - prev) / (length - prev);
         }
@@ -477,9 +470,8 @@ class PathConstraint implements Constraint {
         break;
       }
 
-      _addCurvePosition(p * 0.1,
-          x1, y1, cx1, cy1, cx2, cy2, x2, y2,
-          out, o, tangents || (i > 0 && space == 0));
+      _addCurvePosition(
+          p * 0.1, x1, y1, cx1, cy1, cx2, cy2, x2, y2, out, o, tangents || (i > 0 && space == 0));
     }
     return out;
   }
@@ -506,10 +498,8 @@ class PathConstraint implements Constraint {
     out[o + 2] = r;
   }
 
-  void _addCurvePosition(double p,
-      double x1, double y1, double cx1, double cy1, double cx2, double cy2, double x2, double y2,
-      Float32List out, int o, bool tangents) {
-
+  void _addCurvePosition(double p, double x1, double y1, double cx1, double cy1, double cx2,
+      double cy2, double x2, double y2, Float32List out, int o, bool tangents) {
     if (p == 0 || p.isNaN) p = 0.0001;
     double tt = p * p;
     double ttt = tt * p;
@@ -527,8 +517,7 @@ class PathConstraint implements Constraint {
 
     if (tangents) {
       out[o + 2] = math.atan2(
-          y - (y1 * uu + cy1 * ut * 2 + cy2 * tt),
-          x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
+          y - (y1 * uu + cy1 * ut * 2 + cy2 * tt), x - (x1 * uu + cx1 * ut * 2 + cx2 * tt));
     }
   }
 

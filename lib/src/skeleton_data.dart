@@ -30,9 +30,7 @@
 
 part of stagexl_spine;
 
-
 class SkeletonData {
-
   String name = "";
   String version = "";
   String hash = "";
@@ -41,26 +39,26 @@ class SkeletonData {
   double height = 0.0;
   double fps = 30.0;
 
-  List<BoneData> bones = new List<BoneData>(); // Ordered parents first.
-  List<SlotData> slots = new List<SlotData>(); // Setup pose draw order.
-  List<Skin> skins = new List<Skin>();
-  List<EventData> events = new List<EventData>();
-  List<Animation> animations = new List<Animation>();
-  List<IkConstraintData> ikConstraints = new List<IkConstraintData>();
-  List<TransformConstraintData> transformConstraints = new List<TransformConstraintData>();
-  List<PathConstraintData> pathConstraints = new List<PathConstraintData>();
+  List<BoneData> bones = List<BoneData>(); // Ordered parents first.
+  List<SlotData> slots = List<SlotData>(); // Setup pose draw order.
+  List<Skin> skins = List<Skin>();
+  List<EventData> events = List<EventData>();
+  List<Animation> animations = List<Animation>();
+  List<IkConstraintData> ikConstraints = List<IkConstraintData>();
+  List<TransformConstraintData> transformConstraints = List<TransformConstraintData>();
+  List<PathConstraintData> pathConstraints = List<PathConstraintData>();
 
   Skin defaultSkin;
 
   // --- Bones.
 
   BoneData findBone(String boneName) {
-    if (boneName == null) throw new ArgumentError("boneName cannot be null.");
+    if (boneName == null) throw ArgumentError("boneName cannot be null.");
     return bones.firstWhere((b) => b.name == boneName, orElse: () => null);
   }
 
   int findBoneIndex(String boneName) {
-    if (boneName == null) throw new ArgumentError("boneName cannot be null.");
+    if (boneName == null) throw ArgumentError("boneName cannot be null.");
     for (int i = 0; i < bones.length; i++) {
       if (bones[i].name == boneName) return i;
     }
@@ -70,12 +68,12 @@ class SkeletonData {
   // --- Slots.
 
   SlotData findSlot(String slotName) {
-    if (slotName == null) throw new ArgumentError("slotName cannot be null.");
+    if (slotName == null) throw ArgumentError("slotName cannot be null.");
     return slots.firstWhere((s) => s.name == slotName, orElse: () => null);
   }
 
   int findSlotIndex(String slotName) {
-    if (slotName == null) throw new ArgumentError("slotName cannot be null.");
+    if (slotName == null) throw ArgumentError("slotName cannot be null.");
     for (int i = 0; i < slots.length; i++) {
       if (slots[i].name == slotName) return i;
     }
@@ -85,40 +83,40 @@ class SkeletonData {
   // --- Skins.
 
   Skin findSkin(String skinName) {
-    if (skinName == null) throw new ArgumentError("skinName cannot be null.");
+    if (skinName == null) throw ArgumentError("skinName cannot be null.");
     return skins.firstWhere((s) => s.name == skinName, orElse: () => null);
   }
 
   // --- Events.
 
   EventData findEvent(String eventName) {
-    if (eventName == null) throw new ArgumentError("eventName cannot be null.");
+    if (eventName == null) throw ArgumentError("eventName cannot be null.");
     return events.firstWhere((e) => e.name == eventName, orElse: () => null);
   }
 
   // --- Animations.
 
   Animation findAnimation(String animationName) {
-    if (animationName == null) throw new ArgumentError("animationName cannot be null.");
+    if (animationName == null) throw ArgumentError("animationName cannot be null.");
     return animations.firstWhere((a) => a.name == animationName, orElse: () => null);
   }
 
   // --- IK constraints.
 
-  IkConstraintData findIkConstraint (String constraintName) {
-    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+  IkConstraintData findIkConstraint(String constraintName) {
+    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
     return ikConstraints.firstWhere((i) => i.name == constraintName, orElse: () => null);
   }
 
   // --- Transform constraints.
 
   TransformConstraintData findTransformConstraint(String constraintName) {
-    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
     return transformConstraints.firstWhere((t) => t.name == constraintName, orElse: () => null);
   }
 
   int findTransformConstraintIndex(String constraintName) {
-    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
     for (int i = 0; i < this.transformConstraints.length; i++) {
       if (this.transformConstraints[i].name == constraintName) return i;
     }
@@ -127,13 +125,13 @@ class SkeletonData {
 
   // --- Path constraints.
 
-  PathConstraintData findPathConstraint(String constraintName)  {
-    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+  PathConstraintData findPathConstraint(String constraintName) {
+    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
     return this.pathConstraints.firstWhere((p) => p.name == constraintName, orElse: () => null);
   }
 
   int findPathConstraintIndex(String constraintName) {
-    if (constraintName == null) throw new ArgumentError("constraintName cannot be null.");
+    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
     for (int i = 0; i < this.pathConstraints.length; i++) {
       if (this.pathConstraints[i].name == constraintName) return i;
     }
@@ -142,5 +140,4 @@ class SkeletonData {
 
   @override
   String toString() => name ?? super.toString();
-
 }

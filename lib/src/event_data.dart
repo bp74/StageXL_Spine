@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class EventData {
-
   final String name;
 
   int intValue = 0;
@@ -39,7 +38,7 @@ class EventData {
   String stringValue = "";
 
   EventData(this.name) {
-    if (name == null) throw new ArgumentError("name cannot be null.");
+    if (name == null) throw ArgumentError("name cannot be null.");
   }
 
   @override

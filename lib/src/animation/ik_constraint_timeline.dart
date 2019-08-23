@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class IkConstraintTimeline extends CurveTimeline {
-
   static const int _ENTRIES = 3;
   static const int _PREV_TIME = -3;
   static const int _PREV_MIX = -2;
@@ -44,7 +43,7 @@ class IkConstraintTimeline extends CurveTimeline {
   int ikConstraintIndex = 0;
 
   IkConstraintTimeline(int frameCount)
-      : frames = new Float32List(frameCount * _ENTRIES),
+      : frames = Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
   @override
@@ -62,10 +61,8 @@ class IkConstraintTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     IkConstraint constraint = skeleton.ikConstraints[ikConstraintIndex];
     IkConstraintData data = constraint.data;
     double m = 0.0;

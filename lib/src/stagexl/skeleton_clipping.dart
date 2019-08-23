@@ -1,14 +1,17 @@
 part of stagexl_spine;
 
 class SkeletonClipping implements RenderMask {
+  final Graphics _graphics = Graphics();
+  final _SkeletonClippingCommand _command = _SkeletonClippingCommand();
 
-  final Graphics _graphics = new Graphics();
-  final _SkeletonClippingCommand _command = new _SkeletonClippingCommand();
-
-  @override bool relativeToParent = false;
-  @override bool border = false;
-  @override int borderWidth = 1;
-  @override int borderColor = 0xFFFF00FF;
+  @override
+  bool relativeToParent = false;
+  @override
+  bool border = false;
+  @override
+  int borderWidth = 1;
+  @override
+  int borderColor = 0xFFFF00FF;
 
   SkeletonClipping() {
     _graphics.addCommand(_command);
@@ -29,12 +32,11 @@ class SkeletonClipping implements RenderMask {
 //-----------------------------------------------------------------------------
 
 class _SkeletonClippingCommand extends GraphicsCommand {
-
-  Float32List vertices = new Float32List(0);
+  Float32List vertices = Float32List(0);
 
   @override
   void updateContext(GraphicsContext context) {
-    for(int i = 0; i < vertices.length - 1; i += 2) {
+    for (int i = 0; i < vertices.length - 1; i += 2) {
       context.lineTo(vertices[i], vertices[i + 1]);
     }
   }

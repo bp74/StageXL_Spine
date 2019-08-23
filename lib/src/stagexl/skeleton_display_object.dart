@@ -3,20 +3,17 @@ part of stagexl_spine;
 enum SkeletonBoundsCalculation { None, BoundingBoxes, Hull }
 
 class SkeletonDisplayObject extends DisplayObject {
-
   final Skeleton skeleton;
-  final Matrix _skeletonMatrix = new Matrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
-  final Matrix _identityMatrix = new Matrix.fromIdentity();
-  final Matrix _transformMatrix = new Matrix.fromIdentity();
+  final Matrix _skeletonMatrix = Matrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
+  final Matrix _identityMatrix = Matrix.fromIdentity();
+  final Matrix _transformMatrix = Matrix.fromIdentity();
 
-  static final Float32List _vertices = new Float32List(2048);
-  static final SkeletonClipping _clipping = new SkeletonClipping();
+  static final Float32List _vertices = Float32List(2048);
+  static final SkeletonClipping _clipping = SkeletonClipping();
 
   SkeletonBoundsCalculation boundsCalculation = SkeletonBoundsCalculation.None;
 
-  SkeletonDisplayObject(SkeletonData skeletonData)
-      : skeleton = new Skeleton(skeletonData) {
-
+  SkeletonDisplayObject(SkeletonData skeletonData) : skeleton = Skeleton(skeletonData) {
     skeleton.updateWorldTransform();
   }
 
@@ -24,7 +21,6 @@ class SkeletonDisplayObject extends DisplayObject {
 
   @override
   Rectangle<num> get bounds {
-
     Float32List vertices = _vertices;
     int offset = 0;
 
@@ -67,12 +63,11 @@ class SkeletonDisplayObject extends DisplayObject {
     maxX = maxX.isFinite ? maxX : 0.0;
     maxY = maxY.isFinite ? maxY : 0.0;
 
-    return new Rectangle<num>(minX, 0.0 - maxY, maxX - minX, maxY - minY);
+    return Rectangle<num>(minX, 0.0 - maxY, maxX - minX, maxY - minY);
   }
 
   @override
   DisplayObject hitTestInput(num localX, num localY) {
-
     Float32List vertices = _vertices;
     double sx = 0.0 + localX;
     double sy = 0.0 - localY;
@@ -113,7 +108,6 @@ class SkeletonDisplayObject extends DisplayObject {
   //---------------------------------------------------------------------------
 
   void _renderWebGL(RenderState renderState) {
-
     var renderContext = renderState.renderContext as RenderContextWebGL;
     var renderProgram = renderContext.renderProgramTinted;
     var skeletonR = skeleton.color.r;
@@ -136,8 +130,10 @@ class SkeletonDisplayObject extends DisplayObject {
         attachment.updateRenderGeometry(slot);
         renderContext.activateRenderTexture(attachment.bitmapData.renderTexture);
         renderContext.activateBlendMode(slot.data.blendMode);
-        renderProgram.renderTextureMesh(renderState,
-            attachment.ixList, attachment.vxList,
+        renderProgram.renderTextureMesh(
+            renderState,
+            attachment.ixList,
+            attachment.vxList,
             attachment.color.r * skeletonR * slot.color.r,
             attachment.color.g * skeletonG * slot.color.g,
             attachment.color.b * skeletonB * slot.color.b,
@@ -164,7 +160,6 @@ class SkeletonDisplayObject extends DisplayObject {
   }
 
   void _renderCanvas(RenderState renderState) {
-
     var renderContext = renderState.renderContext as RenderContextCanvas;
     var vertices = _vertices;
     var clipping = _clipping;
@@ -216,7 +211,6 @@ class SkeletonDisplayObject extends DisplayObject {
   //---------------------------------------------------------------------------
 
   int _windingCount(Float32List vertices, int length, double x, double y) {
-
     double ax = vertices[length - 2];
     double ay = vertices[length - 1];
     int wn = 0;

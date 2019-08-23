@@ -30,10 +30,4 @@
 
 part of stagexl_spine;
 
-enum TransformMode {
-  normal,
-  onlyTranslation,
-  noRotationOrReflection,
-  noScale,
-  noScaleOrReflection
-}
+enum TransformMode { normal, onlyTranslation, noRotationOrReflection, noScale, noScaleOrReflection }

@@ -31,16 +31,15 @@
 part of stagexl_spine;
 
 class DrawOrderTimeline implements Timeline {
-
   final Float32List frames; // time, ...
   final List<Int16List> drawOrders;
 
   DrawOrderTimeline(int frameCount)
-      : frames = new Float32List(frameCount),
-        drawOrders = new List<Int16List>(frameCount);
+      : frames = Float32List(frameCount),
+        drawOrders = List<Int16List>(frameCount);
 
   @override
-  int getPropertyId () {
+  int getPropertyId() {
     return TimelineType.drawOrder.ordinal << 24;
   }
 
@@ -54,10 +53,8 @@ class DrawOrderTimeline implements Timeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
-
     List<Slot> drawOrder = skeleton.drawOrder;
     List<Slot> slots = skeleton.slots;
 
@@ -80,7 +77,8 @@ class DrawOrderTimeline implements Timeline {
 
     int frameIndex = 0;
 
-    if (time >= frames[frames.length - 1]) { // Time is after last frame.
+    if (time >= frames[frames.length - 1]) {
+      // Time is after last frame.
       frameIndex = frames.length - 1;
     } else {
       frameIndex = Animation.binarySearch1(frames, time) - 1;

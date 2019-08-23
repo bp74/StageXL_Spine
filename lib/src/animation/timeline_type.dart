@@ -31,23 +31,22 @@
 part of stagexl_spine;
 
 class TimelineType {
-
   final int ordinal;
   TimelineType(this.ordinal);
 
-  static final TimelineType rotate = new TimelineType(0);
-  static final TimelineType translate = new TimelineType(1);
-  static final TimelineType scale = new TimelineType(2);
-  static final TimelineType shear = new TimelineType(3);
-  static final TimelineType attachment = new TimelineType(4);
-  static final TimelineType color = new TimelineType(5);
-  static final TimelineType deform = new TimelineType(6);
-  static final TimelineType event = new TimelineType(7);
-  static final TimelineType drawOrder = new TimelineType(8);
-  static final TimelineType ikConstraint = new TimelineType(9);
-  static final TimelineType transformConstraint = new TimelineType(10);
-  static final TimelineType pathConstraintPosition = new TimelineType(11);
-  static final TimelineType pathConstraintSpacing = new TimelineType(12);
-  static final TimelineType pathConstraintMix = new TimelineType(13);
-  static final TimelineType twoColor = new TimelineType(14);
+  static final TimelineType rotate = TimelineType(0);
+  static final TimelineType translate = TimelineType(1);
+  static final TimelineType scale = TimelineType(2);
+  static final TimelineType shear = TimelineType(3);
+  static final TimelineType attachment = TimelineType(4);
+  static final TimelineType color = TimelineType(5);
+  static final TimelineType deform = TimelineType(6);
+  static final TimelineType event = TimelineType(7);
+  static final TimelineType drawOrder = TimelineType(8);
+  static final TimelineType ikConstraint = TimelineType(9);
+  static final TimelineType transformConstraint = TimelineType(10);
+  static final TimelineType pathConstraintPosition = TimelineType(11);
+  static final TimelineType pathConstraintSpacing = TimelineType(12);
+  static final TimelineType pathConstraintMix = TimelineType(13);
+  static final TimelineType twoColor = TimelineType(14);
 }

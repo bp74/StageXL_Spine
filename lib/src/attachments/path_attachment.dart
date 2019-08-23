@@ -31,10 +31,9 @@
 part of stagexl_spine;
 
 class PathAttachment extends VertexAttachment {
-
   Float32List lengths;
   bool closed = false;
   bool constantSpeed = false;
 
-  PathAttachment (String name) : super(name);
+  PathAttachment(String name) : super(name);
 }

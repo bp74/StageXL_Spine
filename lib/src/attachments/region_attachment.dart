@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class RegionAttachment extends RenderAttachment {
-
   double x = 0.0;
   double y = 0.0;
   double width = 0.0;
@@ -40,11 +39,10 @@ class RegionAttachment extends RenderAttachment {
   double scaleY = 1.0;
   double rotation = 0.0;
 
-  final Matrix transformationMatrix = new Matrix.fromIdentity();
+  final Matrix transformationMatrix = Matrix.fromIdentity();
 
   RegionAttachment(String name, String path, BitmapData bitmapData)
       : super(name, path, bitmapData) {
-
     this.initRenderGeometry();
   }
 
@@ -55,7 +53,6 @@ class RegionAttachment extends RenderAttachment {
   /// have to call this method after you have changed one of those fields.
 
   void update() {
-
     num sw = scaleX * width;
     num sh = scaleY * height;
     num bw = bitmapData.width;
@@ -85,9 +82,7 @@ class RegionAttachment extends RenderAttachment {
 
   @override
   void computeWorldVertices2(
-      Slot slot, int start, int count,
-      Float32List worldVertices, int offset, int stride) {
-
+      Slot slot, int start, int count, Float32List worldVertices, int offset, int stride) {
     var ma = slot.bone.a;
     var mb = slot.bone.b;
     var mc = slot.bone.c;
@@ -107,10 +102,10 @@ class RegionAttachment extends RenderAttachment {
   @override
   void initRenderGeometry() {
     var renderTextureQuad = bitmapData.renderTextureQuad;
-    this.ixList = new Int16List.fromList(renderTextureQuad.ixList);
-    this.vxList = new Float32List.fromList(renderTextureQuad.vxList);
+    this.ixList = Int16List.fromList(renderTextureQuad.ixList);
+    this.vxList = Float32List.fromList(renderTextureQuad.vxList);
     this.worldVerticesLength = this.hullLength = vxList.length >> 1;
-    this.vertices = new Float32List(worldVerticesLength);
+    this.vertices = Float32List(worldVerticesLength);
     this.update();
   }
 }

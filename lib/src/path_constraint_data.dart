@@ -31,9 +31,8 @@
 part of stagexl_spine;
 
 class PathConstraintData {
-
-	final String name;
-	final List<BoneData> bones = new List<BoneData>();
+  final String name;
+  final List<BoneData> bones = List<BoneData>();
 
   SlotData target;
   PositionMode positionMode;
@@ -43,18 +42,16 @@ class PathConstraintData {
   RotateMode rotateMode;
 
   int order = 0;
-	double offsetRotation = 0.0;
-	double position = 0.0;
+  double offsetRotation = 0.0;
+  double position = 0.0;
   double spacing = 0.0;
   double rotateMix = 0.0;
   double translateMix = 0.0;
 
-	PathConstraintData (this.name) {
-		if (name == null) throw new ArgumentError("name cannot be null.");
-	}
+  PathConstraintData(this.name) {
+    if (name == null) throw ArgumentError("name cannot be null.");
+  }
 
   @override
-	String toString() => name;
-
+  String toString() => name;
 }
-

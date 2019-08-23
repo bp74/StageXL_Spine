@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class PathConstraintMixTimeline extends CurveTimeline {
-
   static const int _ENTRIES = 3;
   static const int _PREV_TIME = -3;
   static const int _PREV_ROTATE = -2;
@@ -45,7 +44,7 @@ class PathConstraintMixTimeline extends CurveTimeline {
   final Float32List frames; // time, rotate mix, translate mix, ...
 
   PathConstraintMixTimeline(int frameCount)
-      : frames = new Float32List(frameCount * _ENTRIES),
+      : frames = Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
   @override
@@ -55,9 +54,7 @@ class PathConstraintMixTimeline extends CurveTimeline {
 
   /// Sets the time and mixes of the specified keyframe.
 
-  void setFrame(
-      int frameIndex, double time, double rotateMix, double translateMix) {
-
+  void setFrame(int frameIndex, double time, double rotateMix, double translateMix) {
     frameIndex *= _ENTRIES;
     frames[frameIndex + _TIME] = time;
     frames[frameIndex + _ROTATE] = rotateMix;
@@ -65,10 +62,8 @@ class PathConstraintMixTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     PathConstraint pc = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = pc.data;
     double rot = 0.0;
@@ -79,7 +74,7 @@ class PathConstraintMixTimeline extends CurveTimeline {
       if (pose == MixPose.setup) {
         pc.rotateMix = data.rotateMix;
         pc.translateMix = data.translateMix;
-      } else if (pose == MixPose.current){
+      } else if (pose == MixPose.current) {
         pc.rotateMix += (data.rotateMix - pc.rotateMix) * alpha;
         pc.translateMix += (data.translateMix - pc.translateMix) * alpha;
       }

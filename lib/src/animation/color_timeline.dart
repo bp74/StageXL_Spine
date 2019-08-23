@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class ColorTimeline extends CurveTimeline {
-
   static const int _ENTRIES = 5;
   static const int _PREV_TIME = -5;
   static const int _PREV_R = -4;
@@ -48,7 +47,7 @@ class ColorTimeline extends CurveTimeline {
   int slotIndex = 0;
 
   ColorTimeline(int frameCount)
-      : frames = new Float32List(frameCount * 5),
+      : frames = Float32List(frameCount * 5),
         super(frameCount);
 
   @override
@@ -58,8 +57,7 @@ class ColorTimeline extends CurveTimeline {
 
   /// Sets the time and value of the specified keyframe.
   ///
-  void setFrame(
-      int frameIndex, double time, double r, double g, double b, double a) {
+  void setFrame(int frameIndex, double time, double r, double g, double b, double a) {
     frameIndex *= _ENTRIES;
     frames[frameIndex + _TIME] = time;
     frames[frameIndex + _R] = r;
@@ -69,10 +67,8 @@ class ColorTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     Slot slot = skeleton.slots[slotIndex];
     double r = 0.0;
     double g = 0.0;
@@ -85,7 +81,8 @@ class ColorTimeline extends CurveTimeline {
       } else if (pose == MixPose.current) {
         var color = slot.color;
         var setup = slot.data.color;
-        color.add((setup.r - color.r) * alpha, (setup.g - color.g) * alpha, (setup.b - color.b) * alpha, (setup.a - color.a) * alpha);
+        color.add((setup.r - color.r) * alpha, (setup.g - color.g) * alpha,
+            (setup.b - color.b) * alpha, (setup.a - color.a) * alpha);
       }
       return;
     }

@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -13,15 +12,15 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 800, height: 400);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 800, height: 400);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
   stage.console.visible = true;
   stage.console.alpha = 0.75;
-  
+
   // load "raptor" skeleton resources
 
-  var resourceManager = new ResourceManager();
+  var resourceManager = ResourceManager();
   resourceManager.addTextureAtlas("combined", "atlas/combined.json");
   resourceManager.addTextFile("goblins-spine", "spine/goblins.json");
   resourceManager.addTextFile("goblins-atlas", "spine/goblins.atlas");
@@ -39,10 +38,9 @@ Future main() async {
   // load Spine skeletons from combined texture and the individual definitions
 
   var names = ["goblins", "hero", "raptor", "speedy", "spineboy"];
-  var skeletonAnimations = new List<SkeletonAnimation>();
+  var skeletonAnimations = List<SkeletonAnimation>();
 
   for (var name in names) {
-
     // get spine texture atlases from combined texture atlas
 
     var bitmapData = resourceManager.getTextureAtlas("combined").getBitmapData(name);
@@ -53,14 +51,14 @@ Future main() async {
 
     // create spine skeleton data
 
-    var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
-    var skeletonLoader = new SkeletonLoader(attachmentLoader);
+    var attachmentLoader = TextureAtlasAttachmentLoader(textureAtlas);
+    var skeletonLoader = SkeletonLoader(attachmentLoader);
     var skeletonData = skeletonLoader.readSkeletonData(spine);
 
     // create spine skeleton animation
 
-    var animationStateData = new AnimationStateData(skeletonData);
-    var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
+    var animationStateData = AnimationStateData(skeletonData);
+    var skeletonAnimation = SkeletonAnimation(skeletonData, animationStateData);
     skeletonAnimations.add(skeletonAnimation);
   }
 
@@ -70,28 +68,38 @@ Future main() async {
   skeletonAnimations[0] // goblins-mesh
     ..state.setAnimationByName(0, "walk", true)
     ..skeleton.skinName = "goblin"
-    ..scaleX = 1.0 ..scaleY = 1.0
-    ..x = 150..y = 320;
+    ..scaleX = 1.0
+    ..scaleY = 1.0
+    ..x = 150
+    ..y = 320;
 
   skeletonAnimations[1] // hero-mesh
     ..state.setAnimationByName(0, "walk", true)
-    ..scaleX = 0.7 ..scaleY = 0.7
-    ..x = 260..y = 390;
+    ..scaleX = 0.7
+    ..scaleY = 0.7
+    ..x = 260
+    ..y = 390;
 
   skeletonAnimations[2] // raptor
     ..state.setAnimationByName(0, "walk", true)
-    ..scaleX = 0.28 ..scaleY = 0.28
-    ..x = 380 ..y = 320;
+    ..scaleX = 0.28
+    ..scaleY = 0.28
+    ..x = 380
+    ..y = 320;
 
   skeletonAnimations[3] // speedy
     ..state.setAnimationByName(0, "run", true)
-    ..scaleX = 0.65 ..scaleY = 0.65
-    ..x = 550 ..y = 390;
+    ..scaleX = 0.65
+    ..scaleY = 0.65
+    ..x = 550
+    ..y = 390;
 
   skeletonAnimations[4] // spineboy
     ..state.setAnimationByName(0, "hoverboard", true)
-    ..scaleX = 0.32 ..scaleY = 0.32
-    ..x = 660 ..y = 320;
+    ..scaleX = 0.32
+    ..scaleY = 0.32
+    ..x = 660
+    ..y = 320;
 
   // add the skeleton animations to the Stage and the Juggler
 
@@ -121,5 +129,4 @@ Future main() async {
     shape.graphics.rect(r.left, r.top, r.width, r.height);
     shape.graphics.strokeColor(Color.Red, 2.0);
   });*/
-
 }

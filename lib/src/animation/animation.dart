@@ -31,23 +31,20 @@
 part of stagexl_spine;
 
 class Animation {
-
   final String name;
   final List<Timeline> timelines;
   final double duration;
 
   Animation(this.name, this.timelines, this.duration) {
-    if (name == null) throw new ArgumentError("name cannot be null.");
-    if (timelines == null) throw new ArgumentError("timelines cannot be null.");
+    if (name == null) throw ArgumentError("name cannot be null.");
+    if (timelines == null) throw ArgumentError("timelines cannot be null.");
   }
 
   /// Poses the skeleton at the specified time for this animation.
   ///
-  void apply(
-      Skeleton skeleton, double lastTime, double time, bool loop,
-      List<SpineEvent> events, double alpha, MixPose pose, MixDirection direction) {
-
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+  void apply(Skeleton skeleton, double lastTime, double time, bool loop, List<SpineEvent> events,
+      double alpha, MixPose pose, MixDirection direction) {
+    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
 
     if (loop && duration != 0) {
       time = time.remainder(duration);
@@ -61,13 +58,12 @@ class Animation {
 
   /// target: After the first and before the last entry.
   static int binarySearch(Float32List values, double target, int step) {
-
     int low = 0;
     int high = values.length ~/ step - 2;
     int current = high >> 1;
     if (high == 0) return step;
 
-    for(;;) {
+    for (;;) {
       if (values[(current + 1) * step] <= target) {
         low = current + 1;
       } else {
@@ -83,13 +79,12 @@ class Animation {
   }
 
   static int binarySearch1(Float32List values, double target) {
-
     int low = 0;
     int high = values.length - 2;
     if (high == 0) return 1;
 
     int current = high >> 1;
-    for(;;) {
+    for (;;) {
       if (values[current + 1] <= target) {
         low = current + 1;
       } else {

@@ -33,7 +33,6 @@ part of stagexl_spine;
 /// Base class for frames that use an interpolation bezier curve.
 ///
 class CurveTimeline implements Timeline {
-
   static const double _LINEAR = 0.0;
   static const double _STEPPED = 1.0;
   static const double _BEZIER = 2.0;
@@ -41,14 +40,11 @@ class CurveTimeline implements Timeline {
 
   final Float32List _curves; // type, x, y, ...
 
-  CurveTimeline(int frameCount)
-      : _curves = new Float32List((frameCount - 1) * _BEZIER_SIZE);
+  CurveTimeline(int frameCount) : _curves = Float32List((frameCount - 1) * _BEZIER_SIZE);
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
-      double alpha, MixPose pose, MixDirection direction) {
-  }
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {}
 
   @override
   int getPropertyId() => 0;
@@ -71,7 +67,6 @@ class CurveTimeline implements Timeline {
   /// the keyframe's values.
 
   void setCurve(int frameIndex, double cx1, double cy1, double cx2, double cy2) {
-
     double tmpx = (-cx1 * 2 + cx2) * 0.03;
     double tmpy = (-cy1 * 2 + cy2) * 0.03;
     double dddfx = ((cx1 - cx2) * 3 + 1) * 0.006;
@@ -100,7 +95,6 @@ class CurveTimeline implements Timeline {
   }
 
   double getCurvePercent(int frameIndex, double percent) {
-
     if (percent < 0.0) percent = 0.0;
     if (percent > 1.0) percent = 1.0;
 

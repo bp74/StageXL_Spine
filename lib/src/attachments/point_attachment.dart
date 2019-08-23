@@ -31,18 +31,17 @@
 part of stagexl_spine;
 
 class PointAttachment extends VertexAttachment {
-
   double x = 0.0;
   double y = 0.0;
   double rotation = 0.0;
-  SpineColor color = new SpineColor(0.38, 0.94, 0.0, 1.0);
+  SpineColor color = SpineColor(0.38, 0.94, 0.0, 1.0);
 
   PointAttachment(String name) : super(name);
 
   Point<double> computeWorldPosition(Bone bone) {
     var x = this.x * bone.a + this.y * bone.b + bone.worldX;
     var y = this.x * bone.c + this.y * bone.d + bone.worldY;
-    return new Point<double>(x, y);
+    return Point<double>(x, y);
   }
 
   double computeWorldRotation(Bone bone) {

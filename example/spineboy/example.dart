@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_spine/stagexl_spine.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -13,13 +12,13 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 480, height: 600);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 480, height: 600);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load "spineboy" skeleton resources
 
-  var resourceManager = new ResourceManager();
+  var resourceManager = ResourceManager();
   var libgdxx = TextureAtlasFormat.LIBGDX;
   resourceManager.addTextFile("spineboy", "spine/spineboy.json");
   resourceManager.addTextureAtlas("spineboy", "spine/spineboy.atlas", libgdxx);
@@ -27,8 +26,8 @@ Future main() async {
 
   // add TextField to show user information
 
-  var textField = new TextField();
-  textField.defaultTextFormat = new TextFormat("Arial", 24, Color.White);
+  var textField = TextField();
+  textField.defaultTextFormat = TextFormat("Arial", 24, Color.White);
   textField.defaultTextFormat.align = TextFormatAlign.CENTER;
   textField.width = 480;
   textField.x = 0;
@@ -40,13 +39,13 @@ Future main() async {
 
   var spineJson = resourceManager.getTextFile("spineboy");
   var textureAtlas = resourceManager.getTextureAtlas("spineboy");
-  var attachmentLoader = new TextureAtlasAttachmentLoader(textureAtlas);
-  var skeletonLoader = new SkeletonLoader(attachmentLoader);
+  var attachmentLoader = TextureAtlasAttachmentLoader(textureAtlas);
+  var skeletonLoader = SkeletonLoader(attachmentLoader);
   var skeletonData = skeletonLoader.readSkeletonData(spineJson);
 
   // configure Spine animation mix
 
-  var animationStateData = new AnimationStateData(skeletonData);
+  var animationStateData = AnimationStateData(skeletonData);
   animationStateData.setMixByName("portal", "idle", 0.2);
   animationStateData.setMixByName("idle", "walk", 0.2);
   animationStateData.setMixByName("walk", "run", 0.2);
@@ -55,13 +54,13 @@ Future main() async {
 
   // create the display object showing the skeleton animation
 
-  var skeletonAnimation = new SkeletonAnimation(skeletonData, animationStateData);
+  var skeletonAnimation = SkeletonAnimation(skeletonData, animationStateData);
   skeletonAnimation.x = 240;
   skeletonAnimation.y = 520;
   skeletonAnimation.scaleX = skeletonAnimation.scaleY = 0.7;
   skeletonAnimation.boundsCalculation = SkeletonBoundsCalculation.Hull;
 
-  var mouseContainer = new Sprite();
+  var mouseContainer = Sprite();
   mouseContainer.addChild(skeletonAnimation);
   mouseContainer.mouseCursor = MouseCursor.CROSSHAIR;
   stage.juggler.add(skeletonAnimation);

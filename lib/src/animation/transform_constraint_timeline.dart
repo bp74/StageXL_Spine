@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class TransformConstraintTimeline extends CurveTimeline {
-
   static const int _ENTRIES = 5;
   static const int _PREV_TIME = -5;
   static const int _PREV_ROTATE = -4;
@@ -49,7 +48,7 @@ class TransformConstraintTimeline extends CurveTimeline {
   final Float32List frames; // time, rotate mix, translate mix, scale mix, shear mix, ...
 
   TransformConstraintTimeline(int frameCount)
-      : frames = new Float32List(frameCount * _ENTRIES),
+      : frames = Float32List(frameCount * _ENTRIES),
         super(frameCount);
 
   @override
@@ -59,10 +58,8 @@ class TransformConstraintTimeline extends CurveTimeline {
 
   /// Sets the time and mixes of the specified keyframe.
 
-  void setFrame(
-      int frameIndex, double time, double rotateMix,
-      double translateMix, double scaleMix, double shearMix) {
-
+  void setFrame(int frameIndex, double time, double rotateMix, double translateMix, double scaleMix,
+      double shearMix) {
     frameIndex *= _ENTRIES;
     frames[frameIndex + _TIME] = time;
     frames[frameIndex + _ROTATE] = rotateMix;
@@ -72,10 +69,8 @@ class TransformConstraintTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     List<TransformConstraint> tcs = skeleton.transformConstraints;
     TransformConstraint tc = tcs[transformConstraintIndex];
     TransformConstraintData data = tc.data;

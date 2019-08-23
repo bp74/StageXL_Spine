@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 abstract class AttachmentLoader {
-
   /// @return May be null to not load an attachment.
   RegionAttachment newRegionAttachment(Skin skin, String name, String path);
 
@@ -45,7 +44,7 @@ abstract class AttachmentLoader {
   PathAttachment newPathAttachment(Skin skin, String name);
 
   /// @return May be null to not load an attachment
-  PointAttachment newPointAttachment(Skin skin , String name);
+  PointAttachment newPointAttachment(Skin skin, String name);
 
   /// @return May be null to not load an attachment
   ClippingAttachment newClippingAttachment(Skin skin, String name);

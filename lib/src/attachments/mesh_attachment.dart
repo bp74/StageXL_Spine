@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class MeshAttachment extends RenderAttachment {
-
   Float32List regionUVs;
   Int16List triangles;
   Int16List edges;
@@ -41,8 +40,7 @@ class MeshAttachment extends RenderAttachment {
   double height = 0.0;
   MeshAttachment _parentMesh;
 
-  MeshAttachment(String name, String path, BitmapData bitmapData)
-      : super(name, path, bitmapData);
+  MeshAttachment(String name, String path, BitmapData bitmapData) : super(name, path, bitmapData);
 
   //---------------------------------------------------------------------------
 
@@ -73,10 +71,9 @@ class MeshAttachment extends RenderAttachment {
   //---------------------------------------------------------------------------
 
   @override
-  void initRenderGeometry()  {
-
-    ixList = new Int16List.fromList(triangles);
-    vxList = new Float32List(regionUVs.length * 2);
+  void initRenderGeometry() {
+    ixList = Int16List.fromList(triangles);
+    vxList = Float32List(regionUVs.length * 2);
 
     var matrix = bitmapData.renderTextureQuad.samplerMatrix;
     var ma = matrix.a * bitmapData.width;

@@ -31,21 +31,20 @@
 part of stagexl_spine;
 
 class Slot {
-
   final SlotData data;
   final Bone bone;
 
-  SpineColor color = new SpineColor(1.0, 1.0, 1.0, 1.0);
+  SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
   SpineColor darkColor;
 
   Attachment _attachment;
   double _attachmentTime = 0.0;
-  Float32List attachmentVertices = new Float32List(0);
+  Float32List attachmentVertices = Float32List(0);
 
   Slot(this.data, this.bone) {
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (bone == null) throw new ArgumentError("bone cannot be null.");
-    darkColor = data.darkColor == null ? null : new SpineColor(1.0, 1.0, 1.0, 1.0);
+    if (data == null) throw ArgumentError("data cannot be null.");
+    if (bone == null) throw ArgumentError("bone cannot be null.");
+    darkColor = data.darkColor == null ? null : SpineColor(1.0, 1.0, 1.0, 1.0);
     setToSetupPose();
   }
 
@@ -57,7 +56,7 @@ class Slot {
     if (_attachment == attachment) return;
     _attachment = attachment;
     _attachmentTime = bone.skeleton.time;
-    attachmentVertices = new Float32List(0);
+    attachmentVertices = Float32List(0);
   }
 
   /// Returns the time since the attachment was set.

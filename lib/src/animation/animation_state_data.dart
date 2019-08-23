@@ -31,24 +31,23 @@
 part of stagexl_spine;
 
 class AnimationStateData {
-
   final SkeletonData skeletonData;
-  final Map<String, num> animationToMixTime = new Map<String, num>();
+  final Map<String, num> animationToMixTime = Map<String, num>();
   double defaultMix = 0.0;
 
   AnimationStateData(this.skeletonData);
 
   void setMixByName(String fromName, String toName, double duration) {
     Animation from = this.skeletonData.findAnimation(fromName);
-    if (from == null) throw new ArgumentError("Animation not found: $fromName");
+    if (from == null) throw ArgumentError("Animation not found: $fromName");
     Animation to = this.skeletonData.findAnimation(toName);
-    if (to == null) throw new ArgumentError("Animation not found: $toName");
+    if (to == null) throw ArgumentError("Animation not found: $toName");
     setMix(from, to, duration);
   }
 
   void setMix(Animation from, Animation to, double duration) {
-    if (from == null) throw new ArgumentError("from cannot be null.");
-    if (to == null) throw new ArgumentError("to cannot be null.");
+    if (from == null) throw ArgumentError("from cannot be null.");
+    if (to == null) throw ArgumentError("to cannot be null.");
     animationToMixTime["${from.name}:${to.name}"] = duration;
   }
 

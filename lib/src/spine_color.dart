@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class SpineColor {
-
   //static final Color WHITE = new Color(1.0, 1.0, 1.0, 1.0);
   //static final Color RED = new Color(1.0, 0.0, 0.0, 1.0);
   //static final Color GREEN = new Color(0.0, 1.0, 0.0, 1.0);
@@ -43,9 +42,9 @@ class SpineColor {
   double b = 0.0;
   double a = 0.0;
 
-  SpineColor (this.r, this.g, this.b, [this.a = 0.0]);
+  SpineColor(this.r, this.g, this.b, [this.a = 0.0]);
 
-  SpineColor setFrom(double r, double g , double b , double a ) {
+  SpineColor setFrom(double r, double g, double b, double a) {
     this.r = r;
     this.g = g;
     this.b = b;
@@ -81,10 +80,30 @@ class SpineColor {
   }
 
   SpineColor clamp() {
-    if (this.r < 0.0) this.r = 0.0; else if (this.r > 1.0) this.r = 1.0;
-    if (this.g < 0.0) this.g = 0.0; else if (this.g > 1.0) this.g = 1.0;
-    if (this.b < 0.0) this.b = 0.0; else if (this.b > 1.0) this.b = 1.0;
-    if (this.a < 0.0) this.a = 0.0; else if (this.a > 1.0) this.a = 1.0;
+    if (this.r < 0.0) {
+      this.r = 0.0;
+    } else if (this.r > 1.0) {
+      this.r = 1.0;
+    }
+
+    if (this.g < 0.0) {
+      this.g = 0.0;
+     } else if (this.g > 1.0) {
+       this.g = 1.0;
+     }
+
+    if (this.b < 0.0) {
+      this.b = 0.0;
+    } else if (this.b > 1.0) {
+      this.b = 1.0;
+    }
+
+    if (this.a < 0.0) {
+      this.a = 0.0;
+    } else if (this.a > 1.0) {
+      this.a = 1.0;
+    }
+    
     return this;
   }
 }

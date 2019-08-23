@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class TranslateTimeline extends CurveTimeline {
-
   static const int _ENTRIES = 3;
   static const int _PREV_TIME = -3;
   static const int _PREV_X = -2;
@@ -44,7 +43,7 @@ class TranslateTimeline extends CurveTimeline {
   int boneIndex = 0;
 
   TranslateTimeline(int frameCount)
-      : frames = new Float32List(frameCount * 3),
+      : frames = Float32List(frameCount * 3),
         super(frameCount);
 
   @override
@@ -62,10 +61,8 @@ class TranslateTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
     double y = 0.0;

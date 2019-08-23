@@ -33,18 +33,17 @@ part of stagexl_spine;
 /// Stores attachments by slot index and attachment name.
 ///
 class Skin {
-
   final String name;
-  final List<Map> attachments = new List<Map>();
+  final List<Map> attachments = List<Map>();
 
   Skin(this.name) {
-    if (name == null) throw new ArgumentError("name cannot be null.");
+    if (name == null) throw ArgumentError("name cannot be null.");
   }
 
   void addAttachment(int slotIndex, String name, Attachment attachment) {
-    if (attachment == null) throw new ArgumentError("attachment cannot be null.");
+    if (attachment == null) throw ArgumentError("attachment cannot be null.");
     if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
-    if (attachments[slotIndex] == null) attachments[slotIndex] = new Map();
+    if (attachments[slotIndex] == null) attachments[slotIndex] = Map();
     attachments[slotIndex][name] = attachment;
   }
 

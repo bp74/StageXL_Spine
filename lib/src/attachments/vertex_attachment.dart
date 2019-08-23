@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class VertexAttachment extends Attachment {
-
   static int _nextID = 0;
   final int id = (_nextID++ & 65535) << 11;
 
@@ -59,9 +58,7 @@ class VertexAttachment extends Attachment {
   /// [offset] The worldVertices index to begin writing values.
 
   void computeWorldVertices2(
-      Slot slot, int start, int count,
-      Float32List worldVertices, int offset, int stride) {
-
+      Slot slot, int start, int count, Float32List worldVertices, int offset, int stride) {
     Skeleton skeleton = slot.skeleton;
     List<Bone> skeletonBones = skeleton.bones;
     Float32List deform = slot.attachmentVertices;
@@ -69,8 +66,7 @@ class VertexAttachment extends Attachment {
     Int16List bones = this.bones;
 
     if (bones == null) {
-
-      vertices = deform.length == 0 ? vertices : deform;
+      vertices = deform.isEmpty? vertices : deform;
 
       Bone bone = slot.bone;
       double x = bone.worldX;
@@ -89,9 +85,7 @@ class VertexAttachment extends Attachment {
         worldVertices[wi + 0] = vx * a + vy * b + x;
         worldVertices[wi + 1] = vx * c + vy * d + y;
       }
-
-    } else if (deform.length == 0) {
-
+    } else if (deform.isEmpty) {
       int vi = 0; // vertices index
       int bi = 0; // bones index
       int wi = offset; // world vertices index
@@ -118,9 +112,7 @@ class VertexAttachment extends Attachment {
         worldVertices[wi + 0] = x;
         worldVertices[wi + 1] = y;
       }
-
     } else {
-
       int vi = 0; // vertices index
       int di = 0; // deform index
       int bi = 0; // bones index

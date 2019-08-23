@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class TwoColorTimeline extends CurveTimeline {
-
   static const int _ENTRIES = 8;
   static const int _PREV_TIME = -8;
   static const int _PREV_R1 = -7;
@@ -54,8 +53,8 @@ class TwoColorTimeline extends CurveTimeline {
   final Float32List frames; // time, r, g, b, a, ...
 
   TwoColorTimeline(int frameCount)
-    : frames = new Float32List(frameCount * _ENTRIES),
-      super(frameCount);
+      : frames = Float32List(frameCount * _ENTRIES),
+        super(frameCount);
 
   @override
   int getPropertyId() {
@@ -63,7 +62,8 @@ class TwoColorTimeline extends CurveTimeline {
   }
 
   /// Sets the time and value of the specified keyframe.
-  void setFrame(int frameIndex , double time , double r , double g, double b , double a , double r2, double g2, double b2) {
+  void setFrame(int frameIndex, double time, double r, double g, double b, double a, double r2,
+      double g2, double b2) {
     frameIndex *= TwoColorTimeline._ENTRIES;
     this.frames[frameIndex] = time;
     this.frames[frameIndex + TwoColorTimeline._R1] = r;
@@ -76,8 +76,8 @@ class TwoColorTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     Slot slot = skeleton.slots[slotIndex];
     double r1 = 0.0;
     double g1 = 0.0;
@@ -96,14 +96,14 @@ class TwoColorTimeline extends CurveTimeline {
         var d1 = slot.darkColor;
         var l2 = slot.data.color;
         var s2 = slot.data.darkColor;
-        l1.add((l2.r - l1.r) * alpha, (l2.g - l1.g) * alpha, (l2.b - l1.b) * alpha, (l2.a - l1.a) * alpha);
+        l1.add((l2.r - l1.r) * alpha, (l2.g - l1.g) * alpha, (l2.b - l1.b) * alpha,
+            (l2.a - l1.a) * alpha);
         d1.add((s2.r - d1.r) * alpha, (s2.g - d1.g) * alpha, (s2.b - d1.b) * alpha, 0.0);
       }
       return;
     }
 
     if (time >= frames[frames.length - _ENTRIES]) {
-
       // Time is after last frame.
       r1 = frames[frames.length + _PREV_R1];
       g1 = frames[frames.length + _PREV_G1];
@@ -112,9 +112,7 @@ class TwoColorTimeline extends CurveTimeline {
       r2 = frames[frames.length + _PREV_R2];
       g2 = frames[frames.length + _PREV_G2];
       b2 = frames[frames.length + _PREV_B2];
-
     } else {
-
       // Interpolate between the previous frame and the current frame.
       int frame = Animation.binarySearch(frames, time, _ENTRIES);
 
@@ -158,7 +156,8 @@ class TwoColorTimeline extends CurveTimeline {
         light.setFromColor(slot.data.color);
         dark.setFromColor(slot.data.darkColor);
       }
-      light.add((r1 - light.r) * alpha, (g1 - light.g) * alpha, (b1 - light.b) * alpha, (a1 - light.a) * alpha);
+      light.add((r1 - light.r) * alpha, (g1 - light.g) * alpha, (b1 - light.b) * alpha,
+          (a1 - light.a) * alpha);
       dark.add((r2 - dark.r) * alpha, (g2 - dark.g) * alpha, (b2 - dark.b) * alpha, 0.0);
     }
   }

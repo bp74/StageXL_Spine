@@ -31,8 +31,7 @@
 part of stagexl_spine;
 
 class IkConstraint implements Constraint {
-
-  final List<Bone> bones = new List<Bone>();
+  final List<Bone> bones = List<Bone>();
   final IkConstraintData data;
   Bone target;
 
@@ -40,9 +39,8 @@ class IkConstraint implements Constraint {
   int bendDirection = 0;
 
   IkConstraint(this.data, Skeleton skeleton) {
-
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+    if (data == null) throw ArgumentError("data cannot be null.");
+    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
 
     mix = data.mix;
     bendDirection = data.bendDirection;
@@ -63,7 +61,7 @@ class IkConstraint implements Constraint {
     if (bones.length == 1) {
       apply1(bones[0], target.worldX, target.worldY, mix);
     } else if (bones.length == 2) {
-      apply2( bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
+      apply2(bones[0], bones[1], target.worldX, target.worldY, bendDirection, mix);
     }
   }
 
@@ -73,25 +71,24 @@ class IkConstraint implements Constraint {
   @override
   String toString() => data.name;
 
-	/// Adjusts the bone rotation so the tip is as close to the target position
+  /// Adjusts the bone rotation so the tip is as close to the target position
   /// as possible. The target is specified in the world coordinate system.
-	static void apply1 (Bone bone, double targetX, double targetY, double alpha) {
-		if (!bone.appliedValid) bone._updateAppliedTransform();
-		Bone p = bone.parent;
+  static void apply1(Bone bone, double targetX, double targetY, double alpha) {
+    if (!bone.appliedValid) bone._updateAppliedTransform();
+    Bone p = bone.parent;
     double rad2deg = 180.0 / math.pi;
-		double id = 1.0 / (p.a * p.d - p.b * p.c);
-		double x = targetX - p.worldX;
+    double id = 1.0 / (p.a * p.d - p.b * p.c);
+    double x = targetX - p.worldX;
     double y = targetY - p.worldY;
-		double tx = (x * p.d - y * p.b) * id - bone.ax;
+    double tx = (x * p.d - y * p.b) * id - bone.ax;
     double ty = (y * p.a - x * p.c) * id - bone.ay;
-		double rotationIK = math.atan2(ty, tx) * rad2deg - bone.ashearX - bone.arotation;
-		if (bone.ascaleX < 0.0) rotationIK += 180.0;
-		if (rotationIK > 180.0) rotationIK -= 360.0;
-		if (rotationIK < -180.0) rotationIK += 360.0;
-		bone.updateWorldTransformWith(
-        bone.ax, bone.ay, bone.arotation + rotationIK * alpha,
+    double rotationIK = math.atan2(ty, tx) * rad2deg - bone.ashearX - bone.arotation;
+    if (bone.ascaleX < 0.0) rotationIK += 180.0;
+    if (rotationIK > 180.0) rotationIK -= 360.0;
+    if (rotationIK < -180.0) rotationIK += 360.0;
+    bone.updateWorldTransformWith(bone.ax, bone.ay, bone.arotation + rotationIK * alpha,
         bone.ascaleX, bone.ascaleY, bone.ashearX, bone.ashearY);
-	}
+  }
 
   /// Adjusts the parent and child bone rotations so the tip of the
   /// child is as close to the target position as possible. The target
@@ -99,8 +96,8 @@ class IkConstraint implements Constraint {
   ///
   /// [child] Any descendant bone of the parent.
 
-  static void apply2(Bone parent, Bone child, double targetX, double targetY, int bendDir, double alpha) {
-
+  static void apply2(
+      Bone parent, Bone child, double targetX, double targetY, int bendDir, double alpha) {
     if (alpha == 0) {
       child.updateWorldTransform();
       return;
@@ -116,17 +113,22 @@ class IkConstraint implements Constraint {
     int os1 = 0, os2 = 0, s2 = 0;
 
     if (psx < 0) {
-      psx = -psx; os1 = 180; s2 = -1;
+      psx = -psx;
+      os1 = 180;
+      s2 = -1;
     } else {
-      os1 = 0; s2 = 1;
+      os1 = 0;
+      s2 = 1;
     }
 
     if (psy < 0) {
-      psy = -psy; s2 = -s2;
+      psy = -psy;
+      s2 = -s2;
     }
 
     if (csx < 0) {
-      csx = -csx; os2 = 180;
+      csx = -csx;
+      os2 = 180;
     } else {
       os2 = 0;
     }
@@ -170,10 +172,15 @@ class IkConstraint implements Constraint {
     double a1 = 0.0;
     double a2 = 0.0;
 
-    outer: if (u) {
+    outer:
+    if (u) {
       l2 *= psx;
       double cos = (tx * tx + ty * ty - l1 * l1 - l2 * l2) / (2 * l1 * l2);
-      if (cos < -1) cos = -1.0; else if (cos > 1) cos = 1.0;
+      if (cos < -1.0) {
+        cos = -1.0; 
+      } else if (cos > 1.0) { 
+        cos = 1.0; 
+      }
       a2 = math.acos(cos) * bendDir;
       a = l1 + l2 * cos;
       b = l2 * math.sin(a2);
@@ -245,9 +252,11 @@ class IkConstraint implements Constraint {
     double os = math.atan2(cy, cx) * s2;
     double rotation = parent.arotation;
     a1 = _wrapRotation(_toDeg(a1 - os) + os1 - rotation);
-    parent.updateWorldTransformWith(px, py, rotation + a1 * alpha, parent.ascaleX, parent.ascaleY, 0.0, 0.0);
+    parent.updateWorldTransformWith(
+        px, py, rotation + a1 * alpha, parent.ascaleX, parent.ascaleY, 0.0, 0.0);
     rotation = child.arotation;
     a2 = _wrapRotation((_toDeg(a2 + os) - child.ashearX) * s2 + os2 - rotation);
-    child.updateWorldTransformWith(cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
+    child.updateWorldTransformWith(
+        cx, cy, rotation + a2 * alpha, child.ascaleX, child.ascaleY, child.ashearX, child.ashearY);
   }
 }

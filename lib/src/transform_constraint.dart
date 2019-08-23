@@ -31,9 +31,8 @@
 part of stagexl_spine;
 
 class TransformConstraint implements Constraint {
-
   final TransformConstraintData data;
-  final List<Bone> bones = new List<Bone>();
+  final List<Bone> bones = List<Bone>();
 
   Bone target;
   double translateMix = 0.0;
@@ -41,12 +40,11 @@ class TransformConstraint implements Constraint {
   double scaleMix = 0.0;
   double shearMix = 0.0;
 
-  final Float32List _temp = new Float32List(2);
+  final Float32List _temp = Float32List(2);
 
-  TransformConstraint (this.data, Skeleton skeleton) {
-
-    if (data == null) throw new ArgumentError("data cannot be null.");
-    if (skeleton == null) throw new ArgumentError("skeleton cannot be null.");
+  TransformConstraint(this.data, Skeleton skeleton) {
+    if (data == null) throw ArgumentError("data cannot be null.");
+    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
 
     translateMix = data.translateMix;
     rotateMix = data.rotateMix;
@@ -60,21 +58,28 @@ class TransformConstraint implements Constraint {
     target = skeleton.findBone(data.target.name);
   }
 
-  void apply () {
+  void apply() {
     update();
   }
 
   @override
-  void update () {
+  void update() {
     if (data.local) {
-      if (data.relative) _applyRelativeLocal(); else _applyAbsoluteLocal();
+      if (data.relative) {
+        _applyRelativeLocal();
+      } else {
+        _applyAbsoluteLocal();
+      }
     } else {
-      if (data.relative) _applyRelativeWorld(); else _applyAbsoluteWorld();
+      if (data.relative) {
+        _applyRelativeWorld();
+      } else {
+        _applyAbsoluteWorld();
+      }
     }
   }
 
   void _applyAbsoluteWorld() {
-
     double rotateMix = this.rotateMix;
     double translateMix = this.translateMix;
     double scaleMix = this.scaleMix;
@@ -103,7 +108,12 @@ class TransformConstraint implements Constraint {
         double d = bone.d;
         double r = math.atan2(tc, ta) - math.atan2(c, a) + offsetRotation;
 
-        if (r > math.pi) r -= math.pi * 2; else if (r < -math.pi) r += math.pi * 2;
+        if (r > math.pi) {
+          r -= math.pi * 2;
+        } else if (r < -math.pi) {
+           r += math.pi * 2;
+        }
+
         r *= rotateMix;
         double cos = math.cos(r);
         double sin = math.sin(r);
@@ -142,7 +152,13 @@ class TransformConstraint implements Constraint {
         double d = bone.d;
         double by = math.atan2(d, b);
         double r = math.atan2(td, tb) - math.atan2(tc, ta) - (by - math.atan2(bone.c, bone.a));
-        if (r > math.pi) r -= math.pi * 2; else if (r < -math.pi) r += math.pi * 2;
+        
+        if (r > math.pi) {
+          r -= math.pi * 2;
+        } else if (r < -math.pi) {
+          r += math.pi * 2;
+        }
+
         r = by + (r + offsetShearY) * shearMix;
         double s = math.sqrt(b * b + d * d);
         bone._b = math.cos(r) * s;
@@ -155,7 +171,6 @@ class TransformConstraint implements Constraint {
   }
 
   void _applyRelativeWorld() {
-
     var rotateMix = this.rotateMix;
     var translateMix = this.translateMix;
     var scaleMix = this.scaleMix;
@@ -172,7 +187,6 @@ class TransformConstraint implements Constraint {
     var bones = this.bones;
 
     for (int i = 0; i < bones.length; i++) {
-
       var bone = bones[i];
       var modified = false;
 
@@ -242,7 +256,6 @@ class TransformConstraint implements Constraint {
   }
 
   void _applyAbsoluteLocal() {
-
     var rotateMix = this.rotateMix;
     var translateMix = this.translateMix;
     var scaleMix = this.scaleMix;
@@ -271,8 +284,12 @@ class TransformConstraint implements Constraint {
       var scaleX = bone.ascaleX;
       var scaleY = bone.ascaleY;
       if (scaleMix > 0.0) {
-        if (scaleX > 0.00001) scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * scaleMix) / scaleX;
-        if (scaleY > 0.00001) scaleY = (scaleY + (target.ascaleY - scaleY + this.data.offsetScaleY) * scaleMix) / scaleY;
+        if (scaleX > 0.00001) {
+          scaleX = (scaleX + (target.ascaleX - scaleX + this.data.offsetScaleX) * scaleMix) / scaleX;
+        }
+        if (scaleY > 0.00001) {
+          scaleY = (scaleY + (target.ascaleY - scaleY + this.data.offsetScaleY) * scaleMix) / scaleY;
+        }
       }
 
       var shearY = bone.ashearY;
@@ -286,7 +303,6 @@ class TransformConstraint implements Constraint {
   }
 
   void _applyRelativeLocal() {
-
     var rotateMix = this.rotateMix;
     var translateMix = this.translateMix;
     var scaleMix = this.scaleMix;
@@ -314,8 +330,12 @@ class TransformConstraint implements Constraint {
       var scaleX = bone.ascaleX;
       var scaleY = bone.ascaleY;
       if (scaleMix > 0.0) {
-        if (scaleX > 0.00001) scaleX *= ((target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix) + 1;
-        if (scaleY > 0.00001) scaleY *= ((target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix) + 1;
+        if (scaleX > 0.00001) {
+          scaleX *= ((target.ascaleX - 1 + this.data.offsetScaleX) * scaleMix) + 1;
+        }
+        if (scaleY > 0.00001) {
+          scaleY *= ((target.ascaleY - 1 + this.data.offsetScaleY) * scaleMix) + 1;
+        }
       }
 
       var shearY = bone.ashearY;
@@ -328,9 +348,8 @@ class TransformConstraint implements Constraint {
   }
 
   @override
-  int getOrder()  => data.order;
+  int getOrder() => data.order;
 
   @override
-  String toString () => data.name;
-
+  String toString() => data.name;
 }

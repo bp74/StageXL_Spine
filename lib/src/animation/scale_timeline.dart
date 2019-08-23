@@ -31,7 +31,6 @@
 part of stagexl_spine;
 
 class ScaleTimeline extends TranslateTimeline {
-
   static const int _ENTRIES = 3;
   static const int _PREV_TIME = -3;
   static const int _PREV_X = -2;
@@ -48,10 +47,8 @@ class ScaleTimeline extends TranslateTimeline {
   }
 
   @override
-  void apply(
-      Skeleton skeleton, double lastTime, double time,
-      List<SpineEvent> firedEvents, double alpha, MixPose pose, MixDirection direction) {
-
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+      double alpha, MixPose pose, MixDirection direction) {
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;
     double y = 0.0;
