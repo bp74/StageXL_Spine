@@ -17,7 +17,7 @@ Goblins (<http://www.stagexl.org/show/spine/goblins/example.html>)
 PowerUp (<http://www.stagexl.org/show/spine/powerup/example.html>)  
 Hero (<http://www.stagexl.org/show/spine/hero/example.html>)  
 Coin (<http://www.stagexl.org/show/spine/coin/example.html>)  
-Combined (<http://www.stagexl.org/show/spine/texture-atlas/example.html>)  
+Combined (<http://www.stagexl.org/show/spine/texture_atlas/example.html>)  
 
 ## Spine Runtime
 
