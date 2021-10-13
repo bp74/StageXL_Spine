@@ -31,9 +31,9 @@
 part of stagexl_spine;
 
 class SkeletonBounds {
-  final List<BoundingBoxAttachment> boundingBoxes = List<BoundingBoxAttachment>();
-  final List<Float32List> verticesList = List<Float32List>();
-  final List<ByteBuffer> _byteBuffers = List<ByteBuffer>();
+  final List<BoundingBoxAttachment> boundingBoxes = [];
+  final List<Float32List> verticesList = [];
+  final List<ByteBuffer> _byteBuffers = [];
 
   double minX = 0.0;
   double minY = 0.0;
@@ -55,11 +55,11 @@ class SkeletonBounds {
 
     for (int i = 0; i < slots.length; i++) {
       Slot slot = slots[i];
-      Attachment attachment = slot.attachment;
+      Attachment? attachment = slot.attachment;
 
       if (attachment is BoundingBoxAttachment) {
         BoundingBoxAttachment boundingBox = attachment;
-        Float32List vertices;
+        Float32List? vertices;
         int verticesLength = boundingBox.worldVerticesLength;
         int byteBufferLength = verticesLength << 2;
 
@@ -156,7 +156,7 @@ class SkeletonBounds {
   /// or null. When doing many checks, it is usually more efficient to only
   /// call this method if [aabbContainsPoint] returns true.
   ///
-  BoundingBoxAttachment containsPoint(double x, double y) {
+  BoundingBoxAttachment? containsPoint(double x, double y) {
     for (int i = 0; i < verticesList.length; i++) {
       BoundingBoxAttachment boundingBox = boundingBoxes[i];
       Float32List vertices = verticesList[i];
@@ -170,7 +170,7 @@ class SkeletonBounds {
   /// segment, or null. When doing many checks, it is usually more efficient
   /// to only call this method if [aabbIntersectsSegment] returns true.
   ///
-  BoundingBoxAttachment intersectsSegment(double x1, double y1, double x2, double y2) {
+  BoundingBoxAttachment? intersectsSegment(double x1, double y1, double x2, double y2) {
     for (int i = 0; i < verticesList.length; i++) {
       BoundingBoxAttachment boundingBox = boundingBoxes[i];
       Float32List vertices = verticesList[i];
@@ -180,7 +180,7 @@ class SkeletonBounds {
     return null;
   }
 
-  Float32List getVertices(BoundingBoxAttachment attachment) {
+  Float32List? getVertices(BoundingBoxAttachment attachment) {
     int index = boundingBoxes.indexOf(attachment);
     return index == -1 ? null : verticesList[index];
   }

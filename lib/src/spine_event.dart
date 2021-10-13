@@ -36,11 +36,9 @@ class SpineEvent {
 
   int intValue;
   double floatValue;
-  String stringValue;
+  String? stringValue;
 
-  SpineEvent(this.time, this.data) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-  }
+  SpineEvent(this.time, this.data, this.intValue, this.floatValue, this.stringValue);
 
   @override
   String toString() => data.name;

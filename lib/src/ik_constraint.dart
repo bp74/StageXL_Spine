@@ -31,25 +31,21 @@
 part of stagexl_spine;
 
 class IkConstraint implements Constraint {
-  final List<Bone> bones = List<Bone>();
+  final List<Bone> bones = [];
   final IkConstraintData data;
-  Bone target;
+  final Bone target;
 
   double mix = 1.0;
   int bendDirection = 0;
 
-  IkConstraint(this.data, Skeleton skeleton) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
-
+  IkConstraint(this.data, Skeleton skeleton) : target = skeleton.findBone(data.target.name)! {
     mix = data.mix;
     bendDirection = data.bendDirection;
 
     for (BoneData boneData in data.bones) {
-      bones.add(skeleton.findBone(boneData.name));
+      final bone = skeleton.findBone(boneData.name);
+      if (bone != null) bones.add(bone);
     }
-
-    target = skeleton.findBone(data.target.name);
   }
 
   void apply() {
@@ -75,7 +71,7 @@ class IkConstraint implements Constraint {
   /// as possible. The target is specified in the world coordinate system.
   static void apply1(Bone bone, double targetX, double targetY, double alpha) {
     if (!bone.appliedValid) bone._updateAppliedTransform();
-    Bone p = bone.parent;
+    Bone p = bone.parent!;
     double rad2deg = 180.0 / math.pi;
     double id = 1.0 / (p.a * p.d - p.b * p.c);
     double x = targetX - p.worldX;
@@ -153,7 +149,7 @@ class IkConstraint implements Constraint {
       cwy = c * cx + d * cy + parent.worldY;
     }
 
-    Bone pp = parent.parent;
+    Bone pp = parent.parent!;
     a = pp.a;
     b = pp.b;
     c = pp.c;

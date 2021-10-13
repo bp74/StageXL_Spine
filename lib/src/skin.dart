@@ -34,23 +34,21 @@ part of stagexl_spine;
 ///
 class Skin {
   final String name;
-  final List<Map> attachments = List<Map>();
+  final List<Map<String, Attachment>?> attachments = [];
 
-  Skin(this.name) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  Skin(this.name);
 
   void addAttachment(int slotIndex, String name, Attachment attachment) {
-    if (attachment == null) throw ArgumentError("attachment cannot be null.");
-    if (slotIndex >= attachments.length) attachments.length = slotIndex + 1;
-    if (attachments[slotIndex] == null) attachments[slotIndex] = Map();
-    attachments[slotIndex][name] = attachment;
+    if (slotIndex >= attachments.length) {
+      while (attachments.length <= slotIndex) attachments.add({});
+    }
+    attachments[slotIndex]![name] = attachment;
   }
 
-  Attachment getAttachment(int slotIndex, String name) {
+  Attachment? getAttachment(int slotIndex, String name) {
     if (slotIndex >= attachments.length) return null;
-    Map map = attachments[slotIndex];
-    return map != null ? map[name] : null;
+    var map = attachments[slotIndex];
+    return map?[name];
   }
 
   /// Attach each attachment in this skin if the corresponding attachment in
@@ -59,13 +57,13 @@ class Skin {
   void attachAll(Skeleton skeleton, Skin oldSkin) {
     int slotIndex = 0;
     for (Slot slot in skeleton.slots) {
-      Attachment slotAttachment = slot.attachment;
+      Attachment? slotAttachment = slot.attachment;
       if (slotAttachment != null && slotIndex < oldSkin.attachments.length) {
         Map map = oldSkin.attachments[slotIndex] ?? {};
         for (var name in map.keys) {
           Attachment skinAttachment = map[name];
           if (slotAttachment == skinAttachment) {
-            Attachment attachment = getAttachment(slotIndex, name);
+            Attachment? attachment = getAttachment(slotIndex, name);
             if (attachment != null) slot.attachment = attachment;
             break;
           }

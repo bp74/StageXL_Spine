@@ -32,14 +32,14 @@ part of stagexl_spine;
 
 class DeformTimeline extends CurveTimeline {
   final Float32List frames;
-  final List<Float32List> frameVertices;
+  final List<Float32List?> frameVertices;
 
   int slotIndex = 0;
   VertexAttachment attachment;
 
-  DeformTimeline(int frameCount)
+  DeformTimeline(int frameCount, this.attachment)
       : frames = Float32List(frameCount),
-        frameVertices = List<Float32List>(frameCount),
+        frameVertices = List<Float32List?>.filled(frameCount, null),
         super(frameCount);
 
   @override
@@ -55,15 +55,15 @@ class DeformTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     Slot slot = skeleton.slots[slotIndex];
     if (slot.attachment is! VertexAttachment) return;
 
-    VertexAttachment vertexAttachment = slot.attachment;
+    var vertexAttachment = slot.attachment as VertexAttachment;
     if (vertexAttachment.applyDeform(attachment) == false) return;
 
-    var vertexCount = frameVertices[0].length;
+    var vertexCount = frameVertices[0]!.length;
     var targetVertices = slot.attachmentVertices;
     if (targetVertices.isEmpty) alpha = 1.0;
     var setupVertices = vertexAttachment.vertices;
@@ -102,7 +102,7 @@ class DeformTimeline extends CurveTimeline {
 
     if (time >= frames[frames.length - 1]) {
       // Time is after last frame.
-      Float32List lastVertices = frameVertices[frames.length - 1];
+      Float32List lastVertices = frameVertices[frames.length - 1]!;
       if (alpha == 1.0) {
         // Vertex positions or deform offsets, no alpha.
         for (int i = 0; i < vertexCount; i++) {
@@ -137,8 +137,8 @@ class DeformTimeline extends CurveTimeline {
     int frame = Animation.binarySearch1(frames, time);
     double t0 = frames[frame - 1];
     double t1 = frames[frame + 0];
-    Float32List v0List = frameVertices[frame - 1];
-    Float32List v1List = frameVertices[frame + 0];
+    Float32List v0List = frameVertices[frame - 1]!;
+    Float32List v1List = frameVertices[frame + 0]!;
     double between = 1.0 - (time - t1) / (t0 - t1);
     double percent = getCurvePercent(frame - 1, between);
 

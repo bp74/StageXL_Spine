@@ -35,11 +35,9 @@ class EventData {
 
   int intValue = 0;
   double floatValue = 0.0;
-  String stringValue = "";
+  String? stringValue = "";
 
-  EventData(this.name) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  EventData(this.name);
 
   @override
   String toString() => name;

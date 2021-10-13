@@ -31,21 +31,15 @@
 part of stagexl_spine;
 
 abstract class AttachmentLoader {
-  /// @return May be null to not load an attachment.
-  RegionAttachment newRegionAttachment(Skin skin, String name, String path);
+  RegionAttachment? newRegionAttachment(Skin skin, String name, String path);
 
-  /// @return May be null to not load an attachment.
-  MeshAttachment newMeshAttachment(Skin skin, String name, String path);
+  MeshAttachment? newMeshAttachment(Skin skin, String name, String path);
 
-  /// @return May be null to not load an attachment.
-  BoundingBoxAttachment newBoundingBoxAttachment(Skin skin, String name);
+  BoundingBoxAttachment? newBoundingBoxAttachment(Skin skin, String name);
 
-  /// @return May be null to not load an attachment.
-  PathAttachment newPathAttachment(Skin skin, String name);
+  PathAttachment? newPathAttachment(Skin skin, String name);
 
-  /// @return May be null to not load an attachment
-  PointAttachment newPointAttachment(Skin skin, String name);
+  PointAttachment? newPointAttachment(Skin skin, String name);
 
-  /// @return May be null to not load an attachment
-  ClippingAttachment newClippingAttachment(Skin skin, String name);
+  ClippingAttachment? newClippingAttachment(Skin skin, String name);
 }

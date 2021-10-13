@@ -32,14 +32,14 @@ part of stagexl_spine;
 
 class PathConstraintData {
   final String name;
-  final List<BoneData> bones = List<BoneData>();
+  final List<BoneData> bones = [];
 
-  SlotData target;
-  PositionMode positionMode;
+  late final SlotData target;
+  PositionMode? positionMode;
   //SpacingMode spacingMode;
   // Workaround for https://github.com/dart-lang/build/issues/1521
-  String spacingMode;
-  RotateMode rotateMode;
+  String? spacingMode;
+  RotateMode? rotateMode;
 
   int order = 0;
   double offsetRotation = 0.0;
@@ -48,9 +48,7 @@ class PathConstraintData {
   double rotateMix = 0.0;
   double translateMix = 0.0;
 
-  PathConstraintData(this.name) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  PathConstraintData(this.name);
 
   @override
   String toString() => name;

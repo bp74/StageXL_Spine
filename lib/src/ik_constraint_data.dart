@@ -32,16 +32,14 @@ part of stagexl_spine;
 
 class IkConstraintData {
   final String name;
-  final List<BoneData> bones = List<BoneData>();
+  final List<BoneData> bones = [];
 
-  BoneData target;
+  late final BoneData target;
   int bendDirection = 1;
   int order = 0;
   double mix = 1.0;
 
-  IkConstraintData(this.name) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  IkConstraintData(this.name);
 
   @override
   String toString() => name;

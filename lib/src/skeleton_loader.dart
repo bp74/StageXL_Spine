@@ -32,13 +32,13 @@ part of stagexl_spine;
 
 class SkeletonLoader {
   final AttachmentLoader attachmentLoader;
-  final List<_LinkedMesh> _linkedMeshes = List<_LinkedMesh>();
+  final List<_LinkedMesh> _linkedMeshes = [];
 
   SkeletonLoader(this.attachmentLoader);
 
   /// Parameter 'object' must be a String or Map.
   ///
-  SkeletonData readSkeletonData(dynamic object, [String name]) {
+  SkeletonData readSkeletonData(dynamic object, [String? name]) {
     Map root;
 
     if (object == null) {
@@ -54,25 +54,25 @@ class SkeletonLoader {
     SkeletonData skeletonData = SkeletonData();
     skeletonData.name = name;
 
-    // Skeletion
+    // Skeleton
 
-    Map skeletonMap = root["skeleton"];
+    Map? skeletonMap = root["skeleton"];
 
     if (skeletonMap != null) {
-      skeletonData.version = _getString(skeletonMap, "spine", "");
-      skeletonData.hash = _getString(skeletonMap, "hash", "");
+      skeletonData.version = _getString(skeletonMap, "spine", "")!;
+      skeletonData.hash = _getString(skeletonMap, "hash", "")!;
       skeletonData.width = _getDouble(skeletonMap, "width", 0.0);
       skeletonData.height = _getDouble(skeletonMap, "height", 0.0);
       skeletonData.fps = _getDouble(skeletonMap, "fps", 0.0);
-      skeletonData.imagesPath = _getString(skeletonMap, "images", "");
+      skeletonData.imagesPath = _getString(skeletonMap, "images", "")!;
     }
 
     // Bones
 
     for (Map boneMap in root["bones"] ?? []) {
-      BoneData parent;
+      BoneData? parent;
 
-      String parentName = _getString(boneMap, "parent", null);
+      String? parentName = _getString(boneMap, "parent", null);
       if (parentName != null) {
         parent = skeletonData.findBone(parentName);
         if (parent == null) throw StateError("Parent bone not found: $parentName");
@@ -80,8 +80,11 @@ class SkeletonLoader {
 
       var boneIndex = skeletonData.bones.length;
       var boneName = _getString(boneMap, "name", null);
+      if (boneName == null)
+        continue;
+
       var boneData = BoneData(boneIndex, boneName, parent);
-      var transformMode = "TransformMode." + _getString(boneMap, "transform", "normal");
+      var transformMode = "TransformMode." + _getString(boneMap, "transform", "normal")!;
 
       boneData.length = _getDouble(boneMap, "length", 0.0);
       boneData.x = _getDouble(boneMap, "x", 0.0);
@@ -101,17 +104,20 @@ class SkeletonLoader {
     for (Map slotMap in root["slots"] ?? []) {
       var slotName = _getString(slotMap, "name", null);
       var boneName = _getString(slotMap, "bone", null);
+      if (slotName == null || boneName == null)
+        continue;
+
       var boneData = skeletonData.findBone(boneName);
       if (boneData == null) throw StateError("Slot bone not found: $boneName");
 
       var slotIndex = skeletonData.slots.length;
       SlotData slotData = SlotData(slotIndex, slotName, boneData);
-      slotData.color.setFromString(_getString(slotMap, "color", "FFFFFFFF"));
+      slotData.color.setFromString(_getString(slotMap, "color", "FFFFFFFF")!);
       slotData.attachmentName = _getString(slotMap, "attachment", null);
 
       if (slotMap.containsKey("dark")) {
-        slotData.darkColor = SpineColor(1.0, 1.0, 1.0, 0.0);
-        slotData.darkColor.setFromString(_getString(slotMap, "dark", "FFFFFF"));
+        slotData.darkColor =
+          SpineColor(1.0, 1.0, 1.0, 0.0)..setFromString(_getString(slotMap, "dark", "FFFFFF")!);
       }
 
       switch (_getString(slotMap, "blend", "normal")) {
@@ -136,6 +142,9 @@ class SkeletonLoader {
 
     for (Map constraintMap in root["ik"] ?? []) {
       var constraintName = _getString(constraintMap, "name", null);
+      if (constraintName == null)
+        continue;
+
       var constraintData = IkConstraintData(constraintName);
 
       for (var boneName in constraintMap["bones"]) {
@@ -145,6 +154,9 @@ class SkeletonLoader {
       }
 
       var targetName = _getString(constraintMap, "target", null);
+      if (targetName == null)
+        continue;
+
       var target = skeletonData.findBone(targetName);
       if (target == null) throw StateError("Target bone not found: $targetName");
 
@@ -160,6 +172,9 @@ class SkeletonLoader {
 
     for (Map constraintMap in root["transform"] ?? []) {
       var constraintName = _getString(constraintMap, "name", null);
+      if (constraintName == null)
+        continue;
+
       var constraintData = TransformConstraintData(constraintName);
 
       for (String boneName in constraintMap["bones"]) {
@@ -169,6 +184,9 @@ class SkeletonLoader {
       }
 
       var targetName = _getString(constraintMap, "target", null);
+      if (targetName == null)
+        continue;
+
       var target = skeletonData.findBone(targetName);
       if (target == null) throw StateError("Target bone not found: $targetName");
 
@@ -194,6 +212,9 @@ class SkeletonLoader {
 
     for (Map constraintMap in root["path"] ?? []) {
       var constraintName = _getString(constraintMap, "name", null);
+      if (constraintName == null)
+        continue;
+
       var pathConstraintData = PathConstraintData(constraintName);
 
       for (String boneName in constraintMap["bones"]) {
@@ -203,12 +224,15 @@ class SkeletonLoader {
       }
 
       var targetName = _getString(constraintMap, "target", null);
+      if (targetName == null)
+        continue;
+
       var target = skeletonData.findSlot(targetName);
       if (target == null) throw StateError("Path target slot not found: $targetName");
 
-      var positionMode = "PositionMode." + _getString(constraintMap, "positionMode", "percent");
-      var spacingMode = "SpacingMode." + _getString(constraintMap, "spacingMode", "length");
-      var rotateMode = "RotateMode." + _getString(constraintMap, "rotateMode", "tangent");
+      var positionMode = "PositionMode." + _getString(constraintMap, "positionMode", "percent")!;
+      var spacingMode = "SpacingMode." + _getString(constraintMap, "spacingMode", "length")!;
+      var rotateMode = "RotateMode." + _getString(constraintMap, "rotateMode", "tangent")!;
 
       pathConstraintData.target = target;
       pathConstraintData.order = _getInt(constraintMap, "order", 0);
@@ -252,7 +276,7 @@ class SkeletonLoader {
     for (var linkedMesh in _linkedMeshes) {
       var parentSkin = linkedMesh.skin == null
           ? skeletonData.defaultSkin
-          : skeletonData.findSkin(linkedMesh.skin);
+          : skeletonData.findSkin(linkedMesh.skin!);
       if (parentSkin == null) throw StateError("Skin not found: ${linkedMesh.skin}");
       var parentMesh = parentSkin.getAttachment(linkedMesh.slotIndex, linkedMesh.parent);
       if (parentMesh == null) throw StateError("Parent mesh not found: ${linkedMesh.parent}");
@@ -288,13 +312,13 @@ class SkeletonLoader {
 
   //---------------------------------------------------------------------------
 
-  Attachment readAttachment(
+  Attachment? readAttachment(
       Map map, Skin skin, int slotIndex, String name, SkeletonData skeletonData) {
-    name = _getString(map, "name", name);
+    name = _getString(map, "name", name)!;
 
-    var typeName = "AttachmentType." + _getString(map, "type", "region");
+    var typeName = "AttachmentType." + _getString(map, "type", "region")!;
     var type = AttachmentType.values.firstWhere((e) => e.toString() == typeName);
-    var path = _getString(map, "path", name);
+    var path = _getString(map, "path", name)!;
 
     switch (type) {
       case AttachmentType.region:
@@ -308,7 +332,7 @@ class SkeletonLoader {
         region.rotation = _getDouble(map, "rotation", 0.0);
         region.width = _getDouble(map, "width", 0.0);
         region.height = _getDouble(map, "height", 0.0);
-        region.color.setFromString(_getString(map, "color", "FFFFFFFF"));
+        region.color.setFromString(_getString(map, "color", "FFFFFFFF")!);
         region.update();
 
         return region;
@@ -322,14 +346,14 @@ class SkeletonLoader {
         var mesh = attachmentLoader.newMeshAttachment(skin, name, path);
         if (mesh == null) return null;
 
-        mesh.color.setFromString(_getString(map, "color", "FFFFFFFF"));
+        mesh.color.setFromString(_getString(map, "color", "FFFFFFFF")!);
         mesh.width = _getDouble(map, "width", 0.0);
         mesh.height = _getDouble(map, "height", 0.0);
 
         var parentName = _getString(map, "parent", null);
-        var skinName = _getString(map, "skin", null);
 
         if (parentName != null) {
+          var skinName = _getString(map, "skin", null);
           var lm = _LinkedMesh(mesh, skinName, slotIndex, parentName);
           _linkedMeshes.add(lm);
           mesh.inheritDeform = _getBool(map, "deform", true);
@@ -375,7 +399,7 @@ class SkeletonLoader {
         point.x = _getDouble(map, "x", 0.0);
         point.y = _getDouble(map, "y", 0.0);
         point.rotation = _getDouble(map, "rotation", 0.0);
-        point.color.setFromString(_getString(map, "color", "FFFFFFFF"));
+        point.color.setFromString(_getString(map, "color", "FFFFFFFF")!);
         return point;
 
       case AttachmentType.clipping:
@@ -391,12 +415,10 @@ class SkeletonLoader {
           clip.endSlot = slot;
         }
 
-        clip.color.setFromString(_getString(map, "color", "FFFFFFFF"));
+        clip.color.setFromString(_getString(map, "color", "FFFFFFFF")!);
         _readVertices(map, clip, vertexCount << 1);
         return clip;
     }
-
-    return null;
   }
 
   //---------------------------------------------------------------------------
@@ -405,8 +427,8 @@ class SkeletonLoader {
     attachment.worldVerticesLength = verticesLength;
 
     var vertices = _getFloat32List(map, "vertices");
-    var weights = List<double>();
-    var bones = List<int>();
+    var weights = <double>[];
+    var bones = <int>[];
 
     if (verticesLength == vertices.length) {
       attachment.vertices = vertices;
@@ -431,7 +453,7 @@ class SkeletonLoader {
   //---------------------------------------------------------------------------
 
   void _readAnimation(Map map, String name, SkeletonData skeletonData) {
-    List<Timeline> timelines = List<Timeline>();
+    List<Timeline> timelines = [];
     double duration = 0.0;
 
     //-------------------------------------
@@ -453,7 +475,7 @@ class SkeletonLoader {
           for (Map valueMap in values) {
             var time = _getDouble(valueMap, "time", 0.0);
             var name = _getString(valueMap, "name", null);
-            attachmentTimeline.setFrame(frameIndex, time, name);
+            if (name != null) attachmentTimeline.setFrame(frameIndex, time, name);
             frameIndex++;
           }
 
@@ -468,7 +490,7 @@ class SkeletonLoader {
           for (Map valueMap in values) {
             double time = _getDouble(valueMap, "time", 0.0);
             SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
-            color.setFromString(_getString(valueMap, "color", "FFFFFFFF"));
+            color.setFromString(_getString(valueMap, "color", "FFFFFFFF")!);
             colorTimeline.setFrame(frameIndex, time, color.r, color.g, color.b, color.a);
             _readCurve(valueMap, colorTimeline, frameIndex);
             frameIndex++;
@@ -486,8 +508,8 @@ class SkeletonLoader {
             var time = _getDouble(valueMap, "time", 0.0);
             var cl = SpineColor(1.0, 1.0, 1.0, 1.0);
             var cd = SpineColor(1.0, 1.0, 1.0, 1.0);
-            cl.setFromString(_getString(valueMap, "light", "FFFFFFFF"));
-            cd.setFromString(_getString(valueMap, "dark", "FFFFFFFF"));
+            cl.setFromString(_getString(valueMap, "light", "FFFFFFFF")!);
+            cd.setFromString(_getString(valueMap, "dark", "FFFFFFFF")!);
             twoColorTimeline.setFrame(frameIndex, time, cl.r, cl.g, cl.b, cl.a, cd.r, cd.g, cd.b);
             _readCurve(valueMap, twoColorTimeline, frameIndex);
             frameIndex++;
@@ -574,7 +596,7 @@ class SkeletonLoader {
     Map ikMap = map["ik"] ?? {};
 
     for (String ikConstraintName in ikMap.keys) {
-      IkConstraintData ikConstraint = skeletonData.findIkConstraint(ikConstraintName);
+      IkConstraintData ikConstraint = skeletonData.findIkConstraint(ikConstraintName)!;
       List valueMaps = ikMap[ikConstraintName];
       IkConstraintTimeline ikTimeline = IkConstraintTimeline(valueMaps.length);
       ikTimeline.ikConstraintIndex = skeletonData.ikConstraints.indexOf(ikConstraint);
@@ -598,7 +620,7 @@ class SkeletonLoader {
 
     for (String transformName in transformMap.keys) {
       TransformConstraintData transformConstraint =
-          skeletonData.findTransformConstraint(transformName);
+          skeletonData.findTransformConstraint(transformName)!;
       List valueMaps = transformMap[transformName];
       TransformConstraintTimeline transformTimeline = TransformConstraintTimeline(valueMaps.length);
       transformTimeline.transformConstraintIndex =
@@ -686,7 +708,7 @@ class SkeletonLoader {
     Map deformMap = map["deform"] ?? {};
 
     for (String skinName in deformMap.keys) {
-      Skin skin = skeletonData.findSkin(skinName);
+      Skin skin = skeletonData.findSkin(skinName)!;
       Map slotMap = deformMap[skinName];
 
       for (String slotName in slotMap.keys) {
@@ -695,7 +717,7 @@ class SkeletonLoader {
 
         for (String timelineName in timelineMap.keys) {
           List valueMaps = timelineMap[timelineName];
-          VertexAttachment attachment = skin.getAttachment(slotIndex, timelineName);
+          var attachment = skin.getAttachment(slotIndex, timelineName) as VertexAttachment?;
           if (attachment == null) throw StateError("Deform attachment not found: $timelineName");
 
           bool weighted = attachment.bones != null;
@@ -703,9 +725,8 @@ class SkeletonLoader {
           int deformLength = weighted ? vertices.length ~/ 3 * 2 : vertices.length;
           int frameIndex = 0;
 
-          DeformTimeline deformTimeline = DeformTimeline(valueMaps.length);
+          DeformTimeline deformTimeline = DeformTimeline(valueMaps.length, attachment);
           deformTimeline.slotIndex = slotIndex;
-          deformTimeline.attachment = attachment;
 
           for (Map valueMap in valueMaps) {
             Float32List deform;
@@ -739,7 +760,7 @@ class SkeletonLoader {
 
     //-------------------------------------
 
-    List drawOrderValues = map["drawOrder"] ?? map["draworder"];
+    List? drawOrderValues = map["drawOrder"] ?? map["draworder"];
 
     if (drawOrderValues != null) {
       DrawOrderTimeline drawOrderTimeline = DrawOrderTimeline(drawOrderValues.length);
@@ -748,7 +769,7 @@ class SkeletonLoader {
 
       for (Map drawOrderMap in drawOrderValues) {
         double time = _getDouble(drawOrderMap, "time", 0.0);
-        Int16List drawOrder;
+        Int16List? drawOrder;
 
         if (drawOrderMap.containsKey("offsets")) {
           drawOrder = Int16List(slotCount);
@@ -762,7 +783,10 @@ class SkeletonLoader {
           int unchangedIndex = 0;
 
           for (Map offsetMap in offsetMaps) {
-            String slotName = _getString(offsetMap, "slot", null);
+            var slotName = _getString(offsetMap, "slot", null);
+            if (slotName == null)
+              continue;
+
             int slotIndex = skeletonData.findSlotIndex(slotName);
             if (slotIndex == -1) throw StateError("Slot not found: $slotName");
             // Collect unchanged items.
@@ -770,7 +794,7 @@ class SkeletonLoader {
               unchanged[unchangedIndex++] = originalIndex++;
             }
             // Set changed items.
-            drawOrder[originalIndex + offsetMap["offset"]] = originalIndex++;
+            drawOrder[originalIndex + (offsetMap["offset"] as int)] = originalIndex++;
           }
 
           // Collect remaining unchanged items.
@@ -802,10 +826,13 @@ class SkeletonLoader {
         var eventData = skeletonData.findEvent(eventMap["name"]);
         if (eventData == null) throw StateError("Event not found: ${eventMap["name"]}");
         var eventTime = _getDouble(eventMap, "time", 0.0);
-        var event = SpineEvent(eventTime, eventData);
-        event.intValue = _getInt(eventMap, "int", eventData.intValue);
-        event.floatValue = _getDouble(eventMap, "float", eventData.floatValue);
-        event.stringValue = _getString(eventMap, "string", eventData.stringValue);
+        var event = SpineEvent(
+            eventTime,
+            eventData,
+            _getInt(eventMap, "int", eventData.intValue),
+            _getDouble(eventMap, "float", eventData.floatValue),
+            _getString(eventMap, "string", eventData.stringValue),
+        );
         eventTimeline.setFrame(frameIndex++, event);
       }
 
@@ -852,7 +879,7 @@ class SkeletonLoader {
     return result;
   }
 
-  String _getString(Map map, String name, String defaultValue) {
+  String? _getString(Map map, String name, String? defaultValue) {
     var value = map[name];
     return value is String ? value : defaultValue;
   }
@@ -893,7 +920,7 @@ class SkeletonLoader {
 
 class _LinkedMesh {
   final String parent;
-  final String skin;
+  final String? skin;
   final int slotIndex;
   final MeshAttachment mesh;
 

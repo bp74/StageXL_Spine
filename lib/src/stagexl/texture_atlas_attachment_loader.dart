@@ -4,11 +4,7 @@ class TextureAtlasAttachmentLoader implements AttachmentLoader {
   final TextureAtlas textureAtlas;
   final String namePrefix;
 
-  TextureAtlasAttachmentLoader(this.textureAtlas, [this.namePrefix = ""]) {
-    if (textureAtlas == null) {
-      throw ArgumentError("textureAtlas cannot be null.");
-    }
-  }
+  TextureAtlasAttachmentLoader(this.textureAtlas, [this.namePrefix = ""]);
 
   @override
   RegionAttachment newRegionAttachment(Skin skin, String name, String path) {

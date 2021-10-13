@@ -1,14 +1,14 @@
 name: stagexl_spine
-version: 0.10.2
+version: 0.11.0
 author: Bernhard Pichler <support@stagexl.org>
 description: The Spine runtime for the StageXL library.
 homepage: https://github.com/bp74/StageXL_Spine
 
 environment:
-  sdk: '>=2.9.0 <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  stagexl: '>=1.4.6 <2.0.0'
+  stagexl: '>=2.0.0 <3.0.0'
 
 dev_dependencies:
   pedantic: any

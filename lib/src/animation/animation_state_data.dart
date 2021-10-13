@@ -38,21 +38,19 @@ class AnimationStateData {
   AnimationStateData(this.skeletonData);
 
   void setMixByName(String fromName, String toName, double duration) {
-    Animation from = this.skeletonData.findAnimation(fromName);
+    Animation? from = skeletonData.findAnimation(fromName);
     if (from == null) throw ArgumentError("Animation not found: $fromName");
-    Animation to = this.skeletonData.findAnimation(toName);
+    Animation? to = skeletonData.findAnimation(toName);
     if (to == null) throw ArgumentError("Animation not found: $toName");
     setMix(from, to, duration);
   }
 
   void setMix(Animation from, Animation to, double duration) {
-    if (from == null) throw ArgumentError("from cannot be null.");
-    if (to == null) throw ArgumentError("to cannot be null.");
     animationToMixTime["${from.name}:${to.name}"] = duration;
   }
 
   double getMix(Animation from, Animation to) {
-    double time = animationToMixTime["${from.name}:${to.name}"];
+    var time = animationToMixTime["${from.name}:${to.name}"];
     return time is double ? time : defaultMix;
   }
 }

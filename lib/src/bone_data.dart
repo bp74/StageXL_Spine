@@ -33,7 +33,7 @@ part of stagexl_spine;
 class BoneData {
   final int index;
   final String name;
-  final BoneData parent;
+  final BoneData? parent;
 
   double length = 0.0;
   double x = 0.0;
@@ -45,10 +45,7 @@ class BoneData {
   double shearY = 0.0;
   TransformMode transformMode = TransformMode.normal;
 
-  BoneData(this.index, this.name, this.parent) {
-    if (index < 0) throw ArgumentError("index must be >= 0");
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  BoneData(this.index, this.name, this.parent);
 
   @override
   String toString() => name;

@@ -38,7 +38,7 @@ class PathConstraint implements Constraint {
   static const double _epsilon = 0.00001;
 
   final PathConstraintData data;
-  final List<Bone> bones = List<Bone>();
+  final List<Bone> bones = [];
 
   Slot target;
   double position = 0.0;
@@ -53,15 +53,11 @@ class PathConstraint implements Constraint {
   Float32List _lengths = Float32List(0);
   Float32List _segments = Float32List(10);
 
-  PathConstraint(this.data, Skeleton skeleton) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
-
+  PathConstraint(this.data, Skeleton skeleton) : target = skeleton.findSlot(data.target.name)! {
     for (BoneData boneData in data.bones) {
-      bones.add(skeleton.findBone(boneData.name));
+      bones.add(skeleton.findBone(boneData.name)!);
     }
 
-    target = skeleton.findSlot(data.target.name);
     position = data.position;
     spacing = data.spacing;
     rotateMix = data.rotateMix;
@@ -75,7 +71,7 @@ class PathConstraint implements Constraint {
   @override
   void update() {
     if (target.attachment is! PathAttachment) return;
-    PathAttachment attachment = target.attachment;
+    var attachment = target.attachment as PathAttachment;
 
     double rotateMix = this.rotateMix;
     double translateMix = this.translateMix;
@@ -86,9 +82,9 @@ class PathConstraint implements Constraint {
     PathConstraintData data = this.data;
     //SpacingMode spacingMode = data.spacingMode;
     // Workaround for https://github.com/dart-lang/build/issues/1521
-    String spacingMode = data.spacingMode;
+    String spacingMode = data.spacingMode!;
     bool lengthSpacing = spacingMode == SpacingMode.length;
-    RotateMode rotateMode = data.rotateMode;
+    RotateMode rotateMode = data.rotateMode!;
     bool tangents = rotateMode == RotateMode.tangent;
     bool scale = rotateMode == RotateMode.chainScale;
     int boneCount = this.bones.length;
@@ -97,7 +93,7 @@ class PathConstraint implements Constraint {
     List<Bone> bones = this.bones;
     if (_spaces.length != spacesCount) _spaces = Float32List(spacesCount);
     Float32List spaces = _spaces;
-    Float32List lengths;
+    late Float32List lengths;
     double spacing = this.spacing;
 
     if (scale || lengthSpacing) {
