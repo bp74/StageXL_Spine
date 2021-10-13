@@ -34,8 +34,8 @@ class VertexAttachment extends Attachment {
   static int _nextID = 0;
   final int id = (_nextID++ & 65535) << 11;
 
-  Int16List bones;
-  Float32List vertices;
+  Int16List? bones;
+  late Float32List vertices;
   int worldVerticesLength = 0;
 
   VertexAttachment(String name) : super(name);
@@ -63,7 +63,7 @@ class VertexAttachment extends Attachment {
     List<Bone> skeletonBones = skeleton.bones;
     Float32List deform = slot.attachmentVertices;
     Float32List vertices = this.vertices;
-    Int16List bones = this.bones;
+    Int16List? bones = this.bones;
 
     if (bones == null) {
       vertices = deform.isEmpty? vertices : deform;

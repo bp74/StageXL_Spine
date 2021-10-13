@@ -47,7 +47,7 @@ class ScaleTimeline extends TranslateTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     Bone bone = skeleton.bones[boneIndex];
     double x = 0.0;

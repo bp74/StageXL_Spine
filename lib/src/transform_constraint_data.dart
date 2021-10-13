@@ -32,9 +32,9 @@ part of stagexl_spine;
 
 class TransformConstraintData {
   final String name;
-  final List<BoneData> bones = List<BoneData>();
+  final List<BoneData> bones = [];
 
-  BoneData target;
+  late BoneData target;
 
   int order = 0;
   bool relative = false;
@@ -51,9 +51,7 @@ class TransformConstraintData {
   double offsetScaleY = 0.0;
   double offsetShearY = 0.0;
 
-  TransformConstraintData(this.name) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  TransformConstraintData(this.name);
 
   @override
   String toString() => name;

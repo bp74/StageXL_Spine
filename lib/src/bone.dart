@@ -33,8 +33,8 @@ part of stagexl_spine;
 class Bone implements Updatable {
   final BoneData data;
   final Skeleton skeleton;
-  final Bone parent;
-  final List<Bone> children = List<Bone>();
+  final Bone? parent;
+  final List<Bone> children = [];
 
   double x = 0.0;
   double y = 0.0;
@@ -63,8 +63,6 @@ class Bone implements Updatable {
   bool _sorted = false;
 
   Bone(this.data, this.skeleton, this.parent) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
     setToSetupPose();
   }
 
@@ -94,7 +92,7 @@ class Bone implements Updatable {
     ashearY = shearY;
     appliedValid = true;
 
-    Bone parent = this.parent;
+    Bone? parent = this.parent;
     if (parent == null) {
       // Root bone.
       _a = scaleX * _cosDeg(rotation + shearX);
@@ -213,7 +211,7 @@ class Bone implements Updatable {
   double get worldScaleY => math.sqrt(_b * _b + _d * _d);
 
   double worldToLocalRotationX() {
-    Bone parent = this.parent;
+    Bone? parent = this.parent;
     if (parent == null) return arotation;
     double pa = parent.a;
     double pb = parent.b;
@@ -223,7 +221,7 @@ class Bone implements Updatable {
   }
 
   double worldToLocalRotationY() {
-    Bone parent = this.parent;
+    Bone? parent = this.parent;
     if (parent == null) return arotation;
     double pa = parent.a;
     double pb = parent.b;
@@ -255,7 +253,7 @@ class Bone implements Updatable {
 
   void _updateAppliedTransform() {
     this.appliedValid = true;
-    Bone parent = this.parent;
+    Bone? parent = this.parent;
 
     if (parent == null) {
       ax = worldX;

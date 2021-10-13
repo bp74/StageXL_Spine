@@ -62,7 +62,7 @@ class PathConstraintMixTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     PathConstraint pc = skeleton.pathConstraints[pathConstraintIndex];
     PathConstraintData data = pc.data;

@@ -36,15 +36,13 @@ class SlotData {
   final BoneData boneData;
 
   SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
-  SpineColor darkColor;
+  SpineColor? darkColor;
 
-  String attachmentName;
+  String? attachmentName;
   BlendMode blendMode = BlendMode.NORMAL;
 
   SlotData(this.index, this.name, this.boneData) {
     if (index < 0) throw ArgumentError("index must be >= 0.");
-    if (name == null) throw ArgumentError("name cannot be null.");
-    if (boneData == null) throw ArgumentError("boneData cannot be null.");
   }
 
   @override

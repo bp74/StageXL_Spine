@@ -67,7 +67,7 @@ class ColorTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     Slot slot = skeleton.slots[slotIndex];
     double r = 0.0;

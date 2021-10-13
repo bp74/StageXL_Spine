@@ -32,7 +32,7 @@ part of stagexl_spine;
 
 class TransformConstraint implements Constraint {
   final TransformConstraintData data;
-  final List<Bone> bones = List<Bone>();
+  final List<Bone> bones = [];
 
   Bone target;
   double translateMix = 0.0;
@@ -42,20 +42,15 @@ class TransformConstraint implements Constraint {
 
   final Float32List _temp = Float32List(2);
 
-  TransformConstraint(this.data, Skeleton skeleton) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
-
+  TransformConstraint(this.data, Skeleton skeleton) : target = skeleton.findBone(data.target.name)! {
     translateMix = data.translateMix;
     rotateMix = data.rotateMix;
     scaleMix = data.scaleMix;
     shearMix = data.shearMix;
 
     for (BoneData boneData in data.bones) {
-      bones.add(skeleton.findBone(boneData.name));
+      bones.add(skeleton.findBone(boneData.name)!);
     }
-
-    target = skeleton.findBone(data.target.name);
   }
 
   void apply() {

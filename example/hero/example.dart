@@ -11,7 +11,7 @@ Future main() async {
 
   // init Stage and RenderLoop
 
-  var canvas = html.querySelector('#stage');
+  var canvas = html.querySelector('#stage') as html.CanvasElement;
   var stage = Stage(canvas, width: 400, height: 500);
   var renderLoop = RenderLoop();
   renderLoop.addStage(stage);

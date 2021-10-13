@@ -11,7 +11,7 @@ Future main() async {
 
   // init Stage and RenderLoop
 
-  var canvas = html.querySelector('#stage');
+  var canvas = html.querySelector('#stage') as html.CanvasElement;
   var stage = Stage(canvas, width: 800, height: 400);
   var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
@@ -38,7 +38,7 @@ Future main() async {
   // load Spine skeletons from combined texture and the individual definitions
 
   var names = ["goblins", "hero", "raptor", "speedy", "spineboy"];
-  var skeletonAnimations = List<SkeletonAnimation>();
+  var skeletonAnimations = <SkeletonAnimation>[];
 
   for (var name in names) {
     // get spine texture atlases from combined texture atlas

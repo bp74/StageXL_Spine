@@ -32,11 +32,11 @@ part of stagexl_spine;
 
 class DrawOrderTimeline implements Timeline {
   final Float32List frames; // time, ...
-  final List<Int16List> drawOrders;
+  final List<Int16List?> drawOrders;
 
   DrawOrderTimeline(int frameCount)
       : frames = Float32List(frameCount),
-        drawOrders = List<Int16List>(frameCount);
+        drawOrders = List<Int16List?>.filled(frameCount, null);
 
   @override
   int getPropertyId() {
@@ -47,13 +47,13 @@ class DrawOrderTimeline implements Timeline {
 
   /// Sets the time and value of the specified keyframe.
 
-  void setFrame(int frameIndex, double time, Int16List drawOrder) {
+  void setFrame(int frameIndex, double time, Int16List? drawOrder) {
     frames[frameIndex] = time.toDouble();
     drawOrders[frameIndex] = drawOrder;
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     List<Slot> drawOrder = skeleton.drawOrder;
     List<Slot> slots = skeleton.slots;
@@ -84,7 +84,7 @@ class DrawOrderTimeline implements Timeline {
       frameIndex = Animation.binarySearch1(frames, time) - 1;
     }
 
-    Int16List drawOrderToSetupIndex = drawOrders[frameIndex];
+    Int16List? drawOrderToSetupIndex = drawOrders[frameIndex];
 
     if (drawOrderToSetupIndex == null) {
       for (int i = 0; i < slots.length; i++) {

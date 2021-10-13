@@ -34,8 +34,8 @@ abstract class RenderAttachment extends VertexAttachment {
   final String path;
 
   BitmapData bitmapData;
-  Float32List vxList;
-  Int16List ixList;
+  late Float32List vxList;
+  late Int16List ixList;
   int hullLength = 0;
   SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
 

@@ -35,17 +35,12 @@ class Animation {
   final List<Timeline> timelines;
   final double duration;
 
-  Animation(this.name, this.timelines, this.duration) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-    if (timelines == null) throw ArgumentError("timelines cannot be null.");
-  }
+  Animation(this.name, this.timelines, this.duration);
 
   /// Poses the skeleton at the specified time for this animation.
   ///
   void apply(Skeleton skeleton, double lastTime, double time, bool loop, List<SpineEvent> events,
       double alpha, MixPose pose, MixDirection direction) {
-    if (skeleton == null) throw ArgumentError("skeleton cannot be null.");
-
     if (loop && duration != 0) {
       time = time.remainder(duration);
       if (lastTime > 0) lastTime %= duration;

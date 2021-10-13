@@ -32,7 +32,7 @@ part of stagexl_spine;
 
 abstract class Timeline {
   /// Sets the value(s) for the specified time.
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction);
 
   int getPropertyId();

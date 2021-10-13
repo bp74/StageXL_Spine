@@ -32,16 +32,16 @@ part of stagexl_spine;
 
 class Skeleton {
   final SkeletonData data;
-  final List<Bone> bones = List<Bone>();
-  final List<Slot> slots = List<Slot>();
-  final List<Slot> drawOrder = List<Slot>();
-  final List<IkConstraint> ikConstraints = List<IkConstraint>();
-  final List<TransformConstraint> transformConstraints = List<TransformConstraint>();
-  final List<PathConstraint> pathConstraints = List<PathConstraint>();
-  final List<Updatable> _updateCache = List<Updatable>();
-  final List<Bone> _updateCacheReset = List<Bone>();
+  final List<Bone> bones = [];
+  final List<Slot> slots = [];
+  final List<Slot> drawOrder = [];
+  final List<IkConstraint> ikConstraints = [];
+  final List<TransformConstraint> transformConstraints = [];
+  final List<PathConstraint> pathConstraints = [];
+  final List<Updatable> _updateCache = [];
+  final List<Bone> _updateCacheReset = [];
 
-  Skin _skin;
+  Skin? _skin;
 
   SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
   double time = 0.0;
@@ -49,14 +49,12 @@ class Skeleton {
   double y = 0.0;
 
   Skeleton(this.data) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-
     for (BoneData boneData in data.bones) {
       if (boneData.parent == null) {
         Bone bone = Bone(boneData, this, null);
         bones.add(bone);
       } else {
-        Bone parent = bones[boneData.parent.index];
+        Bone parent = bones[boneData.parent!.index];
         Bone bone = Bone(boneData, this, parent);
         parent.children.add(bone);
         bones.add(bone);
@@ -165,18 +163,18 @@ class Skeleton {
     Bone slotBone = slot.bone;
 
     if (skin != null) {
-      _sortPathConstraintAttachment(skin, slotIndex, slotBone);
+      _sortPathConstraintAttachment(skin!, slotIndex, slotBone);
     }
 
     if (data.defaultSkin != null && data.defaultSkin != skin) {
-      _sortPathConstraintAttachment(data.defaultSkin, slotIndex, slotBone);
+      _sortPathConstraintAttachment(data.defaultSkin!, slotIndex, slotBone);
     }
 
     for (int i = 0; i < data.skins.length; i++) {
       _sortPathConstraintAttachment(data.skins[i], slotIndex, slotBone);
     }
 
-    Attachment attachment = slot.attachment;
+    Attachment? attachment = slot.attachment;
     if (attachment is PathAttachment) {
       _sortPathConstraintAttachment2(attachment, slotBone);
     }
@@ -204,7 +202,7 @@ class Skeleton {
     if (constraint.data.local) {
       for (int i = 0; i < constrained.length; i++) {
         Bone child = constrained[i];
-        _sortBone(child.parent);
+        _sortBone(child.parent!);
         if (_updateCache.contains(child) == false) {
           _updateCacheReset.add(child);
         }
@@ -237,7 +235,7 @@ class Skeleton {
   void _sortPathConstraintAttachment2(Attachment attachment, Bone slotBone) {
     if (attachment is! PathAttachment) return;
     PathAttachment pathAttachment = attachment;
-    Int16List pathBones = pathAttachment.bones;
+    Int16List? pathBones = pathAttachment.bones;
     if (pathBones == null) {
       _sortBone(slotBone);
     } else {
@@ -254,7 +252,7 @@ class Skeleton {
 
   void _sortBone(Bone bone) {
     if (bone._sorted) return;
-    Bone parent = bone.parent;
+    Bone? parent = bone.parent;
     if (parent != null) _sortBone(parent);
     bone._sorted = true;
     _updateCache.add(bone);
@@ -328,43 +326,40 @@ class Skeleton {
     }
   }
 
-  Skin get skin => _skin;
+  Skin? get skin => _skin;
 
-  Bone get rootBone => this.bones.isEmpty ? null : this.bones[0];
+  Bone? get rootBone => bones.isEmpty ? null : bones.first;
 
-  Bone findBone(String boneName) {
-    if (boneName == null) throw ArgumentError("boneName cannot be null.");
-    return this.bones.firstWhere((b) => b.data.name == boneName, orElse: () => null);
+  Bone? findBone(String boneName) {
+    return this.bones.firstWhere((b) => b.data.name == boneName);
   }
 
   int findBoneIndex(String boneName) {
-    if (boneName == null) throw ArgumentError("boneName cannot be null.");
     for (int i = 0; i < this.bones.length; i++) {
       if (this.bones[i].data.name == boneName) return i;
     }
     return -1;
   }
 
-  Slot findSlot(String slotName) {
-    if (slotName == null) throw ArgumentError("slotName cannot be null.");
-    return this.slots.firstWhere((s) => s.data.name == slotName, orElse: () => null);
+  Slot? findSlot(String slotName) {
+    return this.slots.firstWhere((s) => s.data.name == slotName);
   }
 
   int findSlotIndex(String slotName) {
-    if (slotName == null) throw ArgumentError("slotName cannot be null.");
     for (int i = 0; i < this.slots.length; i++) {
       if (this.slots[i].data.name == slotName) return i;
     }
     return -1;
   }
 
-  set skinName(String skinName) {
-    Skin skin = data.findSkin(skinName);
+  set skinName(String? skinName) {
+    if (skinName == null) throw ArgumentError('Cannot set skin name to null');
+    Skin? skin = data.findSkin(skinName);
     if (skin == null) throw ArgumentError("Skin not found: $skinName");
     this.skin = skin;
   }
 
-  String get skinName => skin == null ? null : skin.name;
+  String? get skinName => skin?.name;
 
   /// Sets the skin used to look up attachments before looking in
   /// the [SkeletonData.defaultSkin] default skin. Attachments from
@@ -372,16 +367,16 @@ class Skeleton {
   /// old skin was attached. If there was no old skin, each slot's setup
   /// mode attachment is attached from the new skin.
 
-  set skin(Skin newSkin) {
+  set skin(Skin? newSkin) {
     if (newSkin != null) {
       if (_skin != null) {
-        newSkin.attachAll(this, _skin);
+        newSkin.attachAll(this, _skin!);
       } else {
         for (int i = 0; i < this.slots.length; i++) {
           Slot slot = this.slots[i];
-          String name = slot.data.attachmentName;
+          String? name = slot.data.attachmentName;
           if (name != null) {
-            Attachment attachment = newSkin.getAttachment(i, name);
+            Attachment? attachment = newSkin.getAttachment(i, name);
             if (attachment != null) slot.attachment = attachment;
           }
         }
@@ -390,38 +385,28 @@ class Skeleton {
     _skin = newSkin;
   }
 
-  Attachment getAttachmentForSlotName(String slotName, String attachmentName) {
+  Attachment? getAttachmentForSlotName(String slotName, String attachmentName) {
     return getAttachmentForSlotIndex(data.findSlotIndex(slotName), attachmentName);
   }
 
-  Attachment getAttachmentForSlotIndex(int slotIndex, String attachmentName) {
-    if (attachmentName == null) {
-      throw ArgumentError("attachmentName cannot be null.");
-    }
+  Attachment? getAttachmentForSlotIndex(int slotIndex, String attachmentName) {
     if (_skin != null) {
-      Attachment attachment = _skin.getAttachment(slotIndex, attachmentName);
+      Attachment? attachment = _skin!.getAttachment(slotIndex, attachmentName);
       if (attachment != null) return attachment;
     }
     if (data.defaultSkin != null) {
-      return data.defaultSkin.getAttachment(slotIndex, attachmentName);
+      return data.defaultSkin!.getAttachment(slotIndex, attachmentName);
     }
     return null;
   }
 
   void setAttachment(String slotName, String attachmentName) {
-    if (slotName == null) {
-      throw ArgumentError("slotName cannot be null.");
-    }
-
     for (int i = 0; i < this.slots.length; i++) {
       Slot slot = this.slots[i];
       if (slot.data.name == slotName) {
-        Attachment attachment;
-        if (attachmentName != null) {
-          attachment = getAttachmentForSlotIndex(i, attachmentName);
-          if (attachment == null) {
-            throw ArgumentError("Attachment not found: $attachmentName, for slot: $slotName");
-          }
+        var attachment = getAttachmentForSlotIndex(i, attachmentName);
+        if (attachment == null) {
+          throw ArgumentError("Attachment not found: $attachmentName, for slot: $slotName");
         }
         slot.attachment = attachment;
         return;
@@ -431,24 +416,21 @@ class Skeleton {
     throw ArgumentError("Slot not found: $slotName");
   }
 
-  IkConstraint findIkConstraint(String constraintName) {
-    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
+  IkConstraint? findIkConstraint(String constraintName) {
     for (IkConstraint ikConstraint in ikConstraints) {
       if (ikConstraint.data.name == constraintName) return ikConstraint;
     }
     return null;
   }
 
-  TransformConstraint findTransformConstraint(String constraintName) {
-    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
+  TransformConstraint? findTransformConstraint(String constraintName) {
     for (TransformConstraint transformConstraint in transformConstraints) {
       if (transformConstraint.data.name == constraintName) return transformConstraint;
     }
     return null;
   }
 
-  PathConstraint findPathConstraint(String constraintName) {
-    if (constraintName == null) throw ArgumentError("constraintName cannot be null.");
+  PathConstraint? findPathConstraint(String constraintName) {
     for (PathConstraint pathConstraint in pathConstraints) {
       if (pathConstraint.data.name == constraintName) return pathConstraint;
     }

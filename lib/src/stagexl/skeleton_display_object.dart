@@ -67,7 +67,7 @@ class SkeletonDisplayObject extends DisplayObject {
   }
 
   @override
-  DisplayObject hitTestInput(num localX, num localY) {
+  DisplayObject? hitTestInput(num localX, num localY) {
     Float32List vertices = _vertices;
     double sx = 0.0 + localX;
     double sy = 0.0 - localY;
@@ -118,7 +118,7 @@ class SkeletonDisplayObject extends DisplayObject {
     var vertices = _vertices;
     var clipping = _clipping;
 
-    ClippingAttachment clippingAttachment;
+    ClippingAttachment? clippingAttachment;
     renderContext.activateRenderProgram(renderProgram);
     renderState.push(_skeletonMatrix, 1.0, renderState.globalBlendMode);
 
@@ -166,7 +166,7 @@ class SkeletonDisplayObject extends DisplayObject {
     var transform = _transformMatrix;
     var slots = skeleton.drawOrder;
 
-    ClippingAttachment clippingAttachment;
+    ClippingAttachment? clippingAttachment;
     renderState.push(_skeletonMatrix, skeleton.color.a, renderState.globalBlendMode);
 
     for (int s = 0; s < slots.length; s++) {

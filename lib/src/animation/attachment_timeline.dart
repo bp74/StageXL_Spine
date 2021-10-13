@@ -32,12 +32,12 @@ part of stagexl_spine;
 
 class AttachmentTimeline implements Timeline {
   final Float32List frames; // time, ...
-  final List<String> attachmentNames;
+  final List<String?> attachmentNames;
   int slotIndex = 0;
 
   AttachmentTimeline(int frameCount)
       : frames = Float32List(frameCount),
-        attachmentNames = List<String>.filled(frameCount, null);
+        attachmentNames = List<String?>.filled(frameCount, null);
 
   int get frameCount => frames.length;
 
@@ -54,9 +54,9 @@ class AttachmentTimeline implements Timeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
-    String attachmentName;
+    String? attachmentName;
     Slot slot = skeleton.slots[slotIndex];
 
     if (direction == MixDirection.Out && pose == MixPose.setup) {

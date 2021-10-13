@@ -43,7 +43,7 @@ class CurveTimeline implements Timeline {
   CurveTimeline(int frameCount) : _curves = Float32List((frameCount - 1) * _BEZIER_SIZE);
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {}
 
   @override

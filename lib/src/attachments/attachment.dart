@@ -33,9 +33,7 @@ part of stagexl_spine;
 class Attachment {
   final String name;
 
-  Attachment(this.name) {
-    if (name == null) throw ArgumentError("name cannot be null.");
-  }
+  Attachment(this.name);
 
   @override
   String toString() => name;

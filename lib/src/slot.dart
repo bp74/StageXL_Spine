@@ -35,24 +35,22 @@ class Slot {
   final Bone bone;
 
   SpineColor color = SpineColor(1.0, 1.0, 1.0, 1.0);
-  SpineColor darkColor;
+  SpineColor? darkColor;
 
-  Attachment _attachment;
+  Attachment? _attachment;
   double _attachmentTime = 0.0;
   Float32List attachmentVertices = Float32List(0);
 
   Slot(this.data, this.bone) {
-    if (data == null) throw ArgumentError("data cannot be null.");
-    if (bone == null) throw ArgumentError("bone cannot be null.");
     darkColor = data.darkColor == null ? null : SpineColor(1.0, 1.0, 1.0, 1.0);
     setToSetupPose();
   }
 
   Skeleton get skeleton => bone.skeleton;
 
-  Attachment get attachment => _attachment;
+  Attachment? get attachment => _attachment;
 
-  set attachment(Attachment attachment) {
+  set attachment(Attachment? attachment) {
     if (_attachment == attachment) return;
     _attachment = attachment;
     _attachmentTime = bone.skeleton.time;
@@ -68,12 +66,12 @@ class Slot {
 
   void setToSetupPose() {
     color.setFromColor(data.color);
-    if (darkColor != null) darkColor.setFromColor(this.data.darkColor);
+    if (darkColor != null && data.darkColor != null) darkColor!.setFromColor(this.data.darkColor!);
     if (data.attachmentName == null) {
       attachment = null;
     } else {
       _attachment = null;
-      attachment = bone.skeleton.getAttachmentForSlotIndex(data.index, data.attachmentName);
+      attachment = bone.skeleton.getAttachmentForSlotIndex(data.index, data.attachmentName!);
     }
   }
 

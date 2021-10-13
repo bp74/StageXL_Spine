@@ -69,7 +69,7 @@ class TransformConstraintTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     List<TransformConstraint> tcs = skeleton.transformConstraints;
     TransformConstraint tc = tcs[transformConstraintIndex];

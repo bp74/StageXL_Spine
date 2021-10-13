@@ -76,7 +76,7 @@ class TwoColorTimeline extends CurveTimeline {
   }
 
   @override
-  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent> firedEvents,
+  void apply(Skeleton skeleton, double lastTime, double time, List<SpineEvent>? firedEvents,
       double alpha, MixPose pose, MixDirection direction) {
     Slot slot = skeleton.slots[slotIndex];
     double r1 = 0.0;
@@ -90,12 +90,14 @@ class TwoColorTimeline extends CurveTimeline {
     if (time < frames[0]) {
       if (pose == MixPose.setup) {
         slot.color.setFromColor(slot.data.color);
-        slot.darkColor.setFromColor(slot.data.darkColor);
-      } else if (pose == MixPose.current) {
+        if (slot.data.darkColor != null) {
+          slot.darkColor?.setFromColor(slot.data.darkColor!);
+        }
+      } else if (pose == MixPose.current && slot.darkColor != null && slot.data.darkColor != null) {
         var l1 = slot.color;
-        var d1 = slot.darkColor;
+        var d1 = slot.darkColor!;
         var l2 = slot.data.color;
-        var s2 = slot.data.darkColor;
+        var s2 = slot.data.darkColor!;
         l1.add((l2.r - l1.r) * alpha, (l2.g - l1.g) * alpha, (l2.b - l1.b) * alpha,
             (l2.a - l1.a) * alpha);
         d1.add((s2.r - d1.r) * alpha, (s2.g - d1.g) * alpha, (s2.b - d1.b) * alpha, 0.0);
@@ -148,17 +150,19 @@ class TwoColorTimeline extends CurveTimeline {
 
     if (alpha == 1.0) {
       slot.color.setFrom(r1, g1, b1, a1);
-      slot.darkColor.setFrom(r2, g2, b2, 1.0);
+      slot.darkColor?.setFrom(r2, g2, b2, 1.0);
     } else {
       var light = slot.color;
       var dark = slot.darkColor;
       if (pose == MixPose.setup) {
         light.setFromColor(slot.data.color);
-        dark.setFromColor(slot.data.darkColor);
+        if (slot.data.darkColor != null) {
+          dark?.setFromColor(slot.data.darkColor!);
+        }
       }
       light.add((r1 - light.r) * alpha, (g1 - light.g) * alpha, (b1 - light.b) * alpha,
           (a1 - light.a) * alpha);
-      dark.add((r2 - dark.r) * alpha, (g2 - dark.g) * alpha, (b2 - dark.b) * alpha, 0.0);
+      dark?.add((r2 - dark.r) * alpha, (g2 - dark.g) * alpha, (b2 - dark.b) * alpha, 0.0);
     }
   }
 }

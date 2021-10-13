@@ -33,12 +33,12 @@ part of stagexl_spine;
 class TrackEntry extends EventDispatcher {
   final int trackIndex;
   final Animation animation;
-  final List<int> timelineData = List<int>();
-  final List<TrackEntry> timelineDipMix = List<TrackEntry>();
-  final List<num> timelinesRotation = List<num>();
+  List<int> timelineData = [];
+  List<TrackEntry?> timelineDipMix = [];
+  final List<num> timelinesRotation = [];
 
-  TrackEntry next;
-  TrackEntry mixingFrom;
+  TrackEntry? next;
+  TrackEntry? mixingFrom;
   bool loop = false;
 
   double eventThreshold = 0.0;
@@ -105,18 +105,15 @@ class TrackEntry extends EventDispatcher {
     }
   }
 
-  TrackEntry setTimelineData(TrackEntry to, List<TrackEntry> mixingToArray, Set<int> propertyIDs) {
+  TrackEntry setTimelineData(TrackEntry? to, List<TrackEntry> mixingToArray, Set<int> propertyIDs) {
     if (to != null) mixingToArray.add(to);
     var lastEntry = mixingFrom?.setTimelineData(this, mixingToArray, propertyIDs) ?? this;
     if (to != null) mixingToArray.removeLast();
 
     int timelinesCount = animation.timelines.length;
 
-    this.timelineData.length = timelinesCount;
-    this.timelineData.fillRange(0, timelinesCount, 0);
-
-    this.timelineDipMix.length = timelinesCount;
-    this.timelineDipMix.fillRange(0, timelinesCount, null);
+    timelineData = List.filled(timelinesCount, 0);
+    timelineDipMix = List.filled(timelinesCount, null);
 
     outer:
     for (int i = 0; i < timelinesCount; i++) {
@@ -156,5 +153,5 @@ class TrackEntry extends EventDispatcher {
   }
 
   @override
-  String toString() => animation == null ? "<none>" : animation.name;
+  String toString() => animation.name;
 }

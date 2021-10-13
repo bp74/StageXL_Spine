@@ -31,22 +31,22 @@
 part of stagexl_spine;
 
 class MeshAttachment extends RenderAttachment {
-  Float32List regionUVs;
-  Int16List triangles;
-  Int16List edges;
+  late Float32List regionUVs;
+  late Int16List triangles;
+  late Int16List edges;
 
   bool inheritDeform = false;
   double width = 0.0;
   double height = 0.0;
-  MeshAttachment _parentMesh;
+  MeshAttachment? _parentMesh;
 
   MeshAttachment(String name, String path, BitmapData bitmapData) : super(name, path, bitmapData);
 
   //---------------------------------------------------------------------------
 
-  MeshAttachment get parentMesh => _parentMesh;
+  MeshAttachment? get parentMesh => _parentMesh;
 
-  set parentMesh(MeshAttachment parentMesh) {
+  set parentMesh(MeshAttachment? parentMesh) {
     _parentMesh = parentMesh;
     if (parentMesh != null) {
       bones = parentMesh.bones;
